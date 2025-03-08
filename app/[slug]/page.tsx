@@ -7,13 +7,13 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  const { default: Post } = await import(`@/notes/${slug}.mdx`);
+  const { default: Post } = await import(`./content/${slug}.mdx`);
 
   return <Post />;
 }
 
 export async function generateStaticParams() {
-  const slugs = (await fs.readdir("./notes")).map((file) => {
+  const slugs = (await fs.readdir("./content")).map((file) => {
     return { slug: path.basename(file, ".mdx") };
   });
   return slugs;
