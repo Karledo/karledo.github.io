@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 
 async function getFileBasenames() {
-  return (await fs.readdir("./notes")).map((file) => {
+  return (await fs.readdir("./content")).map((file) => {
     return path.basename(file, ".mdx");
   });
 }

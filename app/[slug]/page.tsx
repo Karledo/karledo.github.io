@@ -13,7 +13,7 @@ export default async function Page({
 }
 
 export async function generateStaticParams() {
-  const slugs = (await fs.readdir("@/content")).map((file) => {
+  const slugs = (await fs.readdir("./content")).map((file) => {
     return { slug: path.basename(file, ".mdx") };
   });
   return slugs;
