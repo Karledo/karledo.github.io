@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const newsreaderSerif = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Notes",
-  description: "Karl's Notes",
+  metadataBase: new URL("https://karledo.github.io/"),
+  title: {
+    default: "Karl Edochie",
+    template: "%s | Karl Edochie",
+  },
+  description:
+    "Driven by curiosity, building with logic, striving for novelty—always moving forward.",
+  creator: "Karl Edochie",
+  publisher: "Karl Edochie",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.className} ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${newsreaderSerif.variable} antialiased`}
       >
         {children}
       </body>
