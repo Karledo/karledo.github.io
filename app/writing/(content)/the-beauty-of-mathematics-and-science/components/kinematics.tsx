@@ -5,25 +5,30 @@ import {
   domAnimation,
   useTransform,
   useTime,
+  useMotionValue,
+  useAnimationFrame,
 } from "motion/react";
 import useMeasure from "react-use-measure";
 import * as m from "motion/react-m";
-import { ComponentPropsWithRef, ReactNode } from "react";
+import { ReactNode, useRef } from "react";
+import * as Slider from "@radix-ui/react-slider";
 
 export function Kinematics() {
   const [ref, bounds] = useMeasure();
-  const velocityX = new MotionValue(bounds.width * 0.6);
-  const velocityY = new MotionValue(-bounds.height * 1.75);
-  const accelerationY = new MotionValue(bounds.height * 2.5);
+  const velocityX = useMotionValue(0);
+  const velocityY = useMotionValue(0);
+  const accelerationY = useMotionValue(500);
 
   const duration = useTransform(
-    () => ((-2 * velocityY.get()) / accelerationY.get()) * 1000,
+    () => (-2 * velocityY.get()) / accelerationY.get(),
   );
+
+  const milliseconds = useTransform(() => duration.get() * 1000);
 
   const { time, /* restart, */ start /* , stop */ } = useTimer({
     oneShot: false,
   });
-  start(duration);
+  start(milliseconds);
 
   const { displacementX, displacementY } = useKinematic({
     time,
@@ -32,38 +37,84 @@ export function Kinematics() {
     accelerationY,
   });
 
+  const resolution = 10;
+
+  const path = useRef<{ x: MotionValue<number>; y: MotionValue<number> }[]>(
+    Array(resolution + 1)
+      .fill(0)
+      .map(() => {
+        return {
+          x: new MotionValue(0),
+          y: new MotionValue(0),
+        };
+      }),
+  );
+
+  useAnimationFrame(() => {
+    for (let i = 0; i < resolution + 1; i++) {
+      const frac = i / resolution;
+      const step = duration.get() * frac;
+      const x = equation(velocityX.get(), 0, step);
+      const y = equation(velocityY.get(), accelerationY.get(), step);
+
+      path.current[i].x.set(x);
+      path.current[i].y.set(y);
+    }
+  });
+
   return (
     <Wrapper>
       <div
         ref={ref}
-        className="bg-background-200 relative mb-4 aspect-video items-end overflow-hidden rounded-xl p-8"
+        className="bg-background-200 relative mb-4 aspect-video overflow-hidden rounded-xl px-8 py-12"
       >
-        <div className="absolute inset-8">
-          <PreviewPath
-            initialVelocityX={velocityX}
-            initialVelocityY={velocityY}
-            accelerationX={new MotionValue(0)}
-            accelerationY={accelerationY}
-            time={duration}
-            className="absolute bottom-[calc(10%_+_0.75rem)] left-3"
-          />
+        <div className="relative size-full">
+          <div className="absolute bottom-2 left-2">
+            {Array.from({ length: resolution + 1 }).map((_, i) => {
+              return (
+                <Point key={i} x={path.current[i].x} y={path.current[i].y} />
+              );
+            })}
+          </div>
           <m.div
             aria-label="Ball"
             style={{
               x: displacementX,
               y: displacementY,
             }}
-            className="absolute bottom-[10%] left-0 size-6 rounded-full bg-white"
+            className="absolute bottom-0 size-6 rounded-full bg-white"
           />
         </div>
       </div>
-      {/* <Slider.Root className="relative flex h-10 w-full max-w-[200px] cursor-grab touch-none items-center py-4 select-none active:cursor-grabbing">
-        <Slider.Thumb className="bg-foreground-100 size-6 h-full rounded-full">
-          <Slider.Track className="bg-background-300 isolate h-full grow overflow-hidden">
-            <Slider.Range className="rounded-full bg-white" />
+      <div className="flex items-center gap-x-4">
+        <span>Horizontal Velocity</span>
+        <Slider.Root
+          min={0}
+          max={bounds.width * 0.67}
+          onValueChange={([value]) => velocityX.set(value)}
+          className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
+        >
+          <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
+            <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
           </Slider.Track>
-        </Slider.Thumb>
-      </Slider.Root> */}
+          <Slider.Thumb />
+        </Slider.Root>
+      </div>
+      <div className="flex items-center gap-x-4">
+        <span>Vertical Velocity</span>
+        <Slider.Root
+          min={0}
+          defaultValue={[25]}
+          max={bounds.height * 1.38}
+          onValueChange={([value]) => velocityY.set(-value)}
+          className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
+        >
+          <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
+            <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
+          </Slider.Track>
+          <Slider.Thumb />
+        </Slider.Root>
+      </div>
       {/* <div className="flex gap-2">
         {[
           { func: () => restart(duration), text: "Restart" },
@@ -163,39 +214,21 @@ function useTimer({ oneShot = true }: { oneShot?: boolean }) {
   };
 }
 
-function PreviewPath({
-  initialVelocityX,
-  initialVelocityY,
-  accelerationX,
-  accelerationY,
-  time,
-  resolution = 15,
+function Point({
+  x,
+  y,
   ...props
-}: EquationData & { resolution?: number } & ComponentPropsWithRef<"div">) {
+}: { x: MotionValue<number>; y: MotionValue<number> } & Omit<
+  typeof m.div,
+  "className" | "style" | "aria-label" | "$$typeof"
+>) {
   return (
-    <div {...props}>
-      {Array.from({ length: resolution + 1 }).map((_, i) => {
-        const frac = i / resolution;
-        const x = equation(
-          initialVelocityX.get(),
-          accelerationX.get(),
-          frac * (time.get() / 1000),
-        );
-        const y = equation(
-          initialVelocityY.get(),
-          accelerationY.get(),
-          frac * (time.get() / 1000),
-        );
-        return (
-          <m.div
-            key={i}
-            aria-label="Trajectory Path"
-            className="bg-foreground-100/20 absolute size-2 rounded-full"
-            style={{ x, y }}
-          />
-        );
-      })}
-    </div>
+    <m.div
+      aria-label="Trajectory Path"
+      className="bg-foreground-100/30 absolute bottom-0 left-0 size-2 rounded-full"
+      style={{ x, y }}
+      {...props}
+    />
   );
 }
 
@@ -203,11 +236,3 @@ function equation(u: number, a: number, t: number) {
   if (a === 0) return u * t;
   return u * t + 0.5 * a * t ** 2;
 }
-
-type EquationData = {
-  initialVelocityX: MotionValue<number>;
-  initialVelocityY: MotionValue<number>;
-  accelerationX: MotionValue<number>;
-  accelerationY: MotionValue<number>;
-  time: MotionValue<number>;
-};
