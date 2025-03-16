@@ -36,7 +36,6 @@ export function Gravitation({}) {
     const displacement = sunPos.sub(planetPos);
     const distance = displacement.magnitude();
     const force = equation(PLANET_MASS, SUN_MASS, distance);
-    console.log(force);
 
     const direction = displacement.normalize();
     const newAcceleration = direction.scale(force / PLANET_MASS);
@@ -106,7 +105,7 @@ function useGravitation() {
   const displacement = { x: new MotionValue(0), y: new MotionValue(0) };
   const velocity = { x: new MotionValue(0), y: new MotionValue(100) };
 
-  useAnimationFrame((globalMilliseconds, deltaTimeMilliseconds) => {
+  useAnimationFrame((_, deltaTimeMilliseconds) => {
     const deltaTime = deltaTimeMilliseconds / 1000;
     velocity.x.set(velocity.x.get() + acceleration.x.get() * deltaTime);
     velocity.y.set(velocity.y.get() + acceleration.y.get() * deltaTime);
