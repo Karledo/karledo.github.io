@@ -8,9 +8,10 @@ import {
 } from "motion/react";
 import useMeasure from "react-use-measure";
 import * as m from "motion/react-m";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import { LazyMotionProvider } from "@/components/lazy-motion-provider";
+import { PauseIcon, PlayIcon, ReloadIcon } from "@radix-ui/react-icons";
 
 export function Kinematics() {
   const [ref, bounds] = useMeasure();
@@ -45,10 +46,20 @@ export function Kinematics() {
     accelerationY,
   });
 
-  const controls: { action: () => void; text: string }[] = [
-    { action: reset, text: "Reset" },
-    { action: start, text: "Start" },
-    { action: stop, text: "Stop" },
+  const classNames = "stroke-0 stroke-foreground-200";
+  const controls: { action: () => void; button: ReactNode }[] = [
+    {
+      action: stop,
+      button: <PauseIcon className={`${classNames} size-4`} />,
+    },
+    {
+      action: start,
+      button: <PlayIcon className={`${classNames} size-6`} />,
+    },
+    {
+      action: reset,
+      button: <ReloadIcon className={`${classNames} size-4`} />,
+    },
   ];
 
   const resolution = 10;
@@ -80,7 +91,7 @@ export function Kinematics() {
     <LazyMotionProvider>
       <div
         ref={ref}
-        className="bg-background-200 relative mb-4 aspect-video overflow-hidden rounded-xl px-8 py-12"
+        className="bg-background-200 relative mb-3 aspect-video overflow-hidden rounded-xl px-8 py-12"
       >
         <div className="relative size-full">
           <div className="absolute bottom-2 left-2">
@@ -100,15 +111,30 @@ export function Kinematics() {
           />
         </div>
       </div>
-      <div className="mb-4">
-        <div className="flex items-center gap-x-4">
-          <span>Horizontal Velocity</span>
+      <div className="mb-7 flex items-center justify-center gap-2">
+        {controls.map(({ action, button }) => {
+          return (
+            <button
+              key={action.toString()}
+              onClick={() => {
+                action();
+              }}
+              className="border-background-300 bg-background-200 transition-color hover:bg-background-300 cursor-pointer rounded-full border p-3 duration-300"
+            >
+              {button}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mb-6 flex flex-col gap-y-4">
+        <div>
+          <span className="mb-2">Horizontal Velocity</span>
           <Slider.Root
             min={0}
             defaultValue={[(bounds.width * maxHorizontalVelocityFactor) / 2]}
             max={bounds.width * maxHorizontalVelocityFactor}
             onValueChange={([value]) => velocityX.set(value)}
-            className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
+            className="relative flex h-3 grow cursor-grab touch-none items-center overflow-hidden transition-transform duration-300 select-none hover:scale-y-150 active:scale-y-150 active:cursor-grabbing"
           >
             <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
               <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
@@ -116,14 +142,14 @@ export function Kinematics() {
             <Slider.Thumb />
           </Slider.Root>
         </div>
-        <div className="flex items-center gap-x-4">
-          <span>Vertical Velocity</span>
+        <div>
+          <span className="mb-2">Vertical Velocity</span>
           <Slider.Root
             min={0}
             defaultValue={[(bounds.height * maxVerticalVelocityFactor) / 2]}
             max={bounds.height * maxVerticalVelocityFactor}
             onValueChange={([value]) => velocityY.set(-value)}
-            className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
+            className="relative flex h-3 grow cursor-grab touch-none items-center overflow-hidden transition-transform duration-300 select-none hover:scale-y-150 active:scale-y-150 active:cursor-grabbing"
           >
             <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
               <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
@@ -131,21 +157,6 @@ export function Kinematics() {
             <Slider.Thumb />
           </Slider.Root>
         </div>
-      </div>
-      <div className="flex gap-2">
-        {controls.map(({ action, text }) => {
-          return (
-            <button
-              key={text}
-              onClick={() => {
-                action();
-              }}
-              className="bg-foreground-100 text-background-100 cursor-pointer rounded px-3 py-1.5 text-sm"
-            >
-              {text}
-            </button>
-          );
-        })}
       </div>
     </LazyMotionProvider>
   );

@@ -19,10 +19,7 @@ const newsreaderSerif = Newsreader({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://karledo.github.io/"),
-  title: {
-    default: "Karl Edochie",
-    template: "%s | Karl Edochie",
-  },
+  title: "Karl Edochie",
   description:
     "Driven by curiosity, building with logic, striving for novelty—always moving forward.",
   creator: "Karl Edochie",
