@@ -53,7 +53,7 @@ export function Gravitation({}) {
             <Planet
               x={planetPosition.x}
               y={planetPosition.y}
-              className="bg-white"
+              className="bg-blue-500"
             />
           </div>
         </div>
