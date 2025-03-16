@@ -7,6 +7,7 @@ import {
   useTime,
   useMotionValue,
   useAnimationFrame,
+  useMotionValueEvent,
 } from "motion/react";
 import useMeasure from "react-use-measure";
 import * as m from "motion/react-m";
@@ -19,16 +20,25 @@ export function Kinematics() {
   const velocityY = useMotionValue(0);
   const accelerationY = useMotionValue(500);
 
+  const maxVerticalVelocityFactor = 1.38;
+  const maxHorizontalVelocityFactor = 0.67;
+
   const duration = useTransform(
     () => (-2 * velocityY.get()) / accelerationY.get(),
   );
 
-  const milliseconds = useTransform(() => duration.get() * 1000);
-
-  const { time, /* restart, */ start /* , stop */ } = useTimer({
-    oneShot: false,
+  useMotionValueEvent(duration, "change", (latestDuration) => {
+    timerDuration.set(latestDuration);
   });
-  start(milliseconds);
+
+  const {
+    time,
+    start,
+    stop,
+    reset,
+    duration: timerDuration,
+  } = useTimer(duration.get());
+  start();
 
   const { displacementX, displacementY } = useKinematic({
     time,
@@ -36,6 +46,12 @@ export function Kinematics() {
     velocityY,
     accelerationY,
   });
+
+  const controls: { action: () => void; text: string }[] = [
+    { action: reset, text: "Reset" },
+    { action: start, text: "Start" },
+    { action: stop, text: "Stop" },
+  ];
 
   const resolution = 10;
 
@@ -86,46 +102,45 @@ export function Kinematics() {
           />
         </div>
       </div>
-      <div className="flex items-center gap-x-4">
-        <span>Horizontal Velocity</span>
-        <Slider.Root
-          min={0}
-          max={bounds.width * 0.67}
-          onValueChange={([value]) => velocityX.set(value)}
-          className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
-        >
-          <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
-            <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
-          </Slider.Track>
-          <Slider.Thumb />
-        </Slider.Root>
+      <div className="mb-4">
+        <div className="flex items-center gap-x-4">
+          <span>Horizontal Velocity</span>
+          <Slider.Root
+            min={0}
+            defaultValue={[(bounds.width * maxHorizontalVelocityFactor) / 2]}
+            max={bounds.width * maxHorizontalVelocityFactor}
+            onValueChange={([value]) => velocityX.set(value)}
+            className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
+          >
+            <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
+              <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+        </div>
+        <div className="flex items-center gap-x-4">
+          <span>Vertical Velocity</span>
+          <Slider.Root
+            min={0}
+            defaultValue={[(bounds.height * maxVerticalVelocityFactor) / 2]}
+            max={bounds.height * maxVerticalVelocityFactor}
+            onValueChange={([value]) => velocityY.set(-value)}
+            className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
+          >
+            <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
+              <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+        </div>
       </div>
-      <div className="flex items-center gap-x-4">
-        <span>Vertical Velocity</span>
-        <Slider.Root
-          min={0}
-          defaultValue={[25]}
-          max={bounds.height * 1.38}
-          onValueChange={([value]) => velocityY.set(-value)}
-          className="relative flex h-3 max-w-[300px] grow cursor-grab touch-none items-center overflow-hidden select-none active:cursor-grabbing"
-        >
-          <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full">
-            <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
-          </Slider.Track>
-          <Slider.Thumb />
-        </Slider.Root>
-      </div>
-      {/* <div className="flex gap-2">
-        {[
-          { func: () => restart(duration), text: "Restart" },
-          { func: start, text: "Start" },
-          { func: stop, text: "Stop" },
-        ].map(({ func, text }) => {
+      <div className="flex gap-2">
+        {controls.map(({ action, text }) => {
           return (
             <button
               key={text}
               onClick={() => {
-                func();
+                action();
               }}
               className="bg-foreground-100 text-background-100 cursor-pointer rounded px-3 py-1.5 text-sm"
             >
@@ -133,7 +148,7 @@ export function Kinematics() {
             </button>
           );
         })}
-      </div> */}
+      </div>
     </Wrapper>
   );
 }
@@ -156,62 +171,47 @@ function useKinematic({
   time: MotionValue<number>;
 }) {
   const displacementX = useTransform(() => {
-    const t = time.get() / 1000;
-    return equation(velocityX.get(), accelerationX.get(), t);
+    return equation(velocityX.get(), accelerationX.get(), time.get());
   });
   const displacementY = useTransform(() => {
-    const t = time.get() / 1000;
-    return equation(velocityY.get(), accelerationY.get(), t);
+    return equation(velocityY.get(), accelerationY.get(), time.get());
   });
 
   return { displacementX, displacementY };
 }
 
-function useTimer({ oneShot = true }: { oneShot?: boolean }) {
-  let isRunning = true;
-  const globalTime = useTime();
-  let currentTime = globalTime;
+function useTimer(_duration?: number) {
+  let isRunning = false;
+  const rawTime = useMotionValue(0);
+  const duration = useMotionValue(_duration);
 
-  let duration = new MotionValue(0);
-  const elapsedTime = new MotionValue(0);
+  const time = useTransform(() => rawTime.get() % duration.get());
 
-  const time = useTransform(() => {
-    if (!isRunning) {
-      return elapsedTime.get();
+  function stop() {
+    isRunning = false;
+  }
+
+  function start(timeLeft?: number) {
+    isRunning = true;
+    if (timeLeft) {
+      duration.set(timeLeft);
     }
+  }
 
-    const deltaTime = globalTime.get() - currentTime.get();
-    if (deltaTime <= duration.get()) {
-      return deltaTime;
-    } else {
-      return oneShot ? duration.get() : deltaTime % duration.get();
-    }
+  function reset() {
+    rawTime.set(0);
+  }
+
+  useMotionValueEvent(duration, "change", () => {
+    rawTime.set(0);
   });
 
-  return {
-    time,
-    duration,
-    elapsedTime,
-    restart: (milliseconds: MotionValue<number>) => {
-      isRunning = true;
-      currentTime = new MotionValue(globalTime.get());
-      duration = milliseconds;
-    },
-    start: (milliseconds?: MotionValue<number>) => {
-      isRunning = true;
-      if (milliseconds) {
-        duration = milliseconds;
-        currentTime = new MotionValue(globalTime.get());
-      } else {
-        elapsedTime.set(time.get());
-        currentTime = new MotionValue(globalTime.get() - elapsedTime.get());
-      }
-    },
-    stop: () => {
-      elapsedTime.set(time.get());
-      isRunning = false;
-    },
-  };
+  useAnimationFrame((_, delta) => {
+    if (!isRunning) return;
+    rawTime.set(rawTime.get() + delta / 1000);
+  });
+
+  return { time, duration, start, stop, reset };
 }
 
 function Point({
