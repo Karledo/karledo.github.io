@@ -1,8 +1,6 @@
 "use client";
 import {
-  LazyMotion,
   MotionValue,
-  domAnimation,
   useTransform,
   useMotionValue,
   useAnimationFrame,
@@ -10,8 +8,9 @@ import {
 } from "motion/react";
 import useMeasure from "react-use-measure";
 import * as m from "motion/react-m";
-import { ReactNode, useRef } from "react";
+import { useRef } from "react";
 import * as Slider from "@radix-ui/react-slider";
+import { LazyMotionProvider } from "@/components/lazy-motion-provider";
 
 export function Kinematics() {
   const [ref, bounds] = useMeasure();
@@ -78,7 +77,7 @@ export function Kinematics() {
   });
 
   return (
-    <Wrapper>
+    <LazyMotionProvider>
       <div
         ref={ref}
         className="bg-background-200 relative mb-4 aspect-video overflow-hidden rounded-xl px-8 py-12"
@@ -148,12 +147,8 @@ export function Kinematics() {
           );
         })}
       </div>
-    </Wrapper>
+    </LazyMotionProvider>
   );
-}
-
-function Wrapper({ children }: { children: ReactNode }) {
-  return <LazyMotion features={domAnimation}>{children}</LazyMotion>;
 }
 
 function useKinematic({
