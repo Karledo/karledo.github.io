@@ -41,6 +41,11 @@ const pages: Page[] = [
     date: new Date(2025, 2, 8),
     slug: "/writing/a-lesson-on-thinking",
   },
+  {
+    title: "Law of Gravitational Attraction",
+    date: new Date(2025, 2, 8),
+    slug: "/writing/law-of-universal-gravitation",
+  },
   // {
   //   title: "Youth Parliament",
   //   date: new Date(2025, 3, 10),
