@@ -83,7 +83,7 @@ export default async function Page() {
 
 function PageGroup({ pages }: { pages: Page[] }) {
   return (
-    <div className="group/wrapper divide-background-300 border-background-200 flex flex-col divide-y border-t">
+    <div className="group/wrapper divide-background-300 border-background-300 flex flex-col divide-y border-t">
       {pages.map((page) => {
         return (
           <Link
