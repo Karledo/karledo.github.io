@@ -34,23 +34,18 @@ const pages: Page[] = [
   {
     title: "The Beauty of Mathematics and Science",
     date: new Date(2025, 1, 10),
-    slug: "/writing/the-beauty-of-mathematics-and-science",
+    slug: "/the-beauty-of-mathematics-and-science",
   },
   {
     title: "A Lesson on Thinking",
     date: new Date(2025, 2, 8),
-    slug: "/writing/a-lesson-on-thinking",
+    slug: "/a-lesson-on-thinking",
   },
   {
     title: "Law of Gravitational Attraction",
     date: new Date(2025, 2, 8),
-    slug: "/writing/law-of-universal-gravitation",
+    slug: "/law-of-universal-gravitation",
   },
-  // {
-  //   title: "Youth Parliament",
-  //   date: new Date(2025, 3, 10),
-  //   slug: "/writing/youth-parliament",
-  // },
 ];
 
 export default async function Page() {
@@ -93,7 +88,7 @@ function PageGroup({ pages }: { pages: Page[] }) {
         return (
           <Link
             key={page.slug}
-            href={page.slug}
+            href={`/writing${page.slug}`}
             className="group/link flex items-center justify-between py-3"
           >
             <span className="group-hover/link:text-foreground-100! group-hover/wrapper:text-foreground-200 transition-colors duration-300">
