@@ -1,3 +1,4 @@
+import pageData from "@/app/writing/page-data.json";
 import { CornerUpLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -30,23 +31,11 @@ function groupPagesByYear(pages: Page[]) {
   });
 }
 
-const pages: Page[] = [
-  {
-    title: "The Beauty of Mathematics and Science",
-    date: new Date(2025, 1, 10),
-    slug: "/the-beauty-of-mathematics-and-science",
-  },
-  {
-    title: "A Lesson on Thinking",
-    date: new Date(2025, 2, 8),
-    slug: "/a-lesson-on-thinking",
-  },
-  {
-    title: "Law of Gravitational Attraction",
-    date: new Date(2025, 2, 8),
-    slug: "/law-of-universal-gravitation",
-  },
-];
+const pages: Page[] = pageData.map(({ title, date, slug }) => ({
+  title,
+  date: new Date(date),
+  slug,
+}));
 
 export default async function Page() {
   const pagesGroupedByYear = groupPagesByYear(pages);
@@ -94,7 +83,7 @@ function PageGroup({ pages }: { pages: Page[] }) {
             <span className="group-hover/link:text-foreground-100! group-hover/wrapper:text-foreground-200 transition-colors duration-300">
               {page.title}
             </span>
-            <span className="text-foreground-200 group-hover/link:text-foreground-200! group-hover/wrapper:text-background-300 text-sm transition-colors duration-300">{`${page.date.getDate()}/${page.date.getMonth()}`}</span>
+            <span className="text-foreground-200 group-hover/link:text-foreground-200! group-hover/wrapper:text-background-300 text-sm transition-colors duration-300">{`${page.date.getDate()}/${page.date.getMonth() + 1}`}</span>
           </Link>
         );
       })}
