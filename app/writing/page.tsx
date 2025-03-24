@@ -1,4 +1,5 @@
-import pageData from "@/app/writing/page-data.json";
+import { pages } from "@/app/writing/page-data";
+import type { Page } from "@/app/writing/page-data";
 import { CornerUpLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -9,12 +10,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/writing",
   },
-};
-
-type Page = {
-  title: string;
-  date: Date;
-  slug: string;
 };
 
 function groupPagesByYear(pages: Page[]) {
@@ -30,12 +25,6 @@ function groupPagesByYear(pages: Page[]) {
     };
   });
 }
-
-const pages: Page[] = pageData.map(({ title, date, slug }) => ({
-  title,
-  date: new Date(date),
-  slug,
-}));
 
 export default async function Page() {
   const pagesGroupedByYear = groupPagesByYear(pages);

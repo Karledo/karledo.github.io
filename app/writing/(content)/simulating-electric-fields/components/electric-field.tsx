@@ -19,7 +19,7 @@ const arrowHeadSize = "3";
 const arrowLength = 30;
 const gridSize = 7;
 
-const defaultCharge = 1;
+const defaultCharge = -1;
 const numChargedParticles = 2;
 
 export function ElectricField() {
