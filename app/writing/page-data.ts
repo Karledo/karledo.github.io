@@ -12,7 +12,7 @@ export const pages: Page[] = [
   },
   {
     title: "A Lesson on Thinking",
-    date: new Date(2025, 2, 8),
+    date: new Date(2025, 1, 20),
     slug: "/a-lesson-on-thinking",
   },
   {
@@ -27,12 +27,12 @@ export const pages: Page[] = [
   // },
   {
     title: "What Is Vibe Coding?",
-    date: new Date(2025, 2, 8),
+    date: new Date(2025, 2, 20),
     slug: "/what-is-vibe-coding",
   },
   {
     title: "Simulating Electric Fields",
-    date: new Date(2025, 2, 8),
+    date: new Date(2025, 1, 12),
     slug: "/simulating-electric-fields",
   },
 ];
