@@ -1,5 +1,6 @@
-import { Title } from '@/components/title'
+import { DynamicTitle } from '@/components/dynamic-title'
 import { ElectricField } from "./components/electric-field"
+import { getPageData } from "@/utils/helper"
 
 export const metadata = {
     title: 'Simulating Electric Fields',
@@ -9,7 +10,7 @@ export const metadata = {
     }
 }
 
-<Title className='mb-7' title={'Simulating Electric Fields'} date={new Date(2025, 0, 1)} />
+<DynamicTitle className='mb-7' slug="/simulating-electric-fields" />
 
 <article className="mb-7">Here is a simulation of an electric field.</article>
 
