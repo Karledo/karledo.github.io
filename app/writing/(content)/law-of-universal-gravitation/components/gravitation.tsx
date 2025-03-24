@@ -37,7 +37,7 @@ export function Gravitation({}) {
     const distance = displacement.magnitude();
     const force = equation(PLANET_MASS, SUN_MASS, distance);
 
-    const direction = displacement.normalize();
+    const direction = displacement.normalized();
     const newAcceleration = direction.scale(force / PLANET_MASS);
 
     acceleration.x.set(newAcceleration.x);

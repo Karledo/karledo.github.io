@@ -11,6 +11,10 @@ export class Vector2 {
     return (this.x ** 2 + this.y ** 2) ** 0.5;
   }
 
+  public squaredMagnitude() {
+    return this.x ** 2 + this.y ** 2;
+  }
+
   public sub(vector: Vector2) {
     return new Vector2(this.x - vector.x, this.y - vector.y);
   }
@@ -19,7 +23,7 @@ export class Vector2 {
     return new Vector2(this.x + vector.x, this.y + vector.y);
   }
 
-  public normalize() {
+  public normalized() {
     const length = this.magnitude();
     if (length == 0) return new Vector2(0, 0);
     return new Vector2(this.x / length, this.y / length);

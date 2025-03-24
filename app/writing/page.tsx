@@ -1,3 +1,5 @@
+import { pages } from "@/app/writing/page-data";
+import type { Page } from "@/app/writing/page-data";
 import { CornerUpLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -8,12 +10,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/writing",
   },
-};
-
-type Page = {
-  title: string;
-  date: Date;
-  slug: string;
 };
 
 function groupPagesByYear(pages: Page[]) {
@@ -29,29 +25,6 @@ function groupPagesByYear(pages: Page[]) {
     };
   });
 }
-
-const pages: Page[] = [
-  {
-    title: "The Beauty of Mathematics and Science",
-    date: new Date(2025, 1, 10),
-    slug: "/writing/the-beauty-of-mathematics-and-science",
-  },
-  {
-    title: "A Lesson on Thinking",
-    date: new Date(2025, 2, 8),
-    slug: "/writing/a-lesson-on-thinking",
-  },
-  {
-    title: "Law of Gravitational Attraction",
-    date: new Date(2025, 2, 8),
-    slug: "/writing/law-of-universal-gravitation",
-  },
-  // {
-  //   title: "Youth Parliament",
-  //   date: new Date(2025, 3, 10),
-  //   slug: "/writing/youth-parliament",
-  // },
-];
 
 export default async function Page() {
   const pagesGroupedByYear = groupPagesByYear(pages);
@@ -93,13 +66,13 @@ function PageGroup({ pages }: { pages: Page[] }) {
         return (
           <Link
             key={page.slug}
-            href={page.slug}
+            href={`/writing${page.slug}`}
             className="group/link flex items-center justify-between py-3"
           >
             <span className="group-hover/link:text-foreground-100! group-hover/wrapper:text-foreground-200 transition-colors duration-300">
               {page.title}
             </span>
-            <span className="text-foreground-200 group-hover/link:text-foreground-200! group-hover/wrapper:text-background-300 text-sm transition-colors duration-300">{`${page.date.getDate()}/${page.date.getMonth()}`}</span>
+            <span className="text-foreground-200 group-hover/link:text-foreground-200! group-hover/wrapper:text-background-300 text-sm transition-colors duration-300">{`${page.date.getDate()}/${page.date.getMonth() + 1}`}</span>
           </Link>
         );
       })}

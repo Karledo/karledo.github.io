@@ -30,6 +30,11 @@
   --sh-entity: hsl(220, 50%, 54%);
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-background-300) transparent;
+}
+
 ::selection {
   background-color: var(--selection);
   text-shadow: none;
