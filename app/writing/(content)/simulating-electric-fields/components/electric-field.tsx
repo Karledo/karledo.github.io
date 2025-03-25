@@ -6,6 +6,7 @@ import {
   motion,
   MotionValue,
   PanInfo,
+  SVGMotionProps,
   useAnimationFrame,
   useSpring,
 } from "motion/react";
@@ -14,10 +15,9 @@ import useMeasure from "react-use-measure";
 import * as Slider from "@radix-ui/react-slider";
 
 const arrowColor = "#737373";
-const arrowWidth = "4";
-const arrowHeadSize = "3";
-const arrowLength = 30;
 const gridSize = 7;
+const arrowLengthScalar = 5e-2;
+const arrowWidthScalar = 7e-3;
 
 const defaultCharge = -1;
 const numChargedParticles = 2;
@@ -38,6 +38,7 @@ export function ElectricField() {
     };
   });
 
+  const arrowLength = bounds.width * arrowLengthScalar;
   const arrows = Array.from({ length: gridSize * gridSize }).map((_, i) => {
     const x =
       (i % gridSize) * (bounds.width / gridSize) +
@@ -91,6 +92,7 @@ export function ElectricField() {
         })
         .normalized();
 
+      const arrowLength = bounds.width * arrowLengthScalar;
       const resultantForce = averageDirection.scale(arrowLength);
       const headPosition = tailPosition.add(resultantForce);
 
@@ -115,8 +117,8 @@ export function ElectricField() {
               viewBox="0 0 10 10"
               refX="5"
               refY="5"
-              markerWidth={arrowHeadSize}
-              markerHeight={arrowHeadSize}
+              markerWidth={3}
+              markerHeight={3}
               fill={arrowColor}
               orient="auto-start-reverse"
             >
@@ -124,7 +126,17 @@ export function ElectricField() {
             </marker>
           </defs>
           {arrows.map(({ x1, y1, x2, y2 }, i) => {
-            return <Arrow key={i} x1={x1} y1={y1} x2={x2} y2={y2} />;
+            return (
+              <Arrow
+                key={i}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                strokeWidth={bounds.width * arrowWidthScalar}
+                stroke={arrowColor}
+              />
+            );
           })}
         </m.svg>
         <div ref={dragContainer} className="relative size-full">
@@ -180,25 +192,25 @@ function Arrow({
   y1,
   x2,
   y2,
+  ...props
 }: {
   x1: MotionValue<number>;
   y1: MotionValue<number>;
   x2: MotionValue<number>;
   y2: MotionValue<number>;
-}) {
+} & Omit<SVGMotionProps<SVGLineElement>, "markerEnd">) {
   return (
     <m.line
       x1={x1}
       y1={y1}
       x2={x2}
       y2={y2}
-      stroke={arrowColor}
-      strokeWidth={arrowWidth}
+      {...props}
       markerEnd="url(#arrow)"
     />
   );
 }
 
 function equation(k: number, q1: number, q2: number, rSquared: number) {
-  return (k * q1 * q2) / Math.max(0.00000001, rSquared);
+  return (k * q1 * q2) / Math.max(1e-8, rSquared);
 }
