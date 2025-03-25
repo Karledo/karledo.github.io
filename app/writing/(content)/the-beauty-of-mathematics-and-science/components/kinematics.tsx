@@ -91,9 +91,9 @@ export function Kinematics() {
     <LazyMotionProvider>
       <div
         ref={ref}
-        className="bg-background-200 relative mb-3 aspect-video overflow-hidden rounded-xl px-8 py-12"
+        className="bg-background-200 relative mb-3 aspect-video overflow-hidden rounded-xl"
       >
-        <div className="relative size-full">
+        <div className="absolute inset-8">
           <div className="absolute bottom-2 left-2">
             {Array.from({ length: resolution + 1 }).map((_, i) => {
               return (
