@@ -144,13 +144,13 @@ export function ElectricField() {
             return (
               <motion.div
                 key={index}
-                className={`absolute ${index == 0 ? "left-1/3" : "left-2/3"} top-1/2 flex size-8 items-center justify-center rounded-full border border-neutral-300 bg-white`}
+                className={`absolute ${index == 0 ? "left-1/3" : "left-2/3"} top-1/2 flex aspect-square h-1/10 items-center justify-center rounded-full border border-neutral-300 bg-white`}
                 drag
                 dragMomentum={false}
                 onDrag={(event, info) => handleDragging(event, info, index)}
                 dragConstraints={dragContainer}
               >
-                <span className="font-semibold text-neutral-700">
+                <span className="text-sm font-semibold text-neutral-700 sm:text-base">
                   {index + 1}
                 </span>
               </motion.div>
