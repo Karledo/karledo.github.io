@@ -35,4 +35,9 @@ export const pages: Page[] = [
     date: new Date(2025, 1, 12),
     slug: "/simulating-electric-fields",
   },
+  {
+    title: "Quantum Mechanics: Linearity",
+    date: new Date(2025, 1, 12),
+    slug: "/quantum-mechanics-linearity",
+  },
 ];
