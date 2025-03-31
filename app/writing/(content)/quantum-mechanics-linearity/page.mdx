@@ -1,0 +1,89 @@
+import { DynamicTitle } from "@/components/dynamic-title"
+import { AnchoredHeader } from "@/components/anchored-header";
+import { Latex } from "@/components/latex";
+import { TestSketch } from "./components/test-sketch";
+
+export const metadata = {
+  title: "Linearity",
+  description: "Learning about linearity in Quantum Physics",
+  alternaes: {
+  canonical: "/quantum-mechanics-linearity",
+  },
+};
+
+<DynamicTitle className="mb-7" slug="/quantum-mechanics-linearity" />
+
+<article>
+  <div className="mb-7 space-y-7">
+    {/*
+    <div>
+      <Latex text={`We give illustrations for the ${1 + 2} processes $e^+e^-$, gluon-gluon and $\gamma \gamma \to W t\bar b$. `}/>
+    </div> */}
+
+    <AnchoredHeader id={"what-does-linearity-mean"}>What does linearity mean?</AnchoredHeader>
+
+    Often, it can be easier to start by giving definitions within the realm of mathematics, and *scale-up* the definition to the world of physics.
+
+    Let's start by being clear about what it means for a function to be *linear*, as it can sometimes be confusing. When thinking of a *linear* function, <Latex text="$f(x)=ax + b$"/> is usually the first instinct that comes to mind, but this isn't  a linear function, it is an *affine* function. An affine function is a linear function plus some constant.
+
+    A function is linear if it satisfies the following two properties.
+
+    <div className="flex flex-col items-center gap-y-2">
+      <span className="text-foreground-200 text-sm">Additivity</span>
+      <Latex text={`$f(x_1 + x_2) = f(x_1) + f(x_2)$`} />
+    </div>
+
+    <div className="flex flex-col items-center gap-y-2">
+      <span className="text-foreground-200 text-sm">Homogeneity</span>
+      <Latex text={`$f(\\alpha x) = \\alpha f(x)$`} />
+    </div>
+
+    I want you to take a moment to understand what this means. If I have some linear function and apply it to the sum of two inputs, it is the same as applying the function independently to each input and summing the results. What's more, if I scale the input of a linear function by some factor, it is the same as scaling the output of the function by that same factor.
+
+    <AnchoredHeader id={"what-are-operators"}>What are operators?</AnchoredHeader>
+
+    An operator acts on function spaces (and vectors spaces), mappings functions to functions (and vectors to vectors). All operators are functions, but not all functions are operators. The most common kind of operators are *linear* operators.
+
+    Linear operators follow the same rules of additivity and homogeneity, however, instead of acting on numbers, they act on functions instead.
+
+    Let's say that you have some function, <Latex text={"$L(u)$"}/>, where <Latex text={"$L$"}/> is a linear function and <Latex text={"$u$"} /> is a variable and you're given this equation.
+
+    <div className="flex flex-col items-center">
+        <Latex text={"$L(u)=0$"} />
+    </div>
+
+    Now, say you have two solutions to the equation, <Latex text="$u_1$"/> and <Latex text="$u_2$"/>. If you were to think of <Latex text="$L$"/> as being a straight line going through the origin in the form <Latex text="$f(x)=ax$"/>, having multiple solutions doesn't quite make sense. In this case, <Latex text="$L$"/> has only one solution: <Latex text={"$u=0$"} />, unless <Latex text="$L$"/> lies along the x-axis in the form <Latex text="$f(x)=0x$"/>. In that case, there are infinitely many solutions.
+
+
+    So let's expand <Latex text="$u$"/> to include any unknown. Perhaps <Latex text="$u$"/> could be a function, a function of time, a function of space, or even a function of time and space—<Latex text="$u$"/> could also be a set of functions. Therefore <Latex text="$L$"/> becomes a *linear operator*, since it acts upon functions.
+
+    <AnchoredHeader id={"general-superposition-principle"}>General Superposition Principle</AnchoredHeader>
+
+    When we think about <Latex text="$u$"/> as a function, what it means to have multiple solutions somewhat makes sense. For some functions, <Latex text="$u_1, u_2, ..., u_n$"/>, when you plug them into the linear operator, <Latex text="$L$"/>, the equation becomes true. In other words, it *satisfies* the equation.
+
+    Now, previously we established that since <Latex text="$u_1$"/> and <Latex text="$u_2$"/> are solutions to the linear equation <Latex text="$L(u) = 0$"/>. By additivity, <Latex text="$u_1 + u_2$"/> must also be a solution.
+
+    <div className="flex flex-col items-center">
+        <Latex text="$L(u_1+u_2) = L(u_1) + L(u_2) = 0$"/>,
+    </div>
+
+    Essentially, this solution is the *superposition* of the two functions. By extension, if we were to scale <Latex text="$u_1$"/> by some factor, <Latex text="$\alpha$"/> and scale <Latex text="$u_2$"/> by some factor, <Latex text="$\beta$"/>, we get two new solutions to the equation by homogeneity, <Latex text="$\alpha u_1$"/> and <Latex text="$\beta u_2$"/>. Therefore, we come to the following conclusion.
+
+    <div className="flex flex-col items-center">
+        <Latex text="$L(\alpha u_1 + \beta u_2) = 0$"/>
+    </div>
+
+    This new solution is also a *superposition* of the two solutions, or in some contexts, a "weighted sum," since <Latex text="$\alpha$"/> and <Latex text="$\beta$"/> encode some sort of amplitude to the solutions.
+
+    <AnchoredHeader id={"maxwell's equations"}>Maxwell's Equations</AnchoredHeader>
+
+    Let's think about this with example from classical physics. Often this idea of superposition comes up in the context of classical waves in a way that doesn't involve any quantum weirdness that people may be familiar with—namely, restrictions on energy of these waves being in discrete amounts, or how waves change behaviour once they are measured.
+
+    Maxwell's equations, in a vacuum at least, are an example of a set of linear equations.
+
+    Essentially, they are a combination of derivatives acting on electric fields and magnetic fields, yielding zero. If some fields <Latex text={"$F_1$"} /> and <Latex text={"$F_2$"} /> satisfy the equation <Latex text={"$dF=0$"} />. Then <Latex text={"$F_1 + F_2$"} /> also satisfies the equation, since Maxwell's equations are linear. This new solution is the *superposition* of the two different fields.
+
+  </div>
+  <TestSketch />
+
+</article>

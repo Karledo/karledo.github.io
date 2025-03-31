@@ -1,6 +1,13 @@
 import { Link2Icon } from "@radix-ui/react-icons";
+import { ReactNode } from "react";
 
-export function IdHeader({ id, text }: { id: string; text: string }) {
+export function AnchoredHeader({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) {
   return (
     <h3 className="mt-14 font-medium">
       <a
@@ -8,7 +15,7 @@ export function IdHeader({ id, text }: { id: string; text: string }) {
         id={id}
         href={`#${id}`}
       >
-        {text}
+        <span>{children}</span>
         <Link2Icon className="text-foreground-200 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </a>
     </h3>
