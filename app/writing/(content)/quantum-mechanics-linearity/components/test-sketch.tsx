@@ -146,7 +146,7 @@ export function TestSketch() {
           </Slider.Track>
           <Slider.Thumb />
         </Slider.Root>
-        <span>
+        <span className="min-w-12 tabular-nums">
           {localPhaseDifference}
           <Latex text="$\pi$" />
         </span>
@@ -174,7 +174,7 @@ export function TestSketch() {
               </Slider.Track>
               <Slider.Thumb />
             </Slider.Root>
-            <span>{slider.value}</span>
+            <span className="min-w-12 tabular-nums">{slider.value}</span>
           </div>
         );
       })}
