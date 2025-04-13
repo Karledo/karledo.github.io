@@ -53,3 +53,11 @@ export const P5Container: P5Container = ({ sketch, ...props }) => {
 
   return <div {...props} ref={parentRef}></div>;
 };
+
+type DefaultP5ContainerProps = {
+  sketch: P5Sketch
+}
+
+export function StyledP5Container({ sketch }: DefaultP5ContainerProps) {
+  return <P5Container sketch={sketch} className="bg-background-200 overflow-hidden rounded-xl relative mb-4 pt-[56.25%]" />
+}

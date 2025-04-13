@@ -1,3 +1,4 @@
+"use client";
 import type { ComponentPropsWithRef } from "react";
 import { formatBasename, getPageData } from "@/utils/helper";
 

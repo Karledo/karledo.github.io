@@ -1,13 +1,13 @@
-import { DynamicTitle } from "@/components/dynamic-title"
+import { DynamicTitle } from "@/components/dynamic-title";
 import { AnchoredHeader } from "@/components/anchored-header";
 import { Latex } from "@/components/latex";
-import { TestSketch } from "./components/test-sketch";
+import { Superposition } from "./components/superposition";
 
 export const metadata = {
   title: "Linearity",
-  description: "Learning about linearity in Quantum Physics",
-  alternaes: {
-  canonical: "/quantum-mechanics-linearity",
+  description: "Learning about linearity in Quantum Mechanics",
+  alternates: {
+    canonical: "/quantum-mechanics-linearity",
   },
 };
 
@@ -84,6 +84,6 @@ export const metadata = {
     Essentially, they are a combination of derivatives acting on electric fields and magnetic fields, yielding zero. If some fields <Latex text={"$F_1$"} /> and <Latex text={"$F_2$"} /> satisfy the equation <Latex text={"$dF=0$"} />. Then <Latex text={"$F_1 + F_2$"} /> also satisfies the equation, since Maxwell's equations are linear. This new solution is the *superposition* of the two different fields.
 
   </div>
-  <TestSketch />
+  <Superposition />
 
 </article>

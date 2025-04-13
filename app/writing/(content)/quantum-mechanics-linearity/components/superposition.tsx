@@ -1,8 +1,7 @@
 "use client";
 
-import { P5Container, type P5Sketch } from "@/components/p5-container";
-import type { Renderer } from "p5";
-import { useState } from "react";
+import { StyledP5Container, type P5Sketch } from "@/components/p5-container";
+import { Fragment, useRef } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import { Latex } from "@/components/latex";
 
@@ -18,15 +17,17 @@ const sketch: P5Sketch = (p5, parentRef) => {
   let parentStyle: CSSStyleDeclaration;
   let canvasHeight: number;
   let canvasWidth: number;
-  let canvas: Renderer;
 
   p5.setup = () => {
     parentStyle = window.getComputedStyle(parentRef);
     canvasWidth = parseFloat(parentStyle.width);
     canvasHeight = parseFloat(parentStyle.height);
-    canvas = p5.createCanvas(canvasWidth, canvasHeight).parent(parentRef);
-    canvas.style(`width:${canvasWidth}`);
-    canvas.style(`height:${canvasHeight}`);
+    const canvas = p5.createCanvas(canvasWidth, canvasHeight).parent(parentRef);
+    canvas.style("position: absolute");
+    canvas.style("top: 0");
+    canvas.style("left: 0");
+    canvas.style("width: 100%");
+    canvas.style("height: 100%");
   };
 
   function drawFunction(f: (x: number) => number, resolution: number) {
@@ -44,12 +45,12 @@ const sketch: P5Sketch = (p5, parentRef) => {
   }
 
   p5.draw = () => {
-    parentStyle = window.getComputedStyle(parentRef);
+    parentStyle = getComputedStyle(parentRef);
     canvasWidth = parseFloat(parentStyle.width);
     canvasHeight = parseFloat(parentStyle.height);
     p5.resizeCanvas(canvasWidth, canvasHeight);
     p5.clear();
-    p5.strokeWeight(0);
+    p5.noStroke();
 
     const frequency = 1;
     const waveNumber = 8;
@@ -61,7 +62,7 @@ const sketch: P5Sketch = (p5, parentRef) => {
 
     p5.fill("white");
 
-    p5.strokeWeight(5);
+    p5.strokeWeight(p5.width * 0.0078);
     p5.stroke("#58C4DD");
     time += p5.deltaTime / 1000;
 
@@ -70,8 +71,8 @@ const sketch: P5Sketch = (p5, parentRef) => {
       amplitudeOne *
       p5.sin(
         (x / p5.width) * angularWaveNumber +
-          angularFrequency * time +
-          phaseDifference * p5.PI,
+        angularFrequency * time +
+        phaseDifference * p5.PI,
       );
 
     const waveFunctionTwo = (x: number) =>
@@ -92,42 +93,43 @@ const sketch: P5Sketch = (p5, parentRef) => {
   };
 };
 
-export function TestSketch() {
-  const [localPhaseDifference, setLocalPhaseDifference] = useState(
-    defaultPhaseDifference,
-  );
-  const [localAmplitudeOne, setLocalAmplitudeOne] = useState(defaultAmplitude);
-  const [localAmplitudeTwo, setLocalAmplitudeTwo] = useState(defaultAmplitude);
+export function Superposition() {
+  const phaseDifferenceDisplay = useRef<HTMLSpanElement>(null)
+  const amplitudeDisplay1 = useRef<HTMLSpanElement>(null)
+  const amplitudeDisplay2 = useRef<HTMLSpanElement>(null)
 
   const sliders = [
     {
       key: "amplitudeOne",
       onValueChange: ([value]: number[]) => {
         amplitudeOne = value;
-        setLocalAmplitudeOne(value);
+        if (amplitudeDisplay1.current) {
+          amplitudeDisplay1.current.innerText = `${value}`
+        }
       },
-      value: localAmplitudeOne,
-      color: "#58C4DD",
+      ref: amplitudeDisplay1,
+      color: "blue",
     },
     {
       key: "amplitudeTwo",
       onValueChange: ([value]: number[]) => {
         amplitudeTwo = value;
-        setLocalAmplitudeTwo(value);
+        if (amplitudeDisplay2.current) {
+          amplitudeDisplay2.current.innerText = `${value}`
+        }
       },
-      value: localAmplitudeTwo,
-      color: "#FC6255",
+      ref: amplitudeDisplay2,
+      color: "red",
     },
   ];
 
   return (
     <div>
-      <P5Container
-        className="bg-background-200 relative mb-4 aspect-video h-full w-full rounded-xl"
+      <StyledP5Container
         sketch={sketch}
       />
-      <div className="flex items-center gap-x-4">
-        <span className="min-w-36">
+      <div className="grid items-center grid-cols-[auto_1fr_auto] gap-x-4">
+        <span>
           Phase Difference, <Latex text="$\phi$" />
         </span>
         <Slider.Root
@@ -137,7 +139,9 @@ export function TestSketch() {
           step={0.01}
           onValueChange={([value]) => {
             phaseDifference = value;
-            setLocalPhaseDifference(value);
+            if (phaseDifferenceDisplay.current) {
+              phaseDifferenceDisplay.current.innerText = `${value}`
+            }
           }}
           className="group relative flex h-3 grow cursor-grab touch-none items-center transition-transform duration-300 select-none active:cursor-grabbing"
         >
@@ -146,38 +150,36 @@ export function TestSketch() {
           </Slider.Track>
           <Slider.Thumb />
         </Slider.Root>
-        <span className="min-w-12 tabular-nums">
-          {localPhaseDifference}
-          <Latex text="$\pi$" />
+        <span className="min-w-[5ch]">
+          <span ref={phaseDifferenceDisplay} className="tabular-nums">{defaultPhaseDifference}</span><Latex text="$\pi$" />
         </span>
+        {sliders.map((slider) => {
+          return (
+            <Fragment key={slider.key}>
+              <span>
+                Amplitude, <Latex text="$A$" />
+              </span>
+              <Slider.Root
+                min={0}
+                max={3}
+                defaultValue={[defaultAmplitude]}
+                step={0.01}
+                onValueChange={slider.onValueChange}
+                className="group relative flex h-3 grow cursor-grab touch-none items-center transition-transform duration-300 select-none active:cursor-grabbing"
+              >
+                <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full transition-transform duration-300 group-hover:scale-y-150 group-active:scale-y-150">
+                  <Slider.Range
+                    style={{ backgroundColor: `var(--visual-${slider.color})` }}
+                    className={`absolute h-full rounded-full`}
+                  />
+                </Slider.Track>
+                <Slider.Thumb />
+              </Slider.Root>
+              <span ref={slider.ref} className="tabular-nums">{defaultAmplitude}</span>
+            </Fragment>
+          );
+        })}
       </div>
-
-      {sliders.map((slider) => {
-        return (
-          <div key={slider.key} className="flex items-center gap-x-4">
-            <span className="min-w-36">
-              Amplitude, <Latex text="$A$" />
-            </span>
-            <Slider.Root
-              min={0}
-              max={3}
-              defaultValue={[defaultAmplitude]}
-              step={0.01}
-              onValueChange={slider.onValueChange}
-              className="group relative flex h-3 grow cursor-grab touch-none items-center transition-transform duration-300 select-none active:cursor-grabbing"
-            >
-              <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full transition-transform duration-300 group-hover:scale-y-150 group-active:scale-y-150">
-                <Slider.Range
-                  style={{ backgroundColor: slider.color }}
-                  className="absolute h-full rounded-full"
-                />
-              </Slider.Track>
-              <Slider.Thumb />
-            </Slider.Root>
-            <span className="min-w-12 tabular-nums">{slider.value}</span>
-          </div>
-        );
-      })}
     </div>
   );
 }
