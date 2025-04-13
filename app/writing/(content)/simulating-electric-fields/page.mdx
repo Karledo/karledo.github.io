@@ -1,16 +1,30 @@
-import { DynamicTitle } from '@/components/dynamic-title'
-import { ElectricField } from "./components/electric-field"
+import { DynamicTitle } from "@/components/dynamic-title";
+import { Latex } from "@/components/latex";
+import { AnchoredHeader } from "@/components/anchored-header";
+import { P5ElectricField } from "./components/p5-electric-field";
 
 export const metadata = {
-    title: 'Simulating Electric Fields',
-    description: 'Building an electric field simulation',
-    alternates: {
-       canonical: '/simulating-electric-fields',
-    }
-}
+  title: "Simulating Electric Fields",
+  description: "Building an electric field simulation",
+  alternates: {
+    canonical: "/simulating-electric-fields",
+  },
+};
 
-<DynamicTitle className='mb-7' slug="/simulating-electric-fields" />
+<DynamicTitle className="mb-7" slug="/simulating-electric-fields" />
 
-<article className="mb-7">Here is a simulation of an electric field.</article>
+<article>
+  <div className="mb-7 space-y-7">
+    <AnchoredHeader id="coloumbs-law">Coloumb's Law</AnchoredHeader>
+    
+    This is a simulation of electric fields demonstrating Coloumb's Law. Columb's Law links the force <Latex text="$F$" /> experienced between two charges in an electric field <Latex text="$q_1$" /> and <Latex text="$q_2$" /> , with the distance between these charges <Latex text="$r$" />. The force <Latex text="$F$" />, is proportional to <Latex text="$\frac{q_1 q_2 }{r^2}$"/> and the constant of proportionaltiy is <Latex text="$\frac{1}{4 \pi \epsilon _0}$" /> where <Latex text="$\epsilon _0$" /> is the vacuum permittivity, which is approximately <Latex text="$8.85 \times 10^{-12}Fm^{-1}$" />.
 
-<ElectricField/>
+    <div className="flex flex-col items-center">
+      <Latex text="$F = \frac{q_1 q_2}{4 \pi \epsilon _0 r^2 }$" />
+    </div>
+
+In this demonstration the electric field is represented by a vector field, which shows the direction of the force experienced by a single positive charge at each point in space.
+
+  </div>
+<P5ElectricField />
+</article>
