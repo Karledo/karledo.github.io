@@ -7,8 +7,13 @@ export type Page = {
 export const pages: Page[] = [
   {
     title: "The Beauty of Mathematics and Science",
-    date: new Date(2025, 1, 10),
+    date: new Date(2025, 1, 5),
     slug: "/the-beauty-of-mathematics-and-science",
+  },
+  {
+    title: "Simulating Electric Fields",
+    date: new Date(2025, 1, 10),
+    slug: "/simulating-electric-fields",
   },
   {
     title: "A Lesson on Thinking",
@@ -26,33 +31,28 @@ export const pages: Page[] = [
   //   slug: "/dealing-with-high-workload",
   // },
   {
+    title: "Quantum Mechanics: Linearity",
+    date: new Date(2025, 2, 9),
+    slug: "/quantum-mechanics-linearity",
+  },
+  {
     title: "What Is Vibe Coding?",
     date: new Date(2025, 2, 20),
     slug: "/what-is-vibe-coding",
   },
   {
-    title: "Simulating Electric Fields",
-    date: new Date(2025, 1, 5),
-    slug: "/simulating-electric-fields",
-  },
-  {
-    title: "Quantum Mechanics: Linearity",
-    date: new Date(2025, 1, 12),
-    slug: "/quantum-mechanics-linearity",
-  },
-  {
     title: "Quantum Mechanics: Polarisation",
-    date: new Date(2025, 1, 16),
+    date: new Date(2025, 2, 29),
     slug: "/quantum-mechanics-polarisation",
   },
   {
     title: "Diffraction",
-    date: new Date(2025, 1, 16),
+    date: new Date(2025, 3, 4),
     slug: "/diffraction",
   },
   {
     title: "The Schrödinger Equation",
-    date: new Date(2025, 1, 15),
+    date: new Date(2025, 3, 12),
     slug: "/the-schrodinger-equation"
   }
 ];
