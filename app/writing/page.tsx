@@ -72,7 +72,7 @@ function PageGroup({ pages }: { pages: Page[] }) {
             <span className="group-hover/link:text-foreground-100! group-hover/wrapper:text-foreground-200 transition-colors duration-300">
               {page.title}
             </span>
-            <span className="text-foreground-200 group-hover/link:text-foreground-200! group-hover/wrapper:text-background-300 text-sm transition-colors duration-300">{`${page.date.getDate()}/${page.date.getMonth() + 1}`}</span>
+            <span className="text-foreground-200 group-hover/link:text-foreground-200! group-hover/wrapper:text-background-300 text-sm transition-colors duration-300">{`${page.date.getDate().toString().padStart(2, "0")}/${page.date.getMonth() + 1}`}</span>
           </Link>
         );
       })}

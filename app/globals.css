@@ -1,21 +1,9 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-newsreader: var(--font-newsreader);
-  --color-foreground-100: var(--foreground-100);
-  --color-foreground-200: var(--foreground-200);
-  --color-foreground-300: var(--foreground-300);
-  --color-background-100: var(--background-100);
-  --color-background-200: var(--background-200);
-  --color-background-300: var(--background-300);
-}
-
 :root {
   --background-100: hsl(0, 0%, 99%);
   --background-200: hsl(0, 0%, 89%);
-  --background-300: hsl(0 0% 85%);
+  --background-300: hsl(0 0% 80%);
   --foreground-100: hsl(0, 0%, 9%);
   --foreground-200: hsl(0, 0%, 56%);
   --foreground-300: hsl(0, 0%, 44%);
@@ -28,6 +16,11 @@
   --sh-jsxliterals: #7aa2f7;
   --sh-property: hsl(220, 50%, 54%);
   --sh-entity: hsl(220, 50%, 54%);
+  --visual-blue: hsl(191, 66%, 61%);
+  --visual-red: hsl(5, 97%, 66%);
+  --visual-green: hsl(101, 42%, 58%);
+  --visual-yellow: hsl(60, 100%, 50%);
+  --visual-gold: hsl(32, 83%, 66%);
 }
 
 * {
@@ -136,4 +129,21 @@ em {
   pre code > span .sh__token--identifier {
     color: #cdd6f4 !important;
   }
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-newsreader: var(--font-newsreader);
+  --color-foreground-100: var(--foreground-100);
+  --color-foreground-200: var(--foreground-200);
+  --color-foreground-300: var(--foreground-300);
+  --color-background-100: var(--background-100);
+  --color-background-200: var(--background-200);
+  --color-background-300: var(--background-300);
+  --color-visual-yellow: var(--visual-yellow);
+  --color-visual-gold: var(--visual-gold);
+  --color-visual-red: var(--visual-red);
+  --color-visual-blue: var(--visual-blue);
+  --color-visual-green: var(--visual-green);
 }

@@ -15,7 +15,7 @@ export function getPageData(slug: string) {
   });
   if (pageData == undefined) {
     throw Error(
-      "Attempting to get the data for a page slug that doesn't exist",
+      `Attempting to get the data for a page slug ${slug} that doesn't exist`,
     );
   }
   return pageData;

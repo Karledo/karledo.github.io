@@ -1,0 +1,63 @@
+import { DynamicTitle } from "@/components/dynamic-title";
+import { AnchoredHeader } from "@/components/anchored-header";
+import { Latex } from "@/components/latex";
+import { WaveFunction } from "./components/wave-function";
+
+export const metadata = {
+  title: "The Schrödinger Equation",
+  description: "Learning about The Schrödinger Equation",
+  alternates: {
+    canonical: "/the-schrodinger-equation",
+  },
+};
+
+<DynamicTitle className="mb-7" slug="/the-schrodinger-equation" />
+
+<article>
+  <div className="mb-7 space-y-7">
+
+<AnchoredHeader id="wave-particle-duality">Wave-Particle Duality</AnchoredHeader>
+
+Whilst others were debating whether light was a particle or a wave, a suggestion was made by Louis de Broglie, that all things with matter could also behave like waves—this includes electrons, protons, and atoms et cetera. He related this idea with this equation.
+
+<div className="flex flex-col items-center">
+  <Latex text="$\lambda = \frac{h}{p}$" />
+</div>
+
+This equation relates that the wavelength of a particle <Latex text="$\lambda$" />, to Planck's constant <Latex text="$h$" /> and the momentum of a particle <Latex text="$p$" />
+
+<AnchoredHeader id="what-is-the-schrodinger-equation">What is the Schrödinger Equation</AnchoredHeader>
+
+Schrödinger used the idea of conservation of energy and these matter waves described by de Broglie to come up with his equation—the Schrödinger Equation. The time-dependent Schrödinger Equation describes how the wave function of a quantum system evolves over time.
+
+<div className="flex flex-col items-center">
+  <Latex text="$i\hbar \frac{\delta\psi}{\delta t} = \frac{-\hbar^2}{2m} \frac{\delta^2 \psi}{\delta x^2} + V\psi$" />
+</div>
+
+The notation can be somewhat overwhelming, but essentially what this equation says the energy of a system <Latex text="$i\hbar \frac{\delta\psi}{\delta t}$" />,is equal to the sum of the kinetic energy of the system <Latex text="$\frac{-\hbar^2}{2m} \frac{\delta^2\psi}{\delta x^2}$" />, plus the potential energy of the system <Latex text="$V\psi$" />
+
+<div className="flex flex-col items-center">
+  <Latex text="$i\hbar \frac{\delta \psi}{\delta t} = H\psi$" />
+</div>
+
+We can use the Hamiltonian operator—also known as the Schrödinger operator to simplify this equation. This operator encapsulates calculating the kinetic energy and the potential energy of the wave function, into a function, so we can instead just apply the operator to the wave function instead.
+
+At a basic level, The Schrödinger Equation tells us the rate of change of a wave function with respective to time. Schrödinger used the idea of the conservation of energy and matter waves.
+
+<AnchoredHeader id="what-is-a-wave-function">What is a Wave Function</AnchoredHeader>
+
+Naturally, the first thing you may be asking is, what is a wave function?
+
+A wave function is a complex-valued function of space and time that contains all the quantum state of a system. The quantum state includes a bunch of different measurable properties such as position, momentum, energy, spin. For a wave function to be consistent with conservation laws, it must solve Schrödinger's Equation.
+
+The basis that you write the wave function in (position, momentum, energy) determines what the probability density function <Latex text="$|\psi(x, t)|^2$" /> represent.
+
+We can't get the state of the system from the wave function directly, but we can get the probability of a particle being in that state from the square of the absolute value of the wave function <Latex text="$|\psi (x, t)|^2$" />.
+
+For example if I had a time-dependent wave function <Latex text="$\psi(x, t)$" /> which describes the position of a particle in one dimension, where, internally, the wave function <Latex text="$\psi$" />, is written in the position basis <Latex text="$x$" />, then the probability of finding a particle at a given position <Latex text="$x_0$" />, is <Latex text="$|\psi(x_0, t)|^2$" />. This gives us a probability density function for the position of the particle at all position in this one dimension.
+
+<WaveFunction />
+
+  </div>
+
+</article>

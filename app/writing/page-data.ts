@@ -32,7 +32,7 @@ export const pages: Page[] = [
   },
   {
     title: "Simulating Electric Fields",
-    date: new Date(2025, 1, 12),
+    date: new Date(2025, 1, 5),
     slug: "/simulating-electric-fields",
   },
   {
@@ -40,4 +40,19 @@ export const pages: Page[] = [
     date: new Date(2025, 1, 12),
     slug: "/quantum-mechanics-linearity",
   },
+  {
+    title: "Quantum Mechanics: Polarisation",
+    date: new Date(2025, 1, 16),
+    slug: "/quantum-mechanics-polarisation",
+  },
+  {
+    title: "Diffraction",
+    date: new Date(2025, 1, 16),
+    slug: "/diffraction",
+  },
+  {
+    title: "The Schrödinger Equation",
+    date: new Date(2025, 1, 15),
+    slug: "/the-schrodinger-equation"
+  }
 ];

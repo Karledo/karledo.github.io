@@ -1,0 +1,94 @@
+import { DynamicTitle } from "@/components/dynamic-title";
+import { AnchoredHeader } from "@/components/anchored-header";
+import { Latex } from "@/components/latex";
+import { SplittingWaveComponents } from "./components/splitting-wave-components";
+
+export const metadata = {
+  title: "Polarisation",
+  description: "Learning about Polarisation in Quantum Mechanics",
+  alternates: {
+    canonical: "/quantum-mechanics-polarisation",
+  },
+};
+
+<DynamicTitle className="mb-7" slug="/quantum-mechanics-polarisation" />
+
+<article>
+    <div className="mb-7 space-y-7">
+    <AnchoredHeader id="discovering-the-photon">Discovering the Photon</AnchoredHeader>
+
+    Maxwell’s equations allowed for the existence of propagating waves. He conjectured that light was an electromagnetic wave, a propagating electric and magnetic field.
+
+    However, due to experiments on blackbody radiation and the photoemission of electrons, it was suggested that the behaviour of photons had to be complex than waves.
+
+    In order to explain the of the photoelectric effect, Einstein suggested light comes in discrete, indivisible chucks, or rather *quanta*, in  called *photons*. The energy of these photons is directly proportional to its frequency. We'll now call this specific constant,<Latex text={"$h$"} />, known as Planck’s constant.
+
+    <div className="flex flex-col items-center">
+      <Latex text={"$E=h \\nu $"} />
+    </div>
+
+    By extension, the frequency (the colour) of light determines the wavelength of the light, related by the equation <Latex text={"$\\nu \\lambda = c$"} />. If you want to increase the energy of a light beam but maintain the frequency of the light, you simply just need more photons.
+
+    Physically, this means whenever light transfers its energy to something else, like an electron, it always trades an integer amount of <Latex text={"$h \\nu$"} />.
+
+    Importantly, this means there is some minimum non-zero energy level, <Latex text={"$h\\nu$"} />, for the wave of a given frequency. If you have an electromagnetic wave with that frequency and energy, you cannot make it smaller without eliminating it entirely.
+
+    <AnchoredHeader id="classical-polarisation">Classical Polarisation</AnchoredHeader>
+
+    Classically, let’s consider a vertically oriented polarizing filter. Light that is *vertically* polarized, which means that its electric field oscillates only in the vertical direction, completely passes through the filter.
+
+    If light that is *horizontally* polarized travels towards the vertically oriented polarizer, it is absorbed entirely.
+
+    What about light that has a <Latex text="$45 \degree$" /> diagonal polarisation from the horizontal? Intuitively, you could think of the light being the superposition of waves in the vertical direction and the horizontal direction.
+
+    Surely, it would  make sense for the vertical component of the wave to pass through the filter and the horizontal component to be absorbed entirely by the filter.
+
+    Now, imagine let's say that you described the amplitude of this wave as <Latex text="$1$" />. Well, this would make the amplitudes of the horizontal and vertical components <Latex text={"$\\sqrt{1/2}$"} />.
+
+    <SplittingWaveComponents />
+
+    The energy of a wave is proportional to the square of its amplitude, or rather, the energy is proportional the intensity of the wave. The intensity, in this case, is how many of these photons—these packets of <Latex text="$h \nu$" />— are being sent by the wave.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$E \propto I \propto A^2  $"/ >
+    </div>
+
+    It's tempting to believe that this means <Latex text="$\frac{1}{2}$" /> of the energy would lie the horizontal component and <Latex text="$\frac{1}{2}$" /> of the energy would lie in the vertical component. Classicaly, you would then expect <Latex text="$\frac{1}{2}$" /> of the energy to pass through the vertically polarizing filter and the other <Latex text="$\frac{1}{2}$" /> to be absorbed entirely.
+
+    But wait a moment, didn't we describe these photons to be *indivisible chunks of energy*.
+
+    With this description however, that would imply these horizontal and vertical components have energy smaller than a photon. Remember, you cannot reduce the energy of the wave to be less than one photon—one packet of <Latex text="$h \nu$" />—without eliminating it entirely.
+
+
+    Well, if the energy isn't split into the different components, then what happens to the energy the wave once it goes through the filter. Surely, the polarizing filter has to change the wave in some way.
+
+    <AnchoredHeader id="quantum-polarisation">Quantum Polarisation</AnchoredHeader>
+
+    If you were to actualy do this experiment, you would find that about half of the time, the photon passes through the filter, and about half of the time, it is entirely absorbed. And it appears to be *random* whether the photons passes through the filter.
+
+    Let's imagine another example. Let's say that you had light which was polarized at angle of <Latex text="$22.5 \degree$" /> from the vertical trying to pass through a vertically oriented polarizing filter.
+
+    <div className="flex flex-col items-center">
+       <div>
+        <span className="text-visual-blue"><Latex text="$\ket{\psi}$" /></span>
+        <Latex text="$= sin(22.5\degree)$" />
+        <span className="text-visual-red"><Latex text="$\ket{\rightarrow}\ $" /></span>
+        <Latex text="$+\ cos(22.5\degree)$" />
+        <span className="text-visual-green"><Latex text="$\ket{\uparrow}$" /></span>
+      </div>
+    </div>
+
+    <span className="text-visual-blue"><Latex text="$\ket{\psi}$" /></span> represents the polarisation state of the wave—a wave with a <Latex text="$22.5 \degree$" /> polarisation from the vertical—which we have chosen to describe in terms of the superposition of the two states, horizontal <span className="text-visual-red"><Latex text="$\ket{\rightarrow}$" /></span> and vertical <span className="text-visual-green"><Latex text="$\ket{\uparrow}$" /></span>, which are weight by their amplitudes <Latex text="$sin(22.5 \degree)$"/> and <Latex text="$cos(22.5 \degree)$" /> respectively.
+
+    Classically, you might think of the horizontal component having an amplitude of <Latex text="$sin(22.5) \approx 0.38$" /> and energy proportional to <Latex text="$sin^2(22.5) \approx 0.15$"/>. And you might think of the vertical component as having an amplitude of <Latex text="$cos(22.5) \approx 0.92$" /> and energy proportional to <Latex text="$cos^2(22.5) \approx 0.85$"/>.
+
+    But because the energy of light comes in these discrete indivisible packets, instead what you observe is that <Latex text="$85 \%$" /> of the time, the photon passes through the vertically polarizing filter entirely and <Latex text="$15 \%$" /> of the time, the photon is blocked.
+
+    Once the photon has passed through the filter. The state of the filter, <span className="text-visual-blue"><Latex text="$\ket{\psi}$" /></span>, *collapses* from previously being a state of having a <Latex text="$15\%$" /> probability of being horizontal, <span className="text-visual-red"><Latex text="$\ket{\rightarrow}$" /></span>, and a <Latex text="$85\%$" /> probability of being vertical, <span className="text-visual-green"><Latex text="$\ket{\uparrow}$" /></span>, to instead having a <Latex text="$100\%$" /> probability of being vertical.
+
+    This demonstrates something quite fundamental in quantum mechanics. Once we attempt to measure some quantum state, we essentially make the state *pick* a definite state—this is called wave function *collapse* because the multiple different states of the wave function collapse into *single state*.
+
+
+    </div>
+
+</article>
