@@ -49,5 +49,10 @@ export const pages: Page[] = [
     title: "Diffraction",
     date: new Date(2025, 1, 16),
     slug: "/diffraction",
+  },
+  {
+    title: "The Schrödinger Equation",
+    date: new Date(2025, 1, 15),
+    slug: "/the-schrodinger-equation"
   }
 ];

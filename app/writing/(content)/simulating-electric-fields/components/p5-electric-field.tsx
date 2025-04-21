@@ -24,7 +24,6 @@ const setup: Setup = ({ p5, canvas }) => {
   p5.colorMode(p5.HSL)
 
   charges = Array.from({ length: numCharges }).map((_, i) => {
-    console.log(i)
     return { position: p5.createVector(p5.width * 0.25 + i * p5.width * 0.1, p5.height * 0.4), magnitude: 1 }
   })
 
