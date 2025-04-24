@@ -16,13 +16,12 @@ const MAX_WIDTH = 641.52
 const MAX_HEIGHT = (9 / 16) * MAX_WIDTH
 const numCharges = 2
 let charges: Array<Charge>
-let mouseInCanvas = false;
 let selectedCharge: Charge | null
 
-const setup: Setup = ({ p5, canvas }) => {
+const setup: Setup = ({ p5 }) => {
   p5.colorMode(p5.HSL)
 
-  function stopTouchScrolling(canvas: any) {
+  function stopTouchScrolling(canvas: unknown) {
     document.body.addEventListener("touchstart", function (e) {
       if (e.target == canvas) {
         e.preventDefault();
@@ -45,15 +44,6 @@ const setup: Setup = ({ p5, canvas }) => {
   charges = Array.from({ length: numCharges }).map((_, i) => {
     return { position: p5.createVector(p5.width * 0.25 + i * p5.width * 0.1, p5.height * 0.4), magnitude: 1 }
   })
-
-  canvas.mouseOut(() => {
-    mouseInCanvas = false
-  })
-
-  canvas.mouseOver(() => {
-    mouseInCanvas = true
-  })
-
 }
 
 const draw: Draw = ({ p5 }) => {
