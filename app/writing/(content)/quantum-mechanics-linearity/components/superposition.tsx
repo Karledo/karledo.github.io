@@ -60,8 +60,6 @@ const sketch: P5Sketch = (p5, parentRef) => {
     const angularWaveNumber = 2 * Math.PI * waveNumber;
     const angularFrequency = 2 * Math.PI * frequency;
 
-    p5.fill("white");
-
     p5.strokeWeight(p5.width * 0.0078);
     p5.stroke("#58C4DD");
     time += p5.deltaTime / 1000;
