@@ -18,10 +18,29 @@ const numCharges = 2
 let charges: Array<Charge>
 let mouseInCanvas = false;
 let selectedCharge: Charge | null
-let dragging = false
 
 const setup: Setup = ({ p5, canvas }) => {
   p5.colorMode(p5.HSL)
+
+  function stopTouchScrolling(canvas: any) {
+    document.body.addEventListener("touchstart", function (e) {
+      if (e.target == canvas) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    document.body.addEventListener("touchend", function (e) {
+      if (e.target == canvas) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    document.body.addEventListener("touchmove", function (e) {
+      if (e.target == canvas) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
+  stopTouchScrolling(document.getElementById("defaultCanvas0"))
 
   charges = Array.from({ length: numCharges }).map((_, i) => {
     return { position: p5.createVector(p5.width * 0.25 + i * p5.width * 0.1, p5.height * 0.4), magnitude: 1 }
@@ -35,15 +54,6 @@ const setup: Setup = ({ p5, canvas }) => {
     mouseInCanvas = true
   })
 
-  canvas.mousePressed(() => {
-    mouseInCanvas = true
-    dragging = true
-  })
-
-  canvas.mouseReleased(() => {
-    mouseInCanvas = false
-    dragging = false
-  })
 }
 
 const draw: Draw = ({ p5 }) => {
@@ -53,26 +63,25 @@ const draw: Draw = ({ p5 }) => {
 
   const documentStyle = getComputedStyle(document.documentElement)
   const numArrows = { x: 8, y: 4 }
-  const arrowColor = "white"
+  const arrowColor = documentStyle.getPropertyValue("--foreground-100")
   const arrowLength = p5.width * 0.03
   const arrowHeadSize = p5.width * 0.02
 
   const mousePosition = p5.createVector(p5.mouseX, p5.mouseY)
-  const chargeRadius = p5.width * 0.02
+  const chargeRadius = p5.width * 0.025
   const chargeDiameter = chargeRadius * 2
 
   const positiveChargeColor = p5.color(documentStyle.getPropertyValue("--visual-blue"))
   const negativeChargeColor = p5.color(documentStyle.getPropertyValue("--visual-red"))
   const fontSize = p5.width * 0.035
 
-
   const scaledCharges = charges.map((charge) => {
     return { position: charge.position.copy().mult(p5.width / MAX_WIDTH), magnitude: charge.magnitude }
   })
 
-  if (p5.mouseIsPressed && mouseInCanvas) {
+  if (p5.mouseIsPressed) {
     for (let i = 0; i < charges.length; i++) {
-      if (mousePosition.dist(scaledCharges[i].position) < chargeRadius && !selectedCharge && dragging) {
+      if (mousePosition.dist(scaledCharges[i].position) < chargeRadius && !selectedCharge) {
         selectedCharge = charges[i]
         break
       }
@@ -81,7 +90,7 @@ const draw: Draw = ({ p5 }) => {
 
   const scaledMousePosition = mousePosition.copy().mult(MAX_WIDTH / p5.width)
   if (selectedCharge) {
-    if (dragging) {
+    if (p5.mouseIsPressed) {
       selectedCharge.position.x = p5.min(p5.max(0, scaledMousePosition.x), MAX_WIDTH)
       selectedCharge.position.y = p5.min(p5.max(0, scaledMousePosition.y), MAX_HEIGHT)
     } else {
@@ -138,7 +147,7 @@ const draw: Draw = ({ p5 }) => {
     const lerpFactor = (charge.magnitude + 1) * 0.5
     p5.fill(p5.lerpColor(negativeChargeColor, positiveChargeColor, lerpFactor))
     p5.circle(charge.position.x, charge.position.y, chargeDiameter)
-    p5.fill("white")
+    p5.fill(documentStyle.getPropertyValue("--foreground-100"))
     p5.translate(0, fontSize * 0.30)
     p5.text(`${i + 1}`, charge.position.x, charge.position.y)
     p5.pop()
