@@ -29,7 +29,7 @@ const draw: Draw = ({ p5 }) => {
 
   p5.stroke(documentStyle.getPropertyValue("--visual-red"));
   const angularScale = 0.01;
-  const amplitude = 100;
+  const amplitude = (100 / ((MAX_WIDTH * 9) / 16)) * p5.height;
   for (let x = 0; x < p5.width; x++) {
     const current = x * angularScale;
     const next = (x + 1) * angularScale;
