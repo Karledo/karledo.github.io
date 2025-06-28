@@ -1,0 +1,111 @@
+import { DynamicTitle } from "@/components/dynamic-title";
+import { AnchoredHeader } from "@/components/anchored-header";
+import { Latex } from "@/components/latex";
+import { TaylorSeries } from "./components/taylor-series";
+
+export const metadata = {
+  title: "Taylor Series",
+  description: "Learning about the Taylor Series",
+  alternates: {
+    canonical: "/the-taylor-series",
+  },
+};
+
+<DynamicTitle className="mb-7" slug="/taylor-series" />
+
+<article>
+  <div className="mb-7 space-y-7">
+    <AnchoredHeader id="deriving-the-maclaurin-series">Deriving is the Taylor series</AnchoredHeader>
+
+    Let's start by being clear what a Taylor series is.
+
+    Let's say that you have some *analytic* function <Latex text="$f(x)$" />, that you would like to express as a polynomial, and furthermore, let's say we're ok with this polynomial being an infinite degree polynomial. Let's define the function as an infinite polynomial.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$f(x) = a_0 + a_1x + a_2x^2 + a_3x^3 + \ldots = \sum\limits_{k=0}^{\infty} a_kx^k $" />
+    </div>
+
+    Essentially, we define <Latex text="$f(x)$"/> as the sum of every non-negative integer power of <Latex text="$x$" />, each of the terms scaled by some coefficient <Latex text="$a_i$" />, where <Latex text="$a_i$" /> is a real number.
+
+    We don't know yet the value of each coefficient <Latex text="$a_i$" />, but we do know the function we're trying to express as a Taylor series, <Latex text="$f(x)$" />. By extension, we also the derivates of <Latex text="$f(x)$" />, since we can just differentiate to find them.
+
+    So let's try to express each unknown coefficient <Latex text="$a_i$" /> in terms of something we do know, that being, <Latex text="$f(x)$" /> and it's derivatives <Latex text="$f^{(k)}(x)$" />. Effectively, we're going to try to eliminate all of these unknown coefficients.
+
+    Well, how would we go about this?
+
+    First of all, let's think about how we could obtain <Latex text="$a_0$" /> using <Latex text="$f(x)$" /> and it's derivates <Latex text="$f^{(n)}(x)$" /> only. Well that's just a matter of evaluating <Latex text="$f(x)$" /> at <Latex text="$x = 0$" />.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$f(0) = a_0 + a_1x + a_2x^2 + a_3x^3 + \ldots \big|_{x = 0} = a_0 $" />
+    </div>
+
+    I want you to take a moment to verify that.
+
+    Let's consider <Latex text="$a_1$" />. Well, there isn't an obvious value for <Latex text="$x$" /> to evaluate <Latex text="$f(x)$" /> at to get <Latex text="$a_1$" />, so let's try taking the derivate of <Latex text="$f(x)$" />.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$f'(x) = a_1 + 2a_2x + 3a_3x^2 + \ldots$" />
+    </div>
+
+    Now the solution becomes a bit more obvious. We can find the value of <Latex text="$a_1$" /> by evaluating <Latex text="$f'(x)$" /> at <Latex text="$x = 0$" />
+
+    <div className="flex flex-col items-center">
+      <Latex text="$f'(0) = a_1 + 2a_2x + 3a_3x^2\big|_{x=0} = a_1$" />
+    </div>
+
+    Likewise, we can evaluate the second derivate at <Latex text="$x = 0$" /> to get the value of <Latex text="$a_2$" />.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$f''(x) = 2a_2 + 6a_3x + 12a_4x^2 + \ldots$" />
+    </div>
+
+    <div className="flex flex-col gap-y-2 items-center">
+      <Latex text="$f''(0) = 2a_2 + 6a_3x + 12a_4x^2 + \ldots \big|_{x=0} = 2a_2$" />
+      <Latex text="$\frac{f''(0)}{2} = a_2$" />
+    </div>
+
+    We can do the same thing for <Latex text="$a_3$" />.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$f'''(x) = 6a_3 + 24a_4x + 60a_5x^2 + \ldots$" />
+    </div>
+
+    <div className="flex flex-col gap-y-2 items-center">
+      <Latex text="$f'''(0) = 6a_3 + 24a_4x + 60a_5x^2 + \ldots \big|_{x=0} = 6a_3$" />
+      <Latex text="$\frac{f''(0)}{6} = a_3$" />
+    </div>
+
+    Now we can start to see the general formula developing.
+
+    <div className="flex flex-col items-center">
+      <Latex text="$a_k = \frac{f^{(k)}(0)}{k!},\quad k \ge 0$" />
+    </div>
+
+    I want you to take a moment to verify this for yourself, specifically how <Latex text="$k!$" /> evolves into the general formula.
+
+    Hence we can rewrite <Latex text="$f(x)$" /> as the following:
+
+    <div className="flex flex-col items-center">
+      <span className="text-foreground-200 text-sm">The Maclaurin Series</span>
+      <Latex text="$f(x) = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 + \frac{f'''(0)}{3!}x^3 + \ldots = \sum\limits_{k=0}^{\infty} \frac{f^{(k)}(0)}{k!}x^k$" />
+    </div>
+
+    Now we have an infinite sum of scaled non-negative powers of <Latex text="$x$" />, namely, a *power series* that, if it converges, gives us an exact value for <Latex text="$f(x)$" /> for values <Latex text="$x$" />, in the range of convergence. For some functions, such as <Latex text="$e^x$," /> this range of convergence might be <Latex text="$-\infty\lt x \lt\infty  $" /> . Whereas for other functions, such as the binomial series, it converges only if <Latex text="$-1 \lt x \lt 1.$" />
+
+    This called the *Maclaurin series*, which is a specific case of the Taylor series, centered around <Latex text="$x=0$" />.
+
+    However, let's say that we wanted to centre the series around a point <Latex text="$a$" /> instead, so that we obtain a series that outputs values of <Latex text="$f(x)$" /> for values of <Latex text="$x$" /> in the neighbourhood of <Latex text="$a.$" /> Then we could generalize the series to be:
+
+    <div className="flex flex-col items-center">
+      <span className="text-foreground-200 text-sm">The Taylor Series</span>
+      <Latex text="$f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \ldots = \sum\limits_{k=0}^{\infty} \frac{f^{(k)}(a)}{k!}(x-a)^k$" />
+    </div>
+
+    In practice, we can't evaluate an infinite sum, so can truncate the power series at a suitable order of x. This gives us an *approximation* for <Latex text="$f(x)$" />. It's important to realise, often times, approximations that are good enough are far more useful in the physical world and can vastly simplify a problem that would otherwise be verify difficult to solve.
+
+    <TaylorSeries/>
+
+    <span className="text-foreground-200 text-sm">Approximating the value of<Latex text="$f(x) = sin(x)$" /> using a Taylor series centred around <Latex text="$x=0,$" /> i.e. a Maclaurin series.</span>
+
+  </div>
+</article>
