@@ -25,11 +25,6 @@ export const pages: Page[] = [
     date: new Date(2025, 2, 8),
     slug: "/law-of-universal-gravitation",
   },
-  // {
-  //   title: "Dealing with High Workload",
-  //   date: new Date(2025, 2, 8),
-  //   slug: "/dealing-with-high-workload",
-  // },
   {
     title: "Quantum Mechanics: Linearity",
     date: new Date(2025, 2, 9),
@@ -53,6 +48,11 @@ export const pages: Page[] = [
   {
     title: "The Schrödinger Equation",
     date: new Date(2025, 3, 12),
-    slug: "/the-schrodinger-equation"
-  }
+    slug: "/the-schrodinger-equation",
+  },
+  {
+    title: "Taylor Series",
+    date: new Date(2025, 5, 8),
+    slug: "/taylor-series",
+  },
 ];
