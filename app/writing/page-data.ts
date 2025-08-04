@@ -55,4 +55,9 @@ export const pages: Page[] = [
     date: new Date(2025, 5, 8),
     slug: "/taylor-series",
   },
+  {
+    title: "Inverse Kinematics",
+    date: new Date(2025, 6, 8),
+    slug: "/inverse-kinematics",
+  },
 ];
