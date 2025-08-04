@@ -25,9 +25,7 @@ const draw: DrawGL = ({ p5, camera }) => {
     p5.pop();
   }
 };
-const sketch = baseSketchWebGL(draw);
+const sketch = baseSketchWebGL({ draw });
 export function PolarisationProbability() {
-  return (
-    <StyledP5Container sketch={sketch} />
-  );
+  return <StyledP5Container sketch={sketch} />;
 }
