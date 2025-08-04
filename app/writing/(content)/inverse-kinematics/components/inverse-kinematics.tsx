@@ -10,7 +10,7 @@ import { Fragment, useRef } from "react";
 const setup: SetupGL = ({ p5 }) => {
   p5.colorMode(p5.HSL);
   p5.rectMode(p5.CORNERS);
-  p5.debugMode();
+  p5.debugMode(p5.GRID);
 };
 
 // These need to be long enough to reach the maximum offset position for the end effector.
