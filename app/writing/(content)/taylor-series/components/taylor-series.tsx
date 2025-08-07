@@ -13,6 +13,10 @@ const sinApprox = (x: number) => {
   return x - (x * x * x) / 6 + (x * x * x * x * x) / 120;
 };
 
+const moreAccurateSinApproximation = (x: number) => {
+  return x - (x * x * x) / 6 + (x * x * x * x * x) / 120 - (x * x * x * x * x * x * x) / 5040;
+};
+
 const draw: Draw = ({ p5 }) => {
   p5.clear();
   p5.noStroke();
@@ -42,6 +46,18 @@ const draw: Draw = ({ p5 }) => {
     const next = (x + 1) * angularScale;
     p5.line(x, -sinApprox(current) * amplitude, x + 1, -sinApprox(next) * amplitude);
   }
+
+  p5.stroke(documentStyle.getPropertyValue("--visual-green"));
+  for (let x = 0; x < p5.width; x++) {
+    const current = x * angularScale;
+    const next = (x + 1) * angularScale;
+    p5.line(
+      x,
+      -moreAccurateSinApproximation(current) * amplitude,
+      x + 1,
+      -moreAccurateSinApproximation(next) * amplitude,
+    );
+  }
   p5.pop();
 
   p5.noStroke();
@@ -53,10 +69,12 @@ const draw: Draw = ({ p5 }) => {
   p5.text("x", p5.width * 0.97, p5.height * 0.55);
   p5.text("y", p5.width * 0.17, p5.height * 0.05);
 
-  p5.fill(documentStyle.getPropertyValue("--visual-red"));
-  p5.text("y = x - (1/3!)x^3 + (1/5!)x^5", p5.width * 0.66, p5.height * 0.85);
   p5.fill(documentStyle.getPropertyValue("--visual-blue"));
-  p5.text("y = sin(x)", p5.width * 0.77, p5.height * 0.32);
+  p5.text("y = x - (1/3!)x^3 + (1/5!)x^5", p5.width * 0.37, p5.height * 0.15);
+  p5.fill(documentStyle.getPropertyValue("--visual-red"));
+  p5.text("y = sin(x)", p5.width * 0.87, p5.height * 0.86);
+  p5.fill(documentStyle.getPropertyValue("--visual-green"));
+  p5.text("y = x - (1/3!)x^3 + (1/5!)x^5 - (1/7!)x^7", p5.width * 0.31, p5.height * 0.86);
 };
 
 const sketch = baseSketch({ draw, setup });
