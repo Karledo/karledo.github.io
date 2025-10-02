@@ -60,4 +60,9 @@ export const pages: Page[] = [
     date: new Date(2025, 6, 8),
     slug: "/inverse-kinematics",
   },
+  {
+    title: "Fourier Transforms",
+    date: new Date(2025, 8, 23),
+    slug: "/fourier-transforms",
+  },
 ];
