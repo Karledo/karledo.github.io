@@ -1,57 +1,73 @@
 "use client";
 
-import { baseSketch, type Setup, type Draw } from "@/components/base-sketch";
+import { defaultSketch, type Setup, type Draw } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
+import katex from "katex";
+import P5 from "p5";
 
-const MAX_WIDTH = 641.52
-const setup: Setup = ({ p5 }) => {
-  p5.colorMode(p5.HSL)
-  p5.rectMode(p5.CORNERS)
-}
+const MAX_WIDTH = 641.52;
+const setup: Setup = ({ p, containerStyle, state }) => {
+  p.colorMode(p.HSL);
+  p.rectMode(p.CORNERS);
 
-const draw: Draw = ({ p5 }) => {
-  p5.clear()
-  p5.noStroke()
+  const axisNames = ["psi", "x"];
+  const axis = Object.fromEntries(
+    axisNames.map((value) => {
+      return [value, p.createP().style("font-size", "1rem").style("color", containerStyle.color)];
+    }),
+  );
 
-  const documentStyle = getComputedStyle(document.documentElement)
-  const noiseHeight = p5.height * 0.5
-  const seconds = p5.millis() * 0.001
-  const noiseScale = 0.002
-  const timeScale = 0.3
+  state.axis = axis;
+};
 
-  p5.fill(documentStyle.getPropertyValue("--foreground-100"))
-  p5.textSize(18 * p5.width / MAX_WIDTH)
-  p5.textFont("KaTeX_Math")
-  p5.text("|Ψ(x, t)|²", p5.width * 0.52, p5.height * 0.07)
-  p5.text("x", p5.width * 0.97, p5.height * 0.47)
+const draw: Draw = ({ p, state }) => {
+  p.clear();
+  p.noStroke();
 
+  const axis = state.axis as { [k: string]: P5.Element };
 
-  p5.stroke(documentStyle.getPropertyValue("--background-300"))
-  p5.strokeWeight(2 * p5.width / MAX_WIDTH)
-  p5.line(0, p5.height * 0.5, p5.width, p5.height * 0.5)
-  p5.line(p5.width * 0.5, 0, p5.width * 0.5, p5.height)
+  const documentStyle = getComputedStyle(document.documentElement);
+  const foreground = documentStyle.getPropertyValue("--foreground-100");
+  const background = documentStyle.getPropertyValue("--background-300");
 
-  p5.translate(0, p5.height * 0.5)
-  p5.strokeWeight(3 * p5.width / MAX_WIDTH)
-  p5.stroke(documentStyle.getPropertyValue("--foreground-100"))
-  for (let x = 0; x < p5.width; x++) {
-    const noiseX = x * noiseScale
-    const nextNoiseX = (x + 1) * noiseScale
+  const noiseHeight = p.height * 0.5;
+  const seconds = p.millis() * 0.001;
+  const noiseScale = 0.002;
+  const timeScale = 0.3;
 
-    p5.line(
+  axis.psi.position(p.width * 0.52, p.height * 0.01);
+  katex.render(String.raw`\psi(x, t)^2`, axis.psi.elt);
+
+  axis.x.position(p.width * 0.97, p.height * 0.41);
+  katex.render(String.raw`x`, axis.x.elt);
+
+  p.stroke(background);
+  p.strokeWeight((2 * p.width) / MAX_WIDTH);
+  p.line(0, p.height * 0.5, p.width, p.height * 0.5);
+  p.line(p.width * 0.5, 0, p.width * 0.5, p.height);
+
+  p.translate(0, p.height * 0.5);
+  p.strokeWeight((3 * p.width) / MAX_WIDTH);
+  p.stroke(foreground);
+  for (let x = 0; x < p.width; x++) {
+    const noiseX = x * noiseScale;
+    const nextNoiseX = (x + 1) * noiseScale;
+
+    p.line(
       x,
-      -p5.noise(noiseX, seconds * timeScale) * noiseHeight,
+      -p.noise(noiseX, seconds * timeScale) * noiseHeight,
       x + 1,
-      -p5.noise(nextNoiseX, seconds * timeScale) * noiseHeight
-    )
+      -p.noise(nextNoiseX, seconds * timeScale) * noiseHeight,
+    );
   }
-}
+};
 
-const sketch = baseSketch({ draw, setup })
+const sketch = defaultSketch({ draw, setup });
 
 export function WaveFunction() {
-  return <div>
-    <StyledP5Container sketch={sketch} />
-  </div>
+  return (
+    <div>
+      <StyledP5Container sketch={sketch} />
+    </div>
+  );
 }
-

@@ -1,9 +1,9 @@
 "use client";
 
-import { baseSketchWebGL, type DrawGL } from "@/components/base-sketch-webgl";
+import { baseSketchWebGL, type DrawGL } from "@/components/default-sketch-webgl3d";
 import { StyledP5Container } from "@/components/p5-container";
 
-const draw: DrawGL = ({ p5, camera }) => {
+const draw: DrawGL = ({ p: p5, camera }) => {
   p5.clear();
   p5.noStroke();
   p5.fill("white");

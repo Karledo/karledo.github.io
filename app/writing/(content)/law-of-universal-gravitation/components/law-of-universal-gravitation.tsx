@@ -1,6 +1,6 @@
 "use client";
 
-import { baseSketch, Setup, type Draw } from "@/components/base-sketch";
+import { defaultSketch, Setup, type Draw } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
 import { colors } from "@/utils/colors";
 import P5Types from "p5";
@@ -18,14 +18,14 @@ let planetVelocity: P5Types.Vector;
 
 let sunPosition: P5Types.Vector;
 
-const setup: Setup = ({ p5 }) => {
+const setup: Setup = ({ p: p5 }) => {
   p5.colorMode(p5.HSL);
   sunPosition = p5.createVector(0, 0);
   planetPosition = p5.createVector(-100, 0);
   planetVelocity = p5.createVector(0, 300);
 };
 
-const draw: Draw = ({ p5 }) => {
+const draw: Draw = ({ p: p5 }) => {
   p5.noStroke();
   p5.translate(p5.width * 0.5, p5.height * 0.5);
   const deltaTime = p5.deltaTime * 0.001;
@@ -59,9 +59,9 @@ const draw: Draw = ({ p5 }) => {
   const boundaryDistance = (sunDiameter + planetDiameter) * 0.5;
   const isColliding = planetPosition.copy().sub(sunPosition).magSq() < boundaryDistance * boundaryDistance;
   if (isColliding) {
-    const displacement = planetPosition.copy().sub(sunPosition)
+    const displacement = planetPosition.copy().sub(sunPosition);
     const boundaryDisplacement = displacement.copy().normalize().setMag(boundaryDistance);
-    planetPosition.add(boundaryDisplacement.copy().sub(displacement))
+    planetPosition.add(boundaryDisplacement.copy().sub(displacement));
   }
 
   const scalar = p5.width / maxWidth;
@@ -71,12 +71,10 @@ const draw: Draw = ({ p5 }) => {
   p5.pop();
 };
 
-const sketch = baseSketch({ draw, setup });
+const sketch = defaultSketch({ draw, setup });
 
 export function LawOfUniversalGravitation() {
-  return (
-    <StyledP5Container sketch={sketch} />
-  );
+  return <StyledP5Container sketch={sketch} />;
 }
 
 const GRAVITATIONAL_CONSTANT = 100000;

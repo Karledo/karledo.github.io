@@ -13,7 +13,7 @@
         "lucide-react": "^0.479.0",
         "motion": "^12.5.0",
         "next": "15.2.0",
-        "p5": "^1.11.3",
+        "p5": "1.11.10",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-use-measure": "^2.1.7",
@@ -790,7 +790,7 @@
 
     "p-locate": ["p-locate@5.0.0", "", { "dependencies": { "p-limit": "^3.0.2" } }, "sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw=="],
 
-    "p5": ["p5@1.11.3", "", {}, "sha512-5eiyuZ3Pvo6ucr3nr8AzD+qwpoleiIEF2a2HmiO6PJM1tnbD0LmLlckZyYGJATs0tdmRjc37Muh6KPS4d1FHHg=="],
+    "p5": ["p5@1.11.10", "", {}, "sha512-lFe18Af+SUxyZyPkgza0DYhIV+Ymr1oD4w6Y0Bjhbi5TCaIktRys8xu847eH7epL/GZ1jATFekqW71/v4PvNGA=="],
 
     "parent-module": ["parent-module@1.0.1", "", { "dependencies": { "callsites": "^3.0.0" } }, "sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g=="],
 
