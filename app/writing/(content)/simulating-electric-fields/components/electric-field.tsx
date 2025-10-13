@@ -1,15 +1,7 @@
 "use client";
 import { LazyMotionProvider } from "@/components/lazy-motion-provider";
 import { Vector2 } from "@/utils/vector2";
-import {
-  m,
-  motion,
-  MotionValue,
-  PanInfo,
-  SVGMotionProps,
-  useAnimationFrame,
-  useSpring,
-} from "motion/react";
+import { m, motion, MotionValue, PanInfo, SVGMotionProps, useAnimationFrame, useSpring } from "motion/react";
 import { useRef } from "react";
 import useMeasure from "react-use-measure";
 import * as Slider from "@radix-ui/react-slider";
@@ -40,12 +32,8 @@ export function ElectricField() {
 
   const arrowLength = bounds.width * arrowLengthScalar;
   const arrows = Array.from({ length: gridSize * gridSize }).map((_, i) => {
-    const x =
-      (i % gridSize) * (bounds.width / gridSize) +
-      (bounds.width * 0.5) / gridSize;
-    const y =
-      Math.floor(i / gridSize) * (bounds.height / gridSize) +
-      (bounds.height * 0.5) / gridSize;
+    const x = (i % gridSize) * (bounds.width / gridSize) + (bounds.width * 0.5) / gridSize;
+    const y = Math.floor(i / gridSize) * (bounds.height / gridSize) + (bounds.height * 0.5) / gridSize;
 
     return {
       x1: new MotionValue(x),
@@ -55,11 +43,7 @@ export function ElectricField() {
     };
   });
 
-  function handleDragging(
-    event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
-    index: number,
-  ) {
+  function handleDragging(event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo, index: number) {
     if (dragContainer.current == null) return;
     const rect = dragContainer.current.getBoundingClientRect();
 
@@ -78,9 +62,7 @@ export function ElectricField() {
         const chargePosition = new Vector2(dragPosition.x, dragPosition.y);
         const displacement = tailPosition.sub(chargePosition);
 
-        const squaredDistance = tailPosition
-          .sub(chargePosition)
-          .squaredMagnitude();
+        const squaredDistance = tailPosition.sub(chargePosition).squaredMagnitude();
         const force = equation(k, charges[index].get(), q2, squaredDistance);
         const forceVector = displacement.normalized().scale(force);
         return forceVector;
@@ -103,14 +85,8 @@ export function ElectricField() {
 
   return (
     <LazyMotionProvider>
-      <div
-        ref={ref}
-        className="bg-background-200 relative mb-7 aspect-video rounded-xl"
-      >
-        <m.svg
-          viewBox={`0 0 ${bounds.width} ${bounds.height}`}
-          className="pointer-events-none absolute inset-0"
-        >
+      <div ref={ref} className="bg-background-200 relative mb-7 aspect-video rounded-xl">
+        <m.svg viewBox={`0 0 ${bounds.width} ${bounds.height}`} className="pointer-events-none absolute inset-0">
           <defs>
             <marker
               id="arrow"
@@ -150,9 +126,7 @@ export function ElectricField() {
                 onDrag={(event, info) => handleDragging(event, info, index)}
                 dragConstraints={dragContainer}
               >
-                <span className="text-sm font-semibold text-neutral-700 sm:text-base">
-                  {index + 1}
-                </span>
+                <span className="text-sm font-semibold text-neutral-700 sm:text-base">{index + 1}</span>
               </motion.div>
             );
           })}
@@ -199,16 +173,7 @@ function Arrow({
   x2: MotionValue<number>;
   y2: MotionValue<number>;
 } & Omit<SVGMotionProps<SVGLineElement>, "markerEnd">) {
-  return (
-    <m.line
-      x1={x1}
-      y1={y1}
-      x2={x2}
-      y2={y2}
-      {...props}
-      markerEnd="url(#arrow)"
-    />
-  );
+  return <m.line x1={x1} y1={y1} x2={x2} y2={y2} {...props} markerEnd="url(#arrow)" />;
 }
 
 function equation(k: number, q1: number, q2: number, rSquared: number) {

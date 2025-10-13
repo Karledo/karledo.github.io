@@ -53,7 +53,7 @@ const calculateMaximaDistance = ({
   return Math.sqrt(numerator / denominator);
 };
 
-type WaveletParams = {
+interface WaveletParams {
   p: P5;
   x: number;
   y: number;

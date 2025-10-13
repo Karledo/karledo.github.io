@@ -38,7 +38,7 @@ const gaussianFn = (x: number, a: number, b: number) => {
   return Math.exp(-(Math.pow(x - a, 2) / b));
 };
 
-const draw: Draw = ({ p, renderer, state }) => {
+const draw: Draw = ({ p, state }) => {
   p.clear();
   p.noStroke();
 

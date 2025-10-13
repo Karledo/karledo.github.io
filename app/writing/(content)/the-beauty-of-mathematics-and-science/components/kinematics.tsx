@@ -1,11 +1,5 @@
 "use client";
-import {
-  MotionValue,
-  useTransform,
-  useMotionValue,
-  useAnimationFrame,
-  useMotionValueEvent,
-} from "motion/react";
+import { MotionValue, useTransform, useMotionValue, useAnimationFrame, useMotionValueEvent } from "motion/react";
 import useMeasure from "react-use-measure";
 import * as m from "motion/react-m";
 import { ReactNode, useRef } from "react";
@@ -22,21 +16,13 @@ export function Kinematics() {
   const maxVerticalVelocityFactor = 1.38;
   const maxHorizontalVelocityFactor = 0.67;
 
-  const duration = useTransform(
-    () => (-2 * velocityY.get()) / accelerationY.get(),
-  );
+  const duration = useTransform(() => (-2 * velocityY.get()) / accelerationY.get());
 
   useMotionValueEvent(duration, "change", (latestDuration) => {
     timerDuration.set(latestDuration);
   });
 
-  const {
-    time,
-    start,
-    stop,
-    reset,
-    duration: timerDuration,
-  } = useTimer(duration.get());
+  const { time, start, stop, reset, duration: timerDuration } = useTimer(duration.get());
   start();
 
   const { displacementX, displacementY } = useKinematic({
@@ -89,16 +75,11 @@ export function Kinematics() {
 
   return (
     <LazyMotionProvider>
-      <div
-        ref={ref}
-        className="bg-background-200 relative mb-3 aspect-video overflow-hidden rounded-xl"
-      >
+      <div ref={ref} className="bg-background-200 relative mb-3 aspect-video overflow-hidden rounded-xl">
         <div className="absolute inset-8">
           <div className="absolute bottom-2 left-2">
             {Array.from({ length: resolution + 1 }).map((_, i) => {
-              return (
-                <Point key={i} x={path.current[i].x} y={path.current[i].y} />
-              );
+              return <Point key={i} x={path.current[i].x} y={path.current[i].y} />;
             })}
           </div>
           <m.div

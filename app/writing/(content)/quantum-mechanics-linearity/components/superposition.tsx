@@ -1,5 +1,4 @@
 "use client";
-
 import { StyledP5Container, type P5Sketch } from "@/components/p5-container";
 import { Fragment, useRef } from "react";
 import * as Slider from "@radix-ui/react-slider";

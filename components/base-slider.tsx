@@ -1,5 +1,5 @@
 import * as Slider from "@radix-ui/react-slider";
-import { ComponentPropsWithRef, CSSProperties } from "react";
+import { ComponentPropsWithoutRef, ComponentPropsWithRef, CSSProperties, RefObject, useRef } from "react";
 
 type BaseSliderProps = Omit<ComponentPropsWithRef<typeof Slider.Root>, "className"> & {
   rangeStyle?: CSSProperties;
@@ -19,5 +19,35 @@ export function BaseSlider({ rangeStyle, ...props }: BaseSliderProps) {
       </Slider.Track>
       <Slider.Thumb />
     </Slider.Root>
+  );
+}
+
+type RefSliderProps = {
+  sharedRef: RefObject<number>;
+  label: string;
+  mapFn?: (value: number) => number;
+  displayFn?: (value: number) => number | string;
+  ref: RefObject<HTMLInputElement>;
+} & Omit<ComponentPropsWithoutRef<typeof BaseSlider>, "onValueChanged">;
+
+export function RefSlider({ sharedRef, label, mapFn, displayFn, ref, ...props }: RefSliderProps) {
+  const displayRef = useRef<HTMLSpanElement>(null);
+  const internalRef = useRef<HTMLInputElement>(null);
+  const sliderRef = ref ? ref : internalRef;
+
+  return (
+    <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4 tabular-nums">
+      <span>{label}</span>
+      <BaseSlider
+        ref={sliderRef}
+        {...props}
+        onValueChange={([value]) => {
+          sharedRef.current = mapFn ? mapFn(value) : value;
+          if (displayRef.current) displayRef.current.innerHTML = `${displayFn ? displayFn(value) : value}`;
+        }}
+      />
+      <span ref={displayRef} dangerouslySetInnerHTML={{ __html: sliderRef.current?.value ?? 0 }}></span>
+      <div></div>
+    </div>
   );
 }
