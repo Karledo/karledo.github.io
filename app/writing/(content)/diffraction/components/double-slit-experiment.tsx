@@ -1,49 +1,30 @@
 "use client";
 
-import { useRef } from "react";
 import { defaultSketch, type Setup, type Draw } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
-import { BaseSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/base-slider";
 import { Latex } from "@/components/latex";
-import { marque } from "@/utils/p5-helper";
+import { marque as whiteMask } from "@/utils/sketch-utils";
 import P5 from "p5";
 
-const defaultSlitSeparationFactor = 0.4;
+const slitSeperationRef = { current: 0.4 };
+const gratingDistanceRef = { current: 0.25 };
+
 const minimumSlitSeparationFactor = 0.05;
 const maximumSlitSeparationFactor = 0.75;
-let slitSeparationFactor = defaultSlitSeparationFactor;
 
-const defaultGratingDistanceFactor = 0.25;
 const maximumGratingDistanceFactor = 0.75;
 const minimumGratingDistanceFactor = 0.2;
-let gratingDistanceFactor = defaultGratingDistanceFactor;
 
 let waveletA: P5.Graphics;
 let waveletB: P5.Graphics;
 
-const setup: Setup = ({ p, width, height }) => {
-  p.colorMode(p.HSL);
-  p.rectMode(p.CORNERS);
-  waveletA = p.createGraphics(width, height);
-  waveletB = p.createGraphics(width, height);
-
-  waveletA.rectMode(p.CORNERS);
-  waveletB.rectMode(p.CORNERS);
-};
-
-type EquationParams = {
-  order: number;
-  wavelength: number;
-  distanceToScreen: number;
-  slitDistanceFromGratingCentre: number;
-};
-
-const calculateMaximaDistance = ({
-  order,
-  wavelength,
-  distanceToScreen,
-  slitDistanceFromGratingCentre,
-}: EquationParams) => {
+const calculateMaximaDistance = (
+  order: number,
+  wavelength: number,
+  distanceToScreen: number,
+  slitDistanceFromGratingCentre: number,
+) => {
   const klambdaSquared = order * order * wavelength * wavelength;
   const numerator =
     klambdaSquared *
@@ -53,117 +34,121 @@ const calculateMaximaDistance = ({
   return Math.sqrt(numerator / denominator);
 };
 
-interface WaveletParams {
-  p: P5;
-  x: number;
-  y: number;
-  radius: number;
-  wavelength: number;
-  waveSpeed: number;
-  seconds: number;
-  color: string;
+const otherCalculateMaximaDistance = (
+  wavelength: number,
+  distanceFromGratingToScreen: number,
+  distanceAlongScreen: number,
+  slitDistanceFromCentre: number,
+) => {
+  const D = distanceFromGratingToScreen;
+  const d = distanceAlongScreen;
+  // const r = Math.sqrt(D * D + d * d);
+  const lambda = wavelength;
+  const x = slitDistanceFromCentre;
+  const r = Math.sqrt(D * D + Math.pow(d - x, 2));
+
+  const result = (Math.sqrt(r * r + 4 * d * x) - r) / lambda;
+  // const result = (-r * lambda + Math.sqrt(lambda * (r * r + 4 * lambda * d * x))) / (lambda * lambda);
+
+  return result;
 };
 
-const wavelet = ({ p, x, y, wavelength, radius, waveSpeed, seconds, color }: WaveletParams) => {
+const wavelet = (
+  p: P5,
+  x: number,
+  y: number,
+  radius: number,
+  wavelength: number,
+  speed: number,
+  timeSeconds: number,
+) => {
   p.push();
-
   p.noFill();
-  p.strokeWeight(p.width * 0.0031);
-  p.stroke(color);
 
   const maxDistance = radius;
   const numWavelengths = Math.round(maxDistance / wavelength);
 
   for (let i = 1; i <= numWavelengths; i++) {
     const frac = i / numWavelengths;
-    const distance = (maxDistance * frac + seconds * waveSpeed) % maxDistance;
+    const distance = (maxDistance * frac + timeSeconds * speed) % maxDistance;
     p.circle(x, y, distance * 2);
   }
 
   p.pop();
 };
 
-const draw: Draw = ({ p, containerStyle, width, height }) => {
-  waveletA.resizeCanvas(width, height);
-  waveletB.resizeCanvas(width, height);
+const setup: Setup = ({ p }) => {
+  p.colorMode(p.HSL);
+  p.rectMode(p.CORNERS);
+
+  waveletA = p.createGraphics(p.width, p.height);
+  waveletB = p.createGraphics(p.width, p.height);
+
+  waveletA.colorMode(waveletA.HSL);
+  waveletA.rectMode(waveletA.CORNERS);
+  waveletB.colorMode(waveletB.HSL);
+  waveletB.rectMode(waveletB.CORNERS);
+};
+
+const draw: Draw = ({ p, container }) => {
   p.clear();
+
   waveletA.clear();
   waveletB.clear();
+  waveletA.resizeCanvas(p.width, p.height, true);
+  waveletB.resizeCanvas(p.width, p.height, true);
 
-  const gratingDistance = p.width * gratingDistanceFactor;
-  const slitSeparation = p.height * slitSeparationFactor;
+  const style = window.getComputedStyle(container);
+  const background = style.getPropertyValue("--background-300");
+  const foreground = style.getPropertyValue("--foreground-100");
+  const red = style.getPropertyValue("--visual-red");
+
+  const halfHeight = p.height * 0.5;
+  // const halfWidth = p.width * 0.5;
+
+  const gratingDistance = p.width * gratingDistanceRef.current;
+  const slitSeparation = p.height * slitSeperationRef.current;
+
   const screenDistance = p.width * 0.97;
-  const slitGap = p.height * 0.075;
   const screenThickness = p.width * 0.01;
 
-  const seconds = p.millis() * 0.001;
-  const waveSpeed = p.width * 0.045;
-  const wavelength = p.width * 0.0625;
-
-  const distanceToScreen = screenDistance - gratingDistance;
+  const slitGap = p.height * 0.075;
   const slitDistanceFromGratingCentre = (slitSeparation + slitGap) * 0.5;
+  const firstSlitHeight = halfHeight - slitDistanceFromGratingCentre;
+  const secondSlitHeight = halfHeight + slitDistanceFromGratingCentre;
 
-  const screenColor = containerStyle.getPropertyValue("--background-300");
-  const diffractionGratingColor = containerStyle.getPropertyValue("--foreground-100");
-  const waveletColor = containerStyle.getPropertyValue("--visual-red");
+  const wavespeed = p.width * 0.045;
+  const wavelength = p.width * 0.0625;
+  const seconds = p.millis() / 1000;
+
+  const distanceFromGratingToScreen = screenDistance - gratingDistance;
+
+  p.push();
+  p.stroke(red);
+  wavelet(p, 0, waveletA.height * 0.5, p.width, wavelength, wavespeed, seconds);
+  whiteMask(p, 0, 0, gratingDistance, p.height);
+  p.pop();
 
   waveletA.push();
-  wavelet({
-    p: waveletA,
-    x: 0,
-    y: waveletA.height * 0.5,
-    radius: p.width,
-    waveSpeed,
-    wavelength,
-    seconds,
-    color: waveletColor,
-  });
-  marque({
-    p: waveletA,
-    x1: 0,
-    y1: 0,
-    x2: gratingDistance,
-    y2: p.height,
-  });
+  waveletA.stroke(red);
+  wavelet(waveletA, gratingDistance, firstSlitHeight * 0.5, waveletA.width, wavelength, wavespeed, seconds);
+  whiteMask(waveletA, gratingDistance, 0, screenDistance, p.height);
   waveletA.pop();
 
+  p.image(waveletA, 0, 0);
+
   waveletB.push();
-  wavelet({
-    p: waveletB,
-    x: gratingDistance,
-    y: (p.height - slitSeparation - slitGap) * 0.5,
-    radius: p.width,
-    waveSpeed,
-    wavelength,
-    seconds,
-    color: waveletColor,
-  });
-  wavelet({
-    p: waveletB,
-    x: gratingDistance,
-    y: (p.height + slitSeparation + slitGap) * 0.5,
-    radius: p.width,
-    waveSpeed,
-    wavelength,
-    seconds,
-    color: waveletColor,
-  });
-  marque({
-    p: waveletB,
-    x1: gratingDistance,
-    y1: 0,
-    x2: screenDistance,
-    y2: p.height,
-  });
+  waveletB.stroke(red);
+  wavelet(waveletB, gratingDistance, secondSlitHeight, waveletB.width, wavelength, wavespeed, seconds);
+  whiteMask(waveletB, gratingDistance, 0, screenDistance, p.height);
   waveletB.pop();
 
-  p.image(waveletA, 0, 0);
   p.image(waveletB, 0, 0);
 
   // Diffraction Grating
   p.push();
-  p.stroke(p.color(diffractionGratingColor));
-  p.strokeWeight(p.width * 0.0078);
+  p.stroke(foreground);
+  p.strokeWeight(p.width * 0.007);
   p.translate(gratingDistance, 0);
   p.line(0, 0, 0, (p.height - slitSeparation) * 0.5 - slitGap);
   p.line(0, (p.height - slitSeparation) * 0.5, 0, (p.height + slitSeparation) * 0.5);
@@ -172,80 +157,77 @@ const draw: Draw = ({ p, containerStyle, width, height }) => {
 
   // Screen
   p.push();
-  p.strokeWeight(screenThickness);
-  p.stroke(screenColor);
-  p.line(screenDistance, 0, screenDistance, p.height);
+  p.noStroke();
+  p.fill(background);
+  p.rect(screenDistance, 0, screenDistance + screenThickness, p.height);
   p.pop();
 
+  // Fringe Pattern
   p.push();
   p.strokeWeight(p.width * 0.0048);
-  p.fill(waveletColor);
+  p.fill(red);
   p.translate(screenDistance, p.height * 0.5);
 
-  const color = p.color(waveletColor);
-  const distanceBetweenOrders = calculateMaximaDistance({
-    order: 1,
-    wavelength,
-    distanceToScreen,
-    slitDistanceFromGratingCentre,
-  });
-  for (let i = -p.height * 0.5; i <= p.height * 0.5; i++) {
-    const intensity = Math.pow(Math.cos((i * Math.PI) / distanceBetweenOrders), 4);
+  const color = p.color(red);
+  // const distanceBetweenOrders = calculateMaximaDistance(
+  //   1,
+  //   wavelength,
+  //   distanceFromGratingToScreen,
+  //   slitDistanceFromGratingCentre,
+  // );
+  // const firstMaximaDistance = otherCalculateMaximaDistance(0, wavelength, distanceFromGratingToScreen);
+
+  // for (let i = -p.height * 0.5; i <= p.height * 0.5; i++) {
+  //   const intensity = Math.pow(Math.cos((i * Math.PI) / distanceBetweenOrders), 4);
+  //   color.setAlpha(intensity);
+  //   p.stroke(color);
+  //   p.line(-screenThickness * 0.5, i, screenThickness * 0.5, i);
+  // }
+
+  for (let d = 0; d <= p.height * 0.5; d++) {
+    const n = otherCalculateMaximaDistance(wavelength, distanceFromGratingToScreen, d, slitDistanceFromGratingCentre);
+    const intensity = Math.pow(Math.cos(Math.PI * (n - Math.round(n))), 2);
     color.setAlpha(intensity);
     p.stroke(color);
-    p.line(-screenThickness * 0.5, i, screenThickness * 0.5, i);
+    p.line(0, d, screenThickness, d);
+    p.line(0, -d, screenThickness, -d);
   }
 
   p.pop();
 };
 
-const sketch = defaultSketch({ draw, setup });
+const sketch = defaultSketch({ setup, draw });
 
 export function DoubleSlitExperiment() {
-  const slitSeparationDisplay = useRef<HTMLSpanElement>(null);
-  const gratingDistanceDisplay = useRef<HTMLSpanElement>(null);
-
   return (
     <div>
       <StyledP5Container sketch={sketch} />
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
-        <span>
-          Slit Separation, <Latex text="$d$" />
-        </span>
-        <BaseSlider
-          step={maximumSlitSeparationFactor * 0.01}
-          min={minimumSlitSeparationFactor}
-          max={maximumSlitSeparationFactor}
-          defaultValue={[defaultSlitSeparationFactor]}
-          onValueChange={([value]) => {
-            slitSeparationFactor = value;
-            if (slitSeparationDisplay.current) {
-              slitSeparationDisplay.current.innerText = `${`${Math.round(value * 100)}`.padStart(2)}%`;
-            }
-          }}
-        />
-        <span ref={slitSeparationDisplay} className="min-w-[5ch] tabular-nums">
-          {`${Math.round(defaultSlitSeparationFactor * 100)}`.padStart(2)}%
-        </span>
-        <span>
-          Grating Distance, <Latex text="$L$" />
-        </span>
-        <BaseSlider
-          step={(maximumGratingDistanceFactor - minimumGratingDistanceFactor) * 0.01}
-          min={minimumGratingDistanceFactor}
-          max={maximumGratingDistanceFactor}
-          defaultValue={[defaultGratingDistanceFactor]}
-          onValueChange={([value]) => {
-            gratingDistanceFactor = value;
-            if (gratingDistanceDisplay.current) {
-              gratingDistanceDisplay.current.innerText = `${`${Math.round(value * 100)}`.padStart(2)}%`;
-            }
-          }}
-        />
-        <span ref={gratingDistanceDisplay} className="tabular-nums">
-          {`${Math.round(defaultGratingDistanceFactor * 100)}`.padStart(2)}%
-        </span>
-      </div>
+      <RefSlider
+        sharedRef={slitSeperationRef}
+        label={
+          <span>
+            Slit Seperation, <Latex text="$d$" />
+          </span>
+        }
+        step={maximumSlitSeparationFactor * 0.01}
+        defaultValue={[gratingDistanceRef.current]}
+        min={minimumSlitSeparationFactor}
+        max={maximumSlitSeparationFactor}
+        display={(value) => `${(value * 100).toFixed(0)}%`}
+      />
+      <RefSlider
+        sharedRef={gratingDistanceRef}
+        label={
+          <span>
+            Grating Distance, <Latex text="$L$" />{" "}
+          </span>
+        }
+        step={maximumGratingDistanceFactor * 0.01}
+        defaultValue={[gratingDistanceRef.current]}
+        min={minimumGratingDistanceFactor}
+        max={maximumGratingDistanceFactor}
+        display={(value) => `${(value * 100).toFixed(0)}%`}
+      />
     </div>
   );
 }

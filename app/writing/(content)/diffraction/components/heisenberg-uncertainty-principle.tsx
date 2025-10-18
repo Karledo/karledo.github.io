@@ -2,232 +2,194 @@
 
 import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
-import { arrow } from "@/utils/p5-helper";
+import { arrow } from "@/utils/sketch-utils";
 import P5 from "p5";
 import katex from "katex";
 
-const slitSeparationFactor = 0.1;
-const gratingDistanceFactor = 0.5;
-const slitGapFactor = 0.25;
+let labels: {
+  [k: string]: P5.Element;
+};
 
-const setup: Setup = ({ p, width, height, state }) => {
+let initialVelocity: P5.Vector;
+let diameter: number;
+
+const alpha = 0.1;
+const photonCount = 2;
+const ghostPhotonCount = 5;
+const photons: Photon[] = [];
+
+const zigzagIndex = (k: number) => {
+  return Math.pow(-1, k + 1) * Math.floor((k + 1) / 2);
+};
+
+class Photon {
+  p: P5;
+  position: P5.Vector;
+  velocity: P5.Vector;
+  diameter: number;
+
+  pastGrating: boolean;
+  collapsed: boolean;
+
+  constructor(p: P5, position: P5.Vector, velocity: P5.Vector, diameter: number) {
+    this.p = p;
+    this.position = position;
+    this.velocity = velocity;
+    this.diameter = diameter;
+
+    this.pastGrating = false;
+    this.collapsed = false;
+  }
+
+  drawUncertainty(count: number, spacing: number) {
+    for (let i = 0; i < count; i++) {
+      this.p.circle(this.position.x, this.position.y + zigzagIndex(i) * spacing, this.diameter);
+    }
+  }
+
+  drawPhoton() {
+    this.p.circle(this.position.x, this.position.y, this.diameter);
+  }
+}
+
+const setup: Setup = ({ p }) => {
   p.colorMode(p.HSL);
 
-  const graphicsBuffer = p.createGraphics(width, height);
-  graphicsBuffer.colorMode(graphicsBuffer.HSL);
+  initialVelocity = p.createVector(p.width * 0.3, 0);
+  diameter = p.width * 0.03;
+
+  for (let i = 0; i < photonCount; i++) {
+    const position = p.createVector(0, 0);
+    const velocity = p.createVector(p.width * 0.2, 0);
+    const photon = new Photon(p, position, velocity, diameter);
+    photons.push(photon);
+  }
 
   const labelIdentifiers = ["deltaX1", "deltaX2", "deltaP1", "deltaP2"];
-  const labels = Object.fromEntries(
+  labels = Object.fromEntries(
     labelIdentifiers.map((identifier) => {
       const paragraph = p.createP();
       paragraph.style("font-size: 1rem");
       return [identifier, paragraph];
     }),
   );
-
-  state.graphicsBuffer = graphicsBuffer;
-  state.labels = labels;
 };
 
-let photonVelocityY1 = 0;
-let timeSinceReachingGrating1 = 0;
-let photonVelocityY2 = 0;
-let timeSinceReachingGrating2 = 0;
-
-const draw: Draw = ({ p, containerStyle, width, height, state }) => {
+const draw: Draw = ({ p }) => {
   p.clear();
   p.noStroke();
 
-  const graphicsBuffer = state.graphicsBuffer as P5.Graphics;
-
-  graphicsBuffer.resizeCanvas(width, height);
-  graphicsBuffer.clear();
-  graphicsBuffer.noStroke();
-
-  const labels = state.labels as { [k: string]: P5.Element };
-
   const seconds = p.millis() * 0.001;
+  const deltaTimeSeconds = p.deltaTime / 1000;
   const documentStyle = getComputedStyle(document.documentElement);
-
-  const foreground = containerStyle.getPropertyValue("--foreground-100");
+  const foreground = documentStyle.getPropertyValue("--foreground-100");
   const gold = documentStyle.getPropertyValue("--visual-gold");
   const green = documentStyle.getPropertyValue("--visual-green");
 
   // Style
   const strokeWeight = p.width * 0.005;
-
   // Sizes
-  const arrowHeadSize = p.width * 0.018;
-  const photonDiameter = p.width * 0.04;
-  const slitGap = p.height * slitGapFactor;
-  const slitSeparation = p.height * slitSeparationFactor;
-  const gratingDistance = p.width * gratingDistanceFactor;
+
+  const slitGap = p.height * 0.25;
+  const slitSeparation = p.height * 0.1;
+  const gratingDistance = p.width * 0.5;
 
   // Count
-  const numPhotons = 3;
+  const ghostPhotonSpacing = diameter / 2;
   const firstSlitHeight = (p.height - slitSeparation - slitGap) * 0.5;
   const secondSlitHeight = (p.height + slitSeparation + slitGap) * 0.5;
-  const alpha = 0.1;
 
-  // Photons
-  {
-    p.push();
-    const photonPositionX = (p.width * 0.3 * seconds) % p.width;
-    if (photonPositionX > gratingDistance) {
-      if (photonVelocityY1 === 0 && timeSinceReachingGrating1 === 0)
-        photonVelocityY1 = p.random(-p.height * 0.2, p.height * 0.2);
-      timeSinceReachingGrating1 += p.deltaTime * 0.001;
+  initialVelocity.set(p.width * 0.3, 0);
+  diameter = p.width * 0.03;
+
+  for (let i = 0; i < photons.length; i++) {
+    const j = zigzagIndex(i + 1);
+    const y = p.height * 0.5 + j * (slitSeparation + slitGap) * 0.5;
+    const photon = photons[i];
+
+    photon.velocity.x = p.width * 0.3;
+    photon.position.x += photon.velocity.x * deltaTimeSeconds;
+    photon.position.y += photon.velocity.y * deltaTimeSeconds;
+
+    const radius = photon.diameter / 2;
+
+    if (
+      photon.position.x < radius ||
+      photon.position.x > p.width - radius ||
+      photon.position.y < radius ||
+      photon.position.y > p.height - radius
+    ) {
+      photon.position.x = radius;
+      photon.position.y = p.height * 0.5 + j * (slitSeparation + slitGap) * 0.5;
+      photon.velocity.set(initialVelocity);
+      photon.pastGrating = false;
+      photon.collapsed = false;
+    }
+
+    if (photon.position.x > gratingDistance) {
+      photon.pastGrating = true;
+    }
+
+    if (photon.pastGrating && !photon.collapsed) {
+      photon.collapsed = true;
+      const k = zigzagIndex(Math.floor(Math.random() * (ghostPhotonCount + 1)));
+      photon.position.y = y + k * ghostPhotonSpacing;
+      const ySpeed = p.height * 0.2;
+      photon.velocity.y = -ySpeed + Math.random() * 2 * ySpeed;
+    }
+
+    if (photon.collapsed) {
+      p.push();
+      p.fill(gold);
+      photon.drawPhoton();
+      p.pop();
     } else {
-      if (photonVelocityY1 !== 0) {
-        photonVelocityY1 = 0;
-      }
-      if (timeSinceReachingGrating1 !== 0) {
-        timeSinceReachingGrating1 = 0;
-      }
+      p.push();
+      const color = p.color(gold);
+      color.setAlpha(0.2);
+      p.fill(color);
+      photon.drawUncertainty(ghostPhotonCount, ghostPhotonSpacing);
+      p.pop();
     }
-    const photonPosition = p.createVector(
-      photonPositionX,
-      firstSlitHeight + photonVelocityY1 * timeSinceReachingGrating1,
-    );
-
-    const localPhotonColor = p.color(gold);
-    p.fill(localPhotonColor);
-    p.circle(photonPosition.x, photonPosition.y, photonDiameter);
-    const halfNumPhotons = p.floor(numPhotons * 0.5);
-    localPhotonColor.setAlpha(alpha);
-    p.fill(localPhotonColor);
-    for (let i = -halfNumPhotons; i <= halfNumPhotons; i++) {
-      p.circle(photonPosition.x, photonPosition.y + i * photonDiameter, photonDiameter);
-    }
-    p.pop();
   }
 
-  {
+  const photonUncertaintyArrow = (height: number, element: P5.Element) => {
     p.push();
-    const photonPositionX = (p.width * 0.3 * seconds) % p.width;
-    if (photonPositionX > gratingDistance) {
-      if (photonVelocityY2 === 0 && timeSinceReachingGrating2 === 0)
-        photonVelocityY2 = p.random(-p.height * 0.2, p.height * 0.2);
-      timeSinceReachingGrating2 += p.deltaTime * 0.001;
-    } else {
-      if (photonVelocityY2 !== 0) {
-        photonVelocityY2 = 0;
-      }
-      if (timeSinceReachingGrating2 !== 0) {
-        timeSinceReachingGrating2 = 0;
-      }
-    }
-
-    const photonPosition = p.createVector(
-      photonPositionX,
-      secondSlitHeight + photonVelocityY2 * timeSinceReachingGrating2,
-    );
-
-    const localPhotonColor = p.color(gold);
-    p.fill(localPhotonColor);
-    p.circle(photonPosition.x, photonPosition.y, photonDiameter);
-    const halfNumPhotons = p.floor(numPhotons * 0.5);
-    localPhotonColor.setAlpha(alpha);
-    p.fill(localPhotonColor);
-    for (let i = -halfNumPhotons; i <= halfNumPhotons; i++) {
-      p.circle(photonPosition.x, photonPosition.y + i * photonDiameter, photonDiameter);
-    }
-    p.pop();
-  }
-
-  // Photon Uncertainty
-  {
-    p.push();
-    p.translate(gratingDistance, firstSlitHeight);
+    p.translate(gratingDistance, height);
     p.strokeWeight(strokeWeight);
     p.fill(gold);
     p.stroke(gold);
-    arrow({
-      p: p,
-      tailX: -p.width * 0.025,
-      tailY: slitGap * 0.5 - arrowHeadSize,
-      headX: -p.width * 0.025,
-      headY: -slitGap * 0.5 + arrowHeadSize,
-      doubleSided: true,
-      arrowHeadSize,
-    });
+    arrow(p, -p.width * 0.025, slitGap * 0.5, -p.width * 0.025, -slitGap * 0.5, undefined, true);
     p.pop();
 
+    element.position(gratingDistance - p.width * 0.1, height - p.height * 0.06);
+    element.style("color", gold);
+    katex.render(String.raw`\Delta x`, element.elt);
+  };
+
+  photonUncertaintyArrow(firstSlitHeight, labels.deltaX1);
+  photonUncertaintyArrow(secondSlitHeight, labels.deltaX2);
+
+  const arrowLength = p.width * 0.1;
+  const maximumAngle = Math.atan2(slitGap * 0.5, arrowLength);
+  const headPosition = p.createVector(arrowLength, 0).rotate(maximumAngle * p.sin(seconds * 2));
+
+  const momentumUncertaintyArrow = (height: number, element: P5.Element) => {
     p.push();
-    p.translate(gratingDistance, secondSlitHeight);
-    p.strokeWeight(strokeWeight);
-    p.fill(gold);
-    p.stroke(gold);
-    arrow({
-      p: p,
-      tailX: -p.width * 0.025,
-      tailY: slitGap * 0.5 - arrowHeadSize,
-      headX: -p.width * 0.025,
-      headY: -slitGap * 0.5 + arrowHeadSize,
-      doubleSided: true,
-      arrowHeadSize,
-    });
-    p.pop();
-
-    labels.deltaX1.position(gratingDistance - p.width * 0.1, firstSlitHeight - p.height * 0.06);
-    labels.deltaX1.style("color", gold);
-    katex.render(String.raw`\Delta x`, labels.deltaX1.elt);
-
-    labels.deltaX2.position(gratingDistance - p.width * 0.1, secondSlitHeight - p.height * 0.06);
-    labels.deltaX2.style("color", gold);
-    katex.render(String.raw`\Delta x`, labels.deltaX2.elt);
-  }
-
-  // Momentum Uncetainty
-  {
-    const arrowLength = p.width * 0.1;
-    const maximumAngle = Math.atan2(slitGap * 0.5, arrowLength);
-    const headPosition = p.createVector(arrowLength, 0).rotate(maximumAngle * p.sin(seconds * 2));
-
-    p.push();
-    p.translate(gratingDistance, firstSlitHeight);
+    p.translate(gratingDistance, height);
     p.strokeWeight(strokeWeight);
     p.fill(green);
     p.stroke(green);
-    arrow({
-      p: p,
-      tailX: 0,
-      tailY: 0,
-      headX: headPosition.x,
-      headY: headPosition.y,
-      arrowHeadSize,
-    });
+    arrow(p, 0, 0, headPosition.x, headPosition.y);
     p.pop();
 
-    p.push();
-    p.translate(gratingDistance, secondSlitHeight);
-    p.strokeWeight(strokeWeight);
-    p.fill(green);
-    p.stroke(green);
-    arrow({
-      p: p,
-      tailX: 0,
-      tailY: 0,
-      headX: headPosition.x,
-      headY: headPosition.y,
-      arrowHeadSize,
-    });
-    p.pop();
+    element.position(gratingDistance + headPosition.x + p.width * 0.025, height + headPosition.y - p.height * 0.06);
+    element.style("color", green);
+    katex.render(String.raw`\Delta p`, element.elt);
+  };
 
-    labels.deltaP1.position(
-      gratingDistance + headPosition.x + p.width * 0.025,
-      firstSlitHeight + headPosition.y - p.height * 0.06,
-    );
-    labels.deltaP1.style("color", green);
-    katex.render(String.raw`\Delta p`, labels.deltaP1.elt);
-
-    labels.deltaP2.position(
-      gratingDistance + headPosition.x + p.width * 0.025,
-      secondSlitHeight + headPosition.y - p.height * 0.06,
-    );
-    labels.deltaP2.style("color", green);
-    katex.render(String.raw`\Delta p`, labels.deltaP2.elt);
-  }
+  momentumUncertaintyArrow(firstSlitHeight, labels.deltaP1);
+  momentumUncertaintyArrow(secondSlitHeight, labels.deltaP2);
 
   // Diffraction Grating
   const color = p.color(foreground);
