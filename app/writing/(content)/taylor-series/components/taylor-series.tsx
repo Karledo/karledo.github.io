@@ -5,7 +5,10 @@ import { StyledP5Container } from "@/components/p5-container";
 import P5 from "p5";
 import katex from "katex";
 
-const setup: Setup = ({ p, state }) => {
+let equations: Record<string, P5.Element>;
+let axis: Record<string, P5.Element>;
+
+const setup: Setup = ({ p }) => {
   p.colorMode(p.HSL);
   p.rectMode(p.CORNERS);
 
@@ -16,7 +19,7 @@ const setup: Setup = ({ p, state }) => {
   };
 
   const equationNames = ["green", "blue", "red"];
-  const equations = Object.fromEntries(
+  equations = Object.fromEntries(
     equationNames.map((name) => {
       const paragraph = createStyledParagraph();
       return [name, paragraph];
@@ -24,15 +27,12 @@ const setup: Setup = ({ p, state }) => {
   );
 
   const axisNames = ["x", "y", "halfPi"];
-  const axis = Object.fromEntries(
+  axis = Object.fromEntries(
     axisNames.map((value) => {
       const paragraph = createStyledParagraph();
       return [value, paragraph];
     }),
   );
-
-  state.equations = equations;
-  state.axis = axis;
 };
 
 const sinApprox = (x: number) => {
@@ -43,12 +43,10 @@ const moreAccurateSinApproximation = (x: number) => {
   return x - (x * x * x) / 6 + (x * x * x * x * x) / 120 - (x * x * x * x * x * x * x) / 5040;
 };
 
-const draw: Draw = ({ p, state }) => {
+const draw: Draw = ({ p }) => {
   p.clear();
   p.noStroke();
 
-  const equations = state.equations as { [k: string]: P5.Element };
-  const axis = state.axis as { [k: string]: P5.Element };
   const documentStyle = getComputedStyle(document.documentElement);
 
   const foreground = documentStyle.getPropertyValue("--foreground-100");
