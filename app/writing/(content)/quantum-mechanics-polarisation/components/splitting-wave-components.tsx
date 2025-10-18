@@ -1,9 +1,10 @@
 "use client";
 
 import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
-import { StyledP5Container, type P5Sketch } from "@/components/p5-container";
-import { Arrow, arrow } from "@/utils/p5-helper";
+import { StyledP5Container } from "@/components/p5-container";
+import { arrow } from "@/utils/sketch-utils";
 import katex from "katex";
+import { preloadFont } from "next/dist/server/app-render/entry-base";
 import P5 from "p5";
 
 type GridContext = {
@@ -52,106 +53,75 @@ class Grid {
   }
 }
 
-const setup: Setup = ({ p, width, height, state }) => {
-  p.colorMode(p.HSL);
-  const documentStyle = getComputedStyle(document.documentElement);
-  const background = documentStyle.getPropertyValue("--background-300");
-  const red = documentStyle.getPropertyValue("--visual-red");
-  const green = documentStyle.getPropertyValue("--visual-green");
-  const blue = documentStyle.getPropertyValue("--visual-blue");
+const grid = (p: P5, spacing: number) => {
+  const halfWidth = p.width * 0.5;
+  const halfHeight = p.height * 0.5;
+  const gridLinesX = Math.round(halfWidth / spacing);
+  const gridLinesY = Math.round(halfWidth / spacing);
 
-  const spacing = p.width / 15;
-  const grid = new Grid({ p, width, height, spacing, gridColor: p.color(background) });
-  state.grid = grid;
+  p.push();
+  p.translate(halfWidth, halfHeight);
 
-  const redArrow = new Arrow({
-    p,
-    x1: p.width * 0.5,
-    y1: p.height * 0.5,
-    x2: p.width * 0.5 + spacing * 3,
-    y2: p.height * 0.5 - spacing * 3,
-    color: p.color(red),
-  });
+  for (let i = -gridLinesX; i <= gridLinesX; i++) {
+    const x = i * spacing;
+    p.line(x, -halfHeight, x, halfHeight);
+  }
 
-  const greenArrow = new Arrow({
-    p,
-    x1: p.width * 0.5,
-    y1: p.height * 0.5,
-    x2: p.width * 0.5 + spacing * 3,
-    y2: p.height * 0.5 - spacing * 3,
-    color: p.color(green),
-  });
+  for (let i = -gridLinesY; i <= gridLinesY; i++) {
+    const y = i * spacing;
+    p.line(-halfWidth, y, halfWidth, y);
+  }
 
-  const blueArrow = new Arrow({
-    p,
-    x1: p.width * 0.5,
-    y1: p.height * 0.5,
-    x2: p.width * 0.5,
-    y2: p.height * 0.5,
-    color: p.color(blue),
-  });
-
-  state.arrows = { red: redArrow, green: greenArrow, blue: blueArrow };
-
-  const arrowLabelNames = ["green", "red", "blue"];
-  const arrowLabels = Object.fromEntries(
-    arrowLabelNames.map((value) => {
-      const paragraph = p.createP();
-      return [value, paragraph];
-    }),
-  );
-
-  state.labels = arrowLabels;
+  p.pop();
 };
 
-const draw: Draw = ({ p, state }) => {
+const labels: { [k: string]: P5.Element } = {};
+
+const setup: Setup = ({ p }) => {
+  p.colorMode(p.HSL);
+
+  const arrowLabelNames = ["green", "red", "blue"];
+  for (let i = 0; i < arrowLabelNames.length; i++) {
+    const key = arrowLabelNames[i];
+    labels[key] = p.createP();
+  }
+};
+
+const draw: Draw = ({ p }) => {
   p.clear();
 
   const spacing = p.width / 15;
 
   const documentStyle = getComputedStyle(document.documentElement);
+
   const background = documentStyle.getPropertyValue("--background-300");
   const red = documentStyle.getPropertyValue("--visual-red");
   const green = documentStyle.getPropertyValue("--visual-green");
   const blue = documentStyle.getPropertyValue("--visual-blue");
 
-  const grid = state.grid as Grid;
-  grid.updateContext({ spacing, gridColor: p.color(background) });
-  grid.draw();
-
-  const { red: redArrow, green: greenArrow, blue: blueArrow } = state.arrows as Record<string, Arrow>;
+  const halfWidth = p.width * 0.5;
+  const halfHeight = p.height * 0.5;
 
   p.push();
-  p.strokeWeight(0.0055 * p.width);
-  blueArrow.updateContext({
-    x1: p.width * 0.5,
-    y1: p.height * 0.5,
-    x2: p.width * 0.5 + spacing * 3,
-    y2: p.height * 0.5 - spacing * 3,
-    color: p.color(blue),
-  });
-  blueArrow.draw();
+  p.strokeWeight(0.0015 * p.width);
+  p.stroke(background);
 
-  redArrow.updateContext({
-    x1: p.width * 0.5,
-    y1: p.height * 0.5,
-    x2: p.width * 0.5 + spacing * 3,
-    y2: p.height * 0.5,
-    color: p.color(red),
-  });
-  redArrow.draw();
+  grid(p, spacing);
 
-  greenArrow.updateContext({
-    x1: p.width * 0.5 + spacing * 3,
-    y1: p.height * 0.5,
-    x2: p.width * 0.5 + spacing * 3,
-    y2: p.height * 0.5 - spacing * 3,
-    color: p.color(green),
-  });
-  greenArrow.draw();
+  p.strokeWeight(p.width * 0.004);
+
+  p.stroke(blue);
+  p.fill(blue);
+  arrow(p, halfWidth, halfHeight, halfWidth + spacing * 3, halfHeight - spacing * 3);
+
+  p.stroke(red);
+  p.fill(red);
+  arrow(p, halfWidth, halfHeight, halfWidth + spacing * 3, halfHeight);
+
+  p.stroke(green);
+  p.fill(green);
+  arrow(p, halfWidth + spacing * 3, halfHeight, halfWidth + spacing * 3, halfHeight - spacing * 3);
   p.pop();
-
-  const labels = state.labels as Record<string, P5.Element>;
 
   labels.red.style("font-size", "1.125rem").style("color", red);
   labels.red.position(p.width * 0.59, p.height * 0.53);
