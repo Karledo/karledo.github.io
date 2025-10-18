@@ -47,9 +47,6 @@ export const baseSketchWebGL = ({ draw, setup }: { draw?: DrawGL; setup?: SetupG
       context.renderer = p.createCanvas(context.width!, context.height!, p.WEBGL).parent(container);
       updateRendererStyle();
       context.camera = p.createCamera();
-      p.loadFont("/_next/static/media/KaTeX_Main-Regular.3fb4768d.ttf", (font) => {
-        console.log(font);
-      });
 
       if (setup) {
         setup(context as P5ContextGL);
