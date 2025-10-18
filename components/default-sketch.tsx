@@ -3,115 +3,61 @@
 import { P5Container, type P5Sketch } from "@/components/p5-container";
 import P5 from "p5";
 
-export type P5Context<T> = {
+export type P5Context = {
   p: P5;
   container: P5Container;
-  containerStyle: CSSStyleDeclaration;
-  width: number;
-  height: number;
   renderer: P5.Renderer;
-  state: T;
 };
 
-export type Setup<T = undefined> = (context: P5Context<T>) => void;
-export type Draw<T = undefined> = (context: P5Context<T>) => void;
+export type Setup = (context: P5Context) => void;
+export type Draw = (context: P5Context) => void;
 
-interface DefaultSketch<T> {
-  setup: Setup<T>;
-  draw: Draw<T>;
-}
+type DefaultSketch = {
+  setup: Setup;
+  draw: Draw;
+};
 
-export const defaultSketch = <T,>({ setup, draw }: DefaultSketch<T>) => {
+export const defaultSketch = ({ setup, draw }: DefaultSketch) => {
   const sketch: P5Sketch = (p, container) => {
-    const context = { p, container, state: {} } as P5Context<T>;
+    const context = { p, container } as P5Context;
 
-    const updateContext = () => {
-      context.containerStyle = window.getComputedStyle(container);
-      context.width = parseFloat(context.containerStyle.getPropertyValue("width"));
-      context.height = parseFloat(context.containerStyle.getPropertyValue("height"));
+    const calculateRendererSize = () => {
+      const style = window.getComputedStyle(container);
+      const width = parseFloat(style.getPropertyValue("width"));
+      const height = parseFloat(style.getPropertyValue("height"));
+      return { width, height };
     };
 
     const updateRendererStyle = () => {
-      if (context.renderer) {
-        context.renderer
-          .style("position", "absolute")
-          .style("top", "0px")
-          .style("left", "0px")
-          .style("width", "100%")
-          .style("height", "100%");
-        context.renderer.attribute("width", `${context.width}`);
-        context.renderer.attribute("height", `${context.height}`);
-      }
+      if (!context.renderer) return;
+
+      const { width, height } = calculateRendererSize();
+
+      context.renderer
+        .style("position", "absolute")
+        .style("top", "0px")
+        .style("left", "0px")
+        .style("width", "100%")
+        .style("height", "100%");
+      context.renderer.attribute("width", `${width}`);
+      context.renderer.attribute("height", `${height}`);
     };
 
     p.setup = () => {
-      updateContext();
-      const { width, height } = context;
-      context.renderer = p.createCanvas(width, height).parent(container);
+      context.renderer = p.createCanvas(0, 0).parent(container);
       updateRendererStyle();
+      const { width, height } = calculateRendererSize();
+      p.resizeCanvas(width, height, true);
 
-      if (setup) setup(context as P5Context<T>);
+      if (setup) setup(context);
     };
 
     p.draw = () => {
-      updateContext();
       updateRendererStyle();
-      const { width, height } = context;
-      if (width && height) p.resizeCanvas(width, height, true);
+      const { width, height } = calculateRendererSize();
+      p.resizeCanvas(width, height, true);
 
-      if (draw) draw(context as P5Context<T>);
-    };
-  };
-
-  return sketch;
-};
-
-export const defaultSketchWebGL2D = <T,>({ setup, draw }: DefaultSketch<T>) => {
-  const sketch: P5Sketch = (p, container) => {
-    const context = { p } as P5Context<T>;
-
-    let font: P5.Font;
-
-    const updateContext = () => {
-      context.containerStyle = window.getComputedStyle(container);
-      context.width = parseFloat(context.containerStyle.getPropertyValue("width"));
-      context.height = parseFloat(context.containerStyle.getPropertyValue("height"));
-    };
-
-    const updateRendererStyle = () => {
-      if (context.renderer) {
-        context.renderer
-          .style("position", "absolute")
-          .style("top", "0px")
-          .style("left", "0px")
-          .style("width", "100%")
-          .style("height", "100%");
-        context.renderer.attribute("width", `${context.width}`);
-        context.renderer.attribute("height", `${context.height}`);
-      }
-    };
-
-    p.preload = () => {
-      font = p.loadFont("/Roboto-Regular.ttf");
-    };
-
-    p.setup = () => {
-      updateContext();
-      const { width, height } = context;
-      context.renderer = p.createCanvas(width!, height!, p.WEBGL).parent(container);
-      updateRendererStyle();
-      p.textFont(font);
-
-      if (setup) setup(context as P5Context<T>);
-    };
-
-    p.draw = () => {
-      updateContext();
-      updateRendererStyle();
-      const { width, height } = context;
-      if (width && height) p.resizeCanvas(width, height, true);
-
-      if (draw) draw(context as P5Context<T>);
+      if (draw) draw(context);
     };
   };
 
