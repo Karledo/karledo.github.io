@@ -5,114 +5,94 @@ import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
 import P5 from "p5";
 
-const xVelocityRef = { current: 0 };
-const yVelocityRef = { current: 0 };
-const gravityRef = { current: 300 };
+const xVelocityRef = { current: 200 };
+const yVelocityRef = { current: 350 };
+const gravity = 300;
+const alpha = 0.2;
+const pathResolution = 15;
 
-type BallContext = {
-  p: P5;
-  diameter: number | (() => number);
-  position: P5.Vector;
-  velocity: P5.Vector;
-};
+let ball: Ball;
 
 class Ball {
   p: P5;
-  diameter: number | (() => number);
   position: P5.Vector;
   velocity: P5.Vector;
+  diameter: number;
 
-  constructor({ p, diameter, position, velocity }: BallContext) {
+  constructor(p: P5, position: P5.Vector, velocity: P5.Vector, diameter: number) {
     this.p = p;
-    this.diameter = diameter;
     this.position = position;
     this.velocity = velocity;
+    this.diameter = diameter;
   }
 
-  update() {
-    this.position.add(this.velocity.copy().mult(this.p.deltaTime / 1000));
-    const diameter = typeof this.diameter === "function" ? this.diameter() : this.diameter;
-    const radius = diameter / 2;
-
-    if (
-      this.position.x < 0 ||
-      this.position.x > this.p.width ||
-      this.position.y < 0 ||
-      this.position.y > this.p.height
-    ) {
-      this.position.set(50, this.p.height - radius);
-      this.velocity.set(xVelocityRef.current, -yVelocityRef.current);
-    }
+  reset() {
+    this.position.set(this.diameter, this.p.height - this.diameter);
+    this.velocity.set(xVelocityRef.current, -yVelocityRef.current);
   }
 
   drawPath() {
-    const diameter = typeof this.diameter == "function" ? this.diameter() : this.diameter;
-    const u = this.p.createVector(xVelocityRef.current, yVelocityRef.current);
-    const duration = (-2 * u.y) / -gravityRef.current;
-    const pathResolution = 10;
+    const duration = (-2 * -yVelocityRef.current) / gravity;
 
     for (let i = 0; i <= pathResolution; i++) {
-      const t = (i / pathResolution) * duration;
-      const x = u.x * t;
-      const y = u.y * t + (-gravityRef.current * t * t) / 2;
+      const frac = i / pathResolution;
+      const t = frac * duration;
+      const x = xVelocityRef.current * t;
+      const y = -yVelocityRef.current * t + 0.5 * gravity * t * t;
 
-      const color = getComputedStyle(document.documentElement).getPropertyValue("--foreground-300");
-
-      this.p.push();
-      this.p.fill(color);
-      this.p.translate(50, this.p.height - diameter / 2);
-      this.p.circle(x, -y, diameter * 0.2);
-      this.p.pop();
+      this.p.circle(this.diameter + x, this.p.height - this.diameter + y, this.diameter * 0.2);
     }
   }
 
   draw() {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const foreground = documentStyle.getPropertyValue("--foreground-100");
-
-    const diameter = typeof this.diameter === "function" ? this.diameter() : this.diameter;
-
-    this.p.push();
-    this.p.fill(foreground);
-    this.p.circle(this.position.x, this.position.y, diameter);
-    this.p.pop();
+    this.p.circle(this.position.x, this.position.y, this.diameter);
   }
 }
 
-type State = {
-  ball: Ball;
-};
-
-const setup: Setup<State> = ({ p, state }) => {
+const setup: Setup = ({ p }) => {
   p.colorMode(p.HSL);
+  p.rectMode(p.CORNERS);
 
-  const diameter = () => p.width * 0.035;
-  const position = p.createVector(50, p.height - 50);
-  const velocity = p.createVector(xVelocityRef.current, -yVelocityRef.current);
+  const diameter = p.width * 0.05;
+  const position = p.createVector(diameter, p.height - diameter);
+  const velocity = p.createVector(0, 0);
 
-  const ball = new Ball({
-    p,
-    diameter,
-    position,
-    velocity,
-  });
-
-  state.ball = ball;
+  ball = new Ball(p, position, velocity, diameter);
 };
 
-const draw: Draw<State> = ({ p, state }) => {
+const draw: Draw = ({ p }) => {
   p.clear();
   p.noStroke();
 
-  const ball = state.ball as Ball;
+  const documentStyle = getComputedStyle(document.documentElement);
+  const foreground = documentStyle.getPropertyValue("--foreground-100");
+  const foreground3 = documentStyle.getPropertyValue("--foreground-300");
+  const deltaTimeSeconds = p.deltaTime * 0.001;
 
-  ball.velocity.y += (gravityRef.current * p.deltaTime) / 1000;
-  ball.update();
-  ball.draw();
+  ball.diameter = p.width * 0.05;
+  ball.velocity.y += gravity * deltaTimeSeconds;
+  ball.position.x += ball.velocity.x * deltaTimeSeconds;
+  ball.position.y += ball.velocity.y * deltaTimeSeconds;
+
+  const radius = ball.diameter / 2;
+  if (ball.position.x < radius || ball.position.y > p.height - radius) {
+    ball.reset();
+  }
+
+  p.push();
+  const color = p.color(foreground3);
+  color.setAlpha(alpha);
+  p.fill(color);
   ball.drawPath();
+  p.pop();
+
+  p.push();
+  p.fill(foreground);
+  ball.draw();
+  p.pop();
 };
 
-const sketch = defaultSketch<State>({ setup, draw });
+const sketch = defaultSketch({ setup, draw });
 
 export function Kinematics() {
   return (
@@ -124,9 +104,9 @@ export function Kinematics() {
         min={0}
         step={0.01}
         max={5}
-        defaultValue={[0]}
-        mapFn={(value) => value * 100}
-        displayFn={(value) => value.toFixed(2)}
+        map={(value) => value * 100}
+        inverseMap={(value) => value * 0.01}
+        display={(value) => value.toFixed(2)}
       />
       <RefSlider
         sharedRef={yVelocityRef}
@@ -134,9 +114,9 @@ export function Kinematics() {
         min={0}
         step={0.01}
         max={5}
-        defaultValue={[0]}
-        mapFn={(value) => value * 100}
-        displayFn={(value) => value.toFixed(2)}
+        map={(value) => value * 100}
+        inverseMap={(value) => value * 0.01}
+        display={(value) => value.toFixed(2)}
       />
     </div>
   );
