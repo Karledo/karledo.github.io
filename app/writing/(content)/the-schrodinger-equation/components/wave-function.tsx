@@ -5,13 +5,16 @@ import { StyledP5Container } from "@/components/p5-container";
 import katex from "katex";
 import P5 from "p5";
 
-const MAX_WIDTH = 641.52;
-const setup: Setup = ({ p, renderer, containerStyle, state }) => {
+let axis: Record<string, P5.Element>;
+let toggleCollapse = false;
+let collapseX: number | undefined;
+
+const setup: Setup = ({ p, renderer, containerStyle }) => {
   p.colorMode(p.HSL);
   p.rectMode(p.CORNERS);
 
   const axisNames = ["psi", "x"];
-  const axis = Object.fromEntries(
+  axis = Object.fromEntries(
     axisNames.map((value) => {
       return [
         value,
@@ -23,14 +26,17 @@ const setup: Setup = ({ p, renderer, containerStyle, state }) => {
     }),
   );
 
-  state.axis = axis;
-
-  renderer.mousePressed((event: MouseEvent) => {
-    state.collapseX = event.clientX - (renderer.elt as HTMLCanvasElement).getBoundingClientRect().x;
+  renderer.mousePressed(() => {
+    toggleCollapse = true;
   });
 
   renderer.mouseReleased(() => {
-    state.collapseX = undefined;
+    toggleCollapse = false;
+  });
+
+  renderer.mouseMoved((event: MouseEvent) => {
+    collapseX = event.clientX - (renderer.elt as HTMLCanvasElement).getBoundingClientRect().x;
+    console.log(collapseX);
   });
 };
 
@@ -38,11 +44,9 @@ const gaussianFn = (x: number, a: number, b: number) => {
   return Math.exp(-(Math.pow(x - a, 2) / b));
 };
 
-const draw: Draw = ({ p, state }) => {
+const draw: Draw = ({ p }) => {
   p.clear();
   p.noStroke();
-
-  const axis = state.axis as Record<string, P5.Element>;
 
   const documentStyle = getComputedStyle(document.documentElement);
   const foreground = documentStyle.getPropertyValue("--foreground-100");
@@ -61,12 +65,10 @@ const draw: Draw = ({ p, state }) => {
   axis.x.position(p.width * 0.97, p.height * 0.41);
   katex.render(String.raw`x`, axis.x.elt);
 
-  const collapseX = state.collapseX as Partial<number>;
-
-  const collapseFn = (x: number) => 100 * gaussianFn(x, collapseX, 10);
+  const collapseFn = (x: number) => p.height * 0.4 * gaussianFn(x, collapseX!, 4);
   const normalWaveFunction = (x: number) => p.noise(x * noiseScale, seconds * timeScale) * noiseHeight;
 
-  const fn = collapseX ? collapseFn : normalWaveFunction;
+  const fn = toggleCollapse && collapseX ? collapseFn : normalWaveFunction;
 
   p.stroke(background);
   p.strokeWeight(p.width * 0.004);
@@ -74,7 +76,7 @@ const draw: Draw = ({ p, state }) => {
   p.line(p.width * 0.5, 0, p.width * 0.5, p.height);
 
   p.translate(0, p.height * 0.5);
-  p.strokeWeight((3 * p.width) / MAX_WIDTH);
+  p.strokeWeight(p.width * 0.0025);
   p.stroke(foreground);
   for (let x = 0; x < p.width; x++) {
     p.line(x, -fn(x), x + 1, -fn(x + 1));
