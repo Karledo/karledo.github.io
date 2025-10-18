@@ -1,5 +1,5 @@
 import * as Slider from "@radix-ui/react-slider";
-import { ComponentPropsWithoutRef, ComponentPropsWithRef, CSSProperties, RefObject, useRef } from "react";
+import { ComponentPropsWithoutRef, ComponentPropsWithRef, CSSProperties, ReactNode, RefObject, useRef } from "react";
 
 type BaseSliderProps = Omit<ComponentPropsWithRef<typeof Slider.Root>, "className"> & {
   rangeStyle?: CSSProperties;
@@ -24,30 +24,39 @@ export function BaseSlider({ rangeStyle, ...props }: BaseSliderProps) {
 
 type RefSliderProps = {
   sharedRef: RefObject<number>;
-  label: string;
-  mapFn?: (value: number) => number;
-  displayFn?: (value: number) => number | string;
-  ref: RefObject<HTMLInputElement>;
+  label: ReactNode;
+  map?: (value: number) => number;
+  inverseMap?: (value: number) => number;
+  display?: (value: number) => number | string;
+  ref?: RefObject<HTMLInputElement>;
 } & Omit<ComponentPropsWithoutRef<typeof BaseSlider>, "onValueChanged">;
 
-export function RefSlider({ sharedRef, label, mapFn, displayFn, ref, ...props }: RefSliderProps) {
+export function RefSlider({
+  sharedRef,
+  label,
+  map = (v) => v,
+  inverseMap = (v) => v,
+  display = (v) => v,
+  ref,
+  ...props
+}: RefSliderProps) {
   const displayRef = useRef<HTMLSpanElement>(null);
   const internalRef = useRef<HTMLInputElement>(null);
   const sliderRef = ref ? ref : internalRef;
 
   return (
     <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4 tabular-nums">
-      <span>{label}</span>
+      {label}
       <BaseSlider
         ref={sliderRef}
+        defaultValue={[inverseMap(sharedRef.current)]}
         {...props}
         onValueChange={([value]) => {
-          sharedRef.current = mapFn ? mapFn(value) : value;
-          if (displayRef.current) displayRef.current.innerHTML = `${displayFn ? displayFn(value) : value}`;
+          sharedRef.current = map(value);
+          if (displayRef.current) displayRef.current.innerHTML = `${display(value)}`;
         }}
       />
-      <span ref={displayRef} dangerouslySetInnerHTML={{ __html: sliderRef.current?.value ?? 0 }}></span>
-      <div></div>
+      <span ref={displayRef} dangerouslySetInnerHTML={{ __html: display(inverseMap(sharedRef.current)) }}></span>
     </div>
   );
 }
