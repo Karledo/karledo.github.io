@@ -19,22 +19,7 @@ const minimumGratingDistanceFactor = 0.2;
 let waveletA: P5.Graphics;
 let waveletB: P5.Graphics;
 
-const calculateMaximaDistance = (
-  order: number,
-  wavelength: number,
-  distanceToScreen: number,
-  slitDistanceFromGratingCentre: number,
-) => {
-  const klambdaSquared = order * order * wavelength * wavelength;
-  const numerator =
-    klambdaSquared *
-    (klambdaSquared -
-      4 * (slitDistanceFromGratingCentre * slitDistanceFromGratingCentre + distanceToScreen * distanceToScreen));
-  const denominator = 4 * (klambdaSquared - 4 * slitDistanceFromGratingCentre * slitDistanceFromGratingCentre);
-  return Math.sqrt(numerator / denominator);
-};
-
-const otherCalculateMaximaDistance = (
+const calcualteMaximaDistance = (
   wavelength: number,
   distanceFromGratingToScreen: number,
   distanceAlongScreen: number,
@@ -185,7 +170,7 @@ const draw: Draw = ({ p, container }) => {
   // }
 
   for (let d = 0; d <= p.height * 0.5; d++) {
-    const n = otherCalculateMaximaDistance(wavelength, distanceFromGratingToScreen, d, slitDistanceFromGratingCentre);
+    const n = calcualteMaximaDistance(wavelength, distanceFromGratingToScreen, d, slitDistanceFromGratingCentre);
     const intensity = Math.pow(Math.cos(Math.PI * (n - Math.round(n))), 2);
     color.setAlpha(intensity);
     p.stroke(color);
@@ -210,7 +195,6 @@ export function DoubleSlitExperiment() {
           </span>
         }
         step={maximumSlitSeparationFactor * 0.01}
-        defaultValue={[gratingDistanceRef.current]}
         min={minimumSlitSeparationFactor}
         max={maximumSlitSeparationFactor}
         display={(value) => `${(value * 100).toFixed(0)}%`}
@@ -223,7 +207,6 @@ export function DoubleSlitExperiment() {
           </span>
         }
         step={maximumGratingDistanceFactor * 0.01}
-        defaultValue={[gratingDistanceRef.current]}
         min={minimumGratingDistanceFactor}
         max={maximumGratingDistanceFactor}
         display={(value) => `${(value * 100).toFixed(0)}%`}

@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 function groupPagesByYear(pages: Page[]) {
-  const years = Array.from(
-    new Set(pages.map((page) => page.date.getFullYear())),
-  ).toSorted((year, otherYear) => (year > otherYear ? -1 : 1));
+  const years = Array.from(new Set(pages.map((page) => page.date.getFullYear()))).toSorted((year, otherYear) =>
+    year > otherYear ? -1 : 1,
+  );
   return years.map((year) => {
     return {
       year,
@@ -47,9 +47,7 @@ export default async function Page() {
         {pagesGroupedByYear.map((group) => {
           return (
             <div key={group.year}>
-              <span className="text-foreground-200 mb-3 block text-sm">
-                {group.year}
-              </span>
+              <span className="text-foreground-200 mb-3 block text-sm">{group.year}</span>
               <PageGroup pages={group.pages} />
             </div>
           );

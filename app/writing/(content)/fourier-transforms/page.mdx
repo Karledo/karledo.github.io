@@ -1,3 +1,7 @@
+---
+title: Fourier Transforms
+---
+
 import { DynamicTitle } from "@/components/dynamic-title";
 import { AnchoredHeader } from "@/components/anchored-header";
 import { Signal } from "./components/signal"
@@ -17,6 +21,7 @@ export const metadata = {
 
 <article>
   <div className="mb-7 space-y-7">
+    {frontmatter.title}
     <AnchoredHeader id="what-are-fourier-transforms">What are Fourier Transforms</AnchoredHeader>
     
     Essentially, a Fourier transform is a mathematical operation that we can perform on a sinusoidal function to break down it down into the particular frequencies that make it up. They are particularly useful in fields like image processing, signal processing and physics. There are a number of different analogies for Fourier transforms It is the equivalent to *unmixing* paint into the component colours that made that colour of paint.

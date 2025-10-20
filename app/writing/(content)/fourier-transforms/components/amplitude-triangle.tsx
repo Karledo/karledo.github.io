@@ -41,14 +41,14 @@ class Trail {
     this.nodes = aliveNodes;
   }
 
-  draw(baseColor: P5.Color) {
-    const color = this.p.color(baseColor);
+  draw(color: P5.Color) {
+    const newColor = this.p.color(color);
     for (let i = 0; i < this.nodes.length - 1; i++) {
       const curr = this.nodes[i];
       const next = this.nodes[i + 1];
       const age = this.p.millis() - curr.timestamp;
-      color.setAlpha(1 - age / this.lifetime);
-      this.p.stroke(color);
+      newColor.setAlpha(1 - age / this.lifetime);
+      this.p.stroke(newColor);
       this.p.line(curr.point.x, curr.point.y, next.point.x, next.point.y);
     }
   }
