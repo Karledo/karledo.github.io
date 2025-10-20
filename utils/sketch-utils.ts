@@ -91,3 +91,5 @@ export const createText = (p: P5, ...args: string[]) => {
     }),
   );
 };
+
+export const

@@ -1,182 +1,117 @@
 "use client";
-import { StyledP5Container, type P5Sketch } from "@/components/p5-container";
-import { Fragment, useRef } from "react";
-import * as Slider from "@radix-ui/react-slider";
+
+import { RefSlider } from "@/components/base-slider";
+import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
 import { Latex } from "@/components/latex";
+import { StyledP5Container } from "@/components/p5-container";
+import katex from "katex";
 
-const defaultPhaseDifference = 0;
-const defaultAmplitude = 1;
-let phaseDifference = 0;
-let amplitudeOne = defaultAmplitude;
-let amplitudeTwo = defaultAmplitude;
+const phaseDifference = { current: 0 };
+const amplitude1Scale = { current: 1 };
+const amplitude2Scale = { current: 1 };
 
-const sketch: P5Sketch = (p5, parentRef) => {
-  let time = 0;
-
-  let parentStyle: CSSStyleDeclaration;
-  let canvasHeight: number;
-  let canvasWidth: number;
-
-  p5.setup = () => {
-    parentStyle = window.getComputedStyle(parentRef);
-    canvasWidth = parseFloat(parentStyle.width);
-    canvasHeight = parseFloat(parentStyle.height);
-    const canvas = p5.createCanvas(canvasWidth, canvasHeight).parent(parentRef);
-    canvas.style("position: absolute");
-    canvas.style("top: 0");
-    canvas.style("left: 0");
-    canvas.style("width: 100%");
-    canvas.style("height: 100%");
-  };
-
-  function drawFunction(f: (x: number) => number, resolution: number) {
-    for (let i = 0; i <= resolution; i++) {
-      const frac = i / resolution;
-      const nextFrac = Math.min(1, (i + 1) / resolution);
-
-      const x1 = p5.width * frac;
-      const x2 = p5.width * nextFrac;
-      const y1 = f(x1);
-      const y2 = f(x2);
-      const halfHeight = p5.height * 0.5;
-      p5.line(x1, halfHeight - y1, x2, halfHeight - y2);
-    }
-  }
-
-  p5.draw = () => {
-    parentStyle = getComputedStyle(parentRef);
-    canvasWidth = parseFloat(parentStyle.width);
-    canvasHeight = parseFloat(parentStyle.height);
-    p5.resizeCanvas(canvasWidth, canvasHeight);
-    p5.clear();
-    p5.noStroke();
-
-    const frequency = 1;
-    const waveNumber = 8;
-    const baseAmplitude = p5.height * 0.1;
-    const resolution = 200;
-
-    const angularWaveNumber = 2 * Math.PI * waveNumber;
-    const angularFrequency = 2 * Math.PI * frequency;
-
-    p5.strokeWeight(p5.width * 0.0078);
-    p5.stroke("#58C4DD");
-    time += p5.deltaTime / 1000;
-
-    const waveFunctionOne = (x: number) =>
-      baseAmplitude *
-      amplitudeOne *
-      p5.sin(
-        (x / p5.width) * angularWaveNumber +
-        angularFrequency * time +
-        phaseDifference * p5.PI,
-      );
-
-    const waveFunctionTwo = (x: number) =>
-      baseAmplitude *
-      amplitudeTwo *
-      p5.sin((x / p5.width) * angularWaveNumber + angularFrequency * time);
-
-    drawFunction(waveFunctionOne, resolution);
-
-    p5.stroke("#FC6255");
-    drawFunction(waveFunctionTwo, resolution);
-
-    p5.stroke("#83C167");
-    drawFunction(
-      (x: number) => waveFunctionOne(x) + waveFunctionTwo(x),
-      resolution,
-    );
-  };
+const setup: Setup = ({ p }) => {
+  p.colorMode(p.HSL);
 };
 
-export function Superposition() {
-  const phaseDifferenceDisplay = useRef<HTMLSpanElement>(null)
-  const amplitudeDisplay1 = useRef<HTMLSpanElement>(null)
-  const amplitudeDisplay2 = useRef<HTMLSpanElement>(null)
+const draw: Draw = ({ p }) => {
+  p.clear();
+  p.noStroke();
 
-  const sliders = [
-    {
-      key: "amplitudeOne",
-      onValueChange: ([value]: number[]) => {
-        amplitudeOne = value;
-        if (amplitudeDisplay1.current) {
-          amplitudeDisplay1.current.innerText = `${value}`
-        }
-      },
-      ref: amplitudeDisplay1,
-      color: "blue",
-    },
-    {
-      key: "amplitudeTwo",
-      onValueChange: ([value]: number[]) => {
-        amplitudeTwo = value;
-        if (amplitudeDisplay2.current) {
-          amplitudeDisplay2.current.innerText = `${value}`
-        }
-      },
-      ref: amplitudeDisplay2,
-      color: "red",
-    },
-  ];
+  const halfWidth = p.width * 0.5;
+  const halfHeight = p.height * 0.5;
+  const documentStyle = getComputedStyle(document.documentElement);
+  const red = documentStyle.getPropertyValue("--visual-red");
+  const blue = documentStyle.getPropertyValue("--visual-blue");
+  const green = documentStyle.getPropertyValue("--visual-green");
+
+  const drawGraph = (fn: (x: number) => number) => {
+    for (let x = -halfWidth; x < halfWidth; x++) {
+      const next = x + 1;
+      p.line(x, fn(x / scale), next, fn(next / scale));
+    }
+  };
+
+  const maxAmplitude = p.height * 0.2;
+  const scale = 10;
+  const amplitude1 = amplitude1Scale.current * maxAmplitude;
+  const amplitude2 = amplitude2Scale.current * maxAmplitude;
+  const timeScale = 3;
+
+  const fn1 = Math.cos;
+  const fn2 = Math.cos;
+
+  const timeSeconds = p.millis() / 1000;
+  p.push();
+  p.translate(halfWidth, halfHeight);
+  p.strokeWeight(p.width * 0.0025);
+  p.stroke(red);
+  drawGraph((x: number) => amplitude1 * fn1(x + timeSeconds * timeScale));
+  p.stroke(blue);
+  drawGraph((x: number) => amplitude2 * fn2(x + timeSeconds * timeScale + phaseDifference.current));
+  p.stroke(green);
+  drawGraph(
+    (x: number) =>
+      amplitude1 * fn2(x + timeSeconds * timeScale + phaseDifference.current) +
+      amplitude2 * fn2(x + timeSeconds * timeScale),
+  );
+  p.pop();
+};
+
+const sketch = defaultSketch({ setup, draw });
+
+export function Superposition() {
+  const map = (value: number) => value / 5;
+  const inverseMap = (value: number) => value * 5;
+  const display = (value: number) => value.toFixed(2);
 
   return (
     <div>
-      <StyledP5Container
-        sketch={sketch}
+      <StyledP5Container sketch={sketch} />
+      <RefSlider
+        sharedRef={phaseDifference}
+        label={
+          <span>
+            Phase Difference, <Latex text="$\phi$" />
+          </span>
+        }
+        min={0}
+        max={2}
+        step={0.01}
+        map={(value) => value * Math.PI}
+        inverseMap={(value) => value / Math.PI}
+        display={(value) => `${value.toFixed(2)}${katex.renderToString(String.raw`\pi`)}`}
       />
-      <div className="grid items-center grid-cols-[auto_1fr_auto] gap-x-4">
-        <span>
-          Phase Difference, <Latex text="$\phi$" />
-        </span>
-        <Slider.Root
-          min={0}
-          max={2}
-          defaultValue={[defaultAmplitude]}
-          step={0.01}
-          onValueChange={([value]) => {
-            phaseDifference = value;
-            if (phaseDifferenceDisplay.current) {
-              phaseDifferenceDisplay.current.innerText = `${value}`
-            }
-          }}
-          className="group relative flex h-3 grow cursor-grab touch-none items-center transition-transform duration-300 select-none active:cursor-grabbing"
-        >
-          <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full transition-transform duration-300 group-hover:scale-y-150 group-active:scale-y-150">
-            <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
-          </Slider.Track>
-          <Slider.Thumb />
-        </Slider.Root>
-        <span className="min-w-[5ch]">
-          <span ref={phaseDifferenceDisplay} className="tabular-nums">{defaultPhaseDifference}</span><Latex text="$\pi$" />
-        </span>
-        {sliders.map((slider) => {
-          return (
-            <Fragment key={slider.key}>
-              <span>
-                Amplitude, <Latex text="$A$" />
-              </span>
-              <Slider.Root
-                min={0}
-                max={3}
-                defaultValue={[defaultAmplitude]}
-                step={0.01}
-                onValueChange={slider.onValueChange}
-                className="group relative flex h-3 grow cursor-grab touch-none items-center transition-transform duration-300 select-none active:cursor-grabbing"
-              >
-                <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full transition-transform duration-300 group-hover:scale-y-150 group-active:scale-y-150">
-                  <Slider.Range
-                    style={{ backgroundColor: `var(--visual-${slider.color})` }}
-                    className={`absolute h-full rounded-full`}
-                  />
-                </Slider.Track>
-                <Slider.Thumb />
-              </Slider.Root>
-              <span ref={slider.ref} className="tabular-nums">{defaultAmplitude}</span>
-            </Fragment>
-          );
-        })}
-      </div>
+      <RefSlider
+        rangeStyle={{ backgroundColor: "var(--visual-red)" }}
+        sharedRef={amplitude1Scale}
+        label={
+          <span>
+            Amplitude, <Latex text="$A_1$" />
+          </span>
+        }
+        min={0}
+        max={5}
+        step={0.01}
+        map={map}
+        inverseMap={inverseMap}
+        display={display}
+      />
+      <RefSlider
+        rangeStyle={{ backgroundColor: "var(--visual-blue)" }}
+        sharedRef={amplitude2Scale}
+        label={
+          <span>
+            Amplitude, <Latex text="$A_2$" />
+          </span>
+        }
+        min={0}
+        max={5}
+        step={0.01}
+        map={map}
+        inverseMap={inverseMap}
+        display={display}
+      />
     </div>
   );
 }
