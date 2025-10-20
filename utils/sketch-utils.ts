@@ -61,3 +61,33 @@ export const marque = (p: P5, x1: number, y1: number, x2: number, y2: number) =>
   p.noErase();
   p.pop();
 };
+
+export const grid = (p: P5, spacing: number) => {
+  const halfWidth = p.width * 0.5;
+  const halfHeight = p.height * 0.5;
+  const gridLinesX = Math.round(halfWidth / spacing);
+  const gridLinesY = Math.round(halfWidth / spacing);
+
+  p.push();
+  p.translate(halfWidth, halfHeight);
+
+  for (let i = -gridLinesX; i <= gridLinesX; i++) {
+    const x = i * spacing;
+    p.line(x, -halfHeight, x, halfHeight);
+  }
+
+  for (let i = -gridLinesY; i <= gridLinesY; i++) {
+    const y = i * spacing;
+    p.line(-halfWidth, y, halfWidth, y);
+  }
+
+  p.pop();
+};
+
+export const createText = (p: P5, ...args: string[]) => {
+  return Object.fromEntries(
+    args.map((value) => {
+      return [value, p.createP().style("font-size", "1rem")];
+    }),
+  );
+};

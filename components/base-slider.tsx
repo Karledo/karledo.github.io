@@ -29,7 +29,7 @@ type RefSliderProps = {
   inverseMap?: (value: number) => number;
   display?: (value: number) => number | string;
   ref?: RefObject<HTMLInputElement>;
-} & Omit<ComponentPropsWithoutRef<typeof BaseSlider>, "onValueChanged">;
+} & Omit<ComponentPropsWithoutRef<typeof BaseSlider>, "onValueChanged" | "defaultValue">;
 
 export function RefSlider({
   sharedRef,

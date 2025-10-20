@@ -81,6 +81,10 @@ const draw: DrawGL = ({ p }) => {
   p.lights();
   p.orbitControl();
 
+  const documentStyle = getComputedStyle(document.documentElement);
+  const foreground = documentStyle.getPropertyValue("--foreground-100");
+  const background = documentStyle.getPropertyValue("--background-100");
+
   const deltaTimeSeconds = p.deltaTime / 1000;
   currentEndEffectorAngleDegrees = expDecay(
     currentEndEffectorAngleDegrees,
@@ -107,7 +111,7 @@ const draw: DrawGL = ({ p }) => {
 
     p.push();
     p.strokeWeight(2);
-    p.stroke("white");
+    p.stroke(foreground);
     if (i < points.length - 1) {
       const nextPoint = points[i + 1];
       p.line(point[0], point[1], point[2], nextPoint[0], nextPoint[1], nextPoint[2]);

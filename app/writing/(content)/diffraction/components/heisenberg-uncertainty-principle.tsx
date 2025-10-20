@@ -13,7 +13,6 @@ let labels: {
 let initialVelocity: P5.Vector;
 let diameter: number;
 
-const alpha = 0.1;
 const photonCount = 2;
 const ghostPhotonCount = 5;
 const photons: Photon[] = [];
@@ -85,6 +84,7 @@ const draw: Draw = ({ p }) => {
   const foreground = documentStyle.getPropertyValue("--foreground-100");
   const gold = documentStyle.getPropertyValue("--visual-gold");
   const green = documentStyle.getPropertyValue("--visual-green");
+  const fontSize = `${p.width * 0.025}px`;
 
   // Style
   const strokeWeight = p.width * 0.005;
@@ -163,7 +163,7 @@ const draw: Draw = ({ p }) => {
     p.pop();
 
     element.position(gratingDistance - p.width * 0.1, height - p.height * 0.06);
-    element.style("color", gold);
+    element.style("color", gold).style("font-size", fontSize);
     katex.render(String.raw`\Delta x`, element.elt);
   };
 
@@ -184,7 +184,7 @@ const draw: Draw = ({ p }) => {
     p.pop();
 
     element.position(gratingDistance + headPosition.x + p.width * 0.025, height + headPosition.y - p.height * 0.06);
-    element.style("color", green);
+    element.style("color", green).style("font-size", fontSize);
     katex.render(String.raw`\Delta p`, element.elt);
   };
 
