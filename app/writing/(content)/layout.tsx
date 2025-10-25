@@ -11,7 +11,6 @@ export default function Layout({
   children,
 }: {
   children: Readonly<React.ReactNode>;
-  params: Promise<{ slug: string }>;
 }) {
   return (
     <main className="mx-auto max-w-prose px-6 py-30">
