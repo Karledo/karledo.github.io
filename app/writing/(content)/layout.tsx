@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(`${process.env.NEXT_PUBLIC_SITE_URL}/writing)`),
+  metadataBase: new URL("https://karledo.github.io/writing"),
 };
 
 export default function Layout({
