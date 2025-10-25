@@ -1,13 +1,13 @@
 "use client";
 
-import { baseSketchWebGL, type DrawGL, type SetupGL } from "@/components/base-sketch-webgl";
+import { baseSketchWebGL, type DrawGL, type SetupGL } from "@/components/default-sketch-webgl3d";
 import { StyledP5Container } from "@/components/p5-container";
 import { BaseSlider } from "@/components/base-slider";
 import { Latex } from "@/components/latex";
 import { Fragment, useRef } from "react";
 
 // const MAX_WIDTH = 641.52;
-const setup: SetupGL = ({ p5 }) => {
+const setup: SetupGL = ({ p: p5 }) => {
   p5.colorMode(p5.HSL);
   p5.rectMode(p5.CORNERS);
   p5.debugMode(p5.GRID);
@@ -75,46 +75,50 @@ const inverseKinematics = (x: number, y: number, z: number, gamma: number) => {
   return { points, angles };
 };
 
-const draw: DrawGL = ({ p5 }) => {
-  p5.clear();
-  p5.noStroke();
-  p5.lights();
-  p5.orbitControl();
+const draw: DrawGL = ({ p }) => {
+  p.clear();
+  p.noStroke();
+  p.lights();
+  p.orbitControl();
 
-  // const documentStyle = getComputedStyle(document.documentElement);
-  const deltaTimeSeconds = p5.deltaTime / 1000;
+  const documentStyle = getComputedStyle(document.documentElement);
+  const foreground = documentStyle.getPropertyValue("--foreground-100");
+  const background = documentStyle.getPropertyValue("--background-100");
+
+  const deltaTimeSeconds = p.deltaTime / 1000;
   currentEndEffectorAngleDegrees = expDecay(
     currentEndEffectorAngleDegrees,
     targetEndEffectorAngleDegrees,
     decay,
     deltaTimeSeconds,
   );
+
   currentX = expDecay(currentX, targetX, decay, deltaTimeSeconds);
   currentY = expDecay(currentY, targetY, decay, deltaTimeSeconds);
   currentZ = expDecay(currentZ, targetZ, decay, deltaTimeSeconds);
 
-  const { points } = inverseKinematics(currentX, currentY, currentZ, p5.radians(currentEndEffectorAngleDegrees));
+  const { points } = inverseKinematics(currentX, currentY, currentZ, p.radians(currentEndEffectorAngleDegrees));
 
-  p5.rotateX(p5.PI);
+  p.rotateX(p.PI);
 
-  p5.push();
+  p.push();
   for (let i = 0; i < points.length; i++) {
     const point = points[i];
-    p5.push();
-    p5.translate(point[0], point[1], point[2]);
-    p5.sphere(5);
-    p5.pop();
+    p.push();
+    p.translate(point[0], point[1], point[2]);
+    p.sphere(5);
+    p.pop();
 
-    p5.push();
-    p5.strokeWeight(2);
-    p5.stroke("white");
+    p.push();
+    p.strokeWeight(2);
+    p.stroke(foreground);
     if (i < points.length - 1) {
       const nextPoint = points[i + 1];
-      p5.line(point[0], point[1], point[2], nextPoint[0], nextPoint[1], nextPoint[2]);
+      p.line(point[0], point[1], point[2], nextPoint[0], nextPoint[1], nextPoint[2]);
     }
-    p5.pop();
+    p.pop();
   }
-  p5.pop();
+  p.pop();
 };
 
 const sketch = baseSketchWebGL({ draw, setup });

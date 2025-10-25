@@ -18,7 +18,7 @@ const newsreaderSerif = Newsreader({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://karledo.github.io/"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://karledo.github.io"),
   title: "Karl Edochie",
   description:
     "Driven by curiosity, building with logic, striving for novelty—always moving forward.",

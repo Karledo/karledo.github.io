@@ -1,20 +1,15 @@
 import { Link2Icon } from "@radix-ui/react-icons";
 import { ReactNode } from "react";
 
-export function AnchoredHeader({
-  id,
-  children,
-}: {
+type AnchoredHeaderProps = {
   id: string;
   children: ReactNode;
-}) {
+};
+
+export function AnchoredHeader({ id, children }: AnchoredHeaderProps) {
   return (
     <h3 className="mt-14 font-medium">
-      <a
-        className="group inline-flex items-center gap-x-2"
-        id={id}
-        href={`#${id}`}
-      >
+      <a className="group inline-flex items-center gap-x-2" id={id} href={`#${id}`}>
         <span>{children}</span>
         <Link2Icon className="text-foreground-200 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </a>

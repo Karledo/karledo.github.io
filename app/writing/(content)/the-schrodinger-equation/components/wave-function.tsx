@@ -1,57 +1,95 @@
 "use client";
 
-import { baseSketch, type Setup, type Draw } from "@/components/base-sketch";
+import {
+  defaultSketch,
+  type Setup,
+  type Draw,
+} from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
+import katex from "katex";
+import P5 from "p5";
 
-const MAX_WIDTH = 641.52
-const setup: Setup = ({ p5 }) => {
-  p5.colorMode(p5.HSL)
-  p5.rectMode(p5.CORNERS)
-}
+let axis: Record<string, P5.Element>;
+let toggleCollapse = false;
+let collapseX: number | undefined;
 
-const draw: Draw = ({ p5 }) => {
-  p5.clear()
-  p5.noStroke()
+const setup: Setup = ({ p, renderer }) => {
+  p.colorMode(p.HSL);
+  p.rectMode(p.CORNERS);
 
-  const documentStyle = getComputedStyle(document.documentElement)
-  const noiseHeight = p5.height * 0.5
-  const seconds = p5.millis() * 0.001
-  const noiseScale = 0.002
-  const timeScale = 0.3
+  const axisNames = ["psi", "x"];
+  axis = Object.fromEntries(
+    axisNames.map((value) => {
+      return [value, p.createP().style("font-size", `${p.width * 0.0025}rem`)];
+    }),
+  );
 
-  p5.fill(documentStyle.getPropertyValue("--foreground-100"))
-  p5.textSize(18 * p5.width / MAX_WIDTH)
-  p5.textFont("KaTeX_Math")
-  p5.text("|Ψ(x, t)|²", p5.width * 0.52, p5.height * 0.07)
-  p5.text("x", p5.width * 0.97, p5.height * 0.47)
+  renderer.mousePressed(() => {
+    toggleCollapse = true;
+  });
 
+  renderer.mouseReleased(() => {
+    toggleCollapse = false;
+  });
 
-  p5.stroke(documentStyle.getPropertyValue("--background-300"))
-  p5.strokeWeight(2 * p5.width / MAX_WIDTH)
-  p5.line(0, p5.height * 0.5, p5.width, p5.height * 0.5)
-  p5.line(p5.width * 0.5, 0, p5.width * 0.5, p5.height)
+  renderer.mouseMoved((event: MouseEvent) => {
+    collapseX =
+      event.clientX -
+      (renderer.elt as HTMLCanvasElement).getBoundingClientRect().x;
+  });
+};
 
-  p5.translate(0, p5.height * 0.5)
-  p5.strokeWeight(3 * p5.width / MAX_WIDTH)
-  p5.stroke(documentStyle.getPropertyValue("--foreground-100"))
-  for (let x = 0; x < p5.width; x++) {
-    const noiseX = x * noiseScale
-    const nextNoiseX = (x + 1) * noiseScale
+const gaussianFn = (x: number, a: number, b: number) => {
+  return Math.exp(-(Math.pow(x - a, 2) / b));
+};
 
-    p5.line(
-      x,
-      -p5.noise(noiseX, seconds * timeScale) * noiseHeight,
-      x + 1,
-      -p5.noise(nextNoiseX, seconds * timeScale) * noiseHeight
-    )
+const draw: Draw = ({ p }) => {
+  p.clear();
+  p.noStroke();
+
+  const documentStyle = getComputedStyle(document.documentElement);
+  const foreground = documentStyle.getPropertyValue("--foreground-100");
+  const background = documentStyle.getPropertyValue("--background-300");
+
+  const noiseHeight = p.height * 0.5;
+  const seconds = p.millis() * 0.001;
+  const noiseScale = 0.002;
+  const timeScale = 0.3;
+
+  axis.psi.position(p.width * 0.51, p.height * 0.01);
+  axis.psi.style("font-size", `${p.width * 0.025}px`);
+  katex.render(String.raw`|\psi(x, t)|^2`, axis.psi.elt);
+
+  axis.x.style("font-size", `${p.width * 0.025}px`);
+  axis.x.position(p.width * 0.97, p.height * 0.41);
+  katex.render(String.raw`x`, axis.x.elt);
+
+  const collapseFn = (x: number) =>
+    p.height * 0.4 * gaussianFn(x, collapseX!, 4);
+  const normalWaveFunction = (x: number) =>
+    p.noise(x * noiseScale, seconds * timeScale) * noiseHeight;
+
+  const fn = toggleCollapse && collapseX ? collapseFn : normalWaveFunction;
+
+  p.stroke(background);
+  p.strokeWeight(p.width * 0.004);
+  p.line(0, p.height * 0.5, p.width, p.height * 0.5);
+  p.line(p.width * 0.5, 0, p.width * 0.5, p.height);
+
+  p.translate(0, p.height * 0.5);
+  p.strokeWeight(p.width * 0.0025);
+  p.stroke(foreground);
+  for (let x = 0; x < p.width; x++) {
+    p.line(x, -fn(x), x + 1, -fn(x + 1));
   }
-}
+};
 
-const sketch = baseSketch({ draw, setup })
+const sketch = defaultSketch({ draw, setup });
 
 export function WaveFunction() {
-  return <div>
-    <StyledP5Container sketch={sketch} />
-  </div>
+  return (
+    <div>
+      <StyledP5Container sketch={sketch} />
+    </div>
+  );
 }
-

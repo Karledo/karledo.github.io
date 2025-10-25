@@ -6,10 +6,7 @@ export default async function Page() {
     <main className="mx-auto max-w-prose px-6 py-30">
       <div className="mb-7 space-y-7">
         <h1 className="text-foreground-100 mb-6">Karl Edochie</h1>
-        <p>
-          Driven by curiosity, building with logic, striving for novelty—always
-          moving forward.
-        </p>
+        <p>Driven by curiosity, building with logic, striving for novelty—always moving forward.</p>
       </div>
       <div className="mt-16 flex">
         <div className="flex aspect-square max-w-[calc(100%_/_3_-_2rem)] flex-col">
@@ -20,9 +17,7 @@ export default async function Page() {
                 All writing
               </Link>
             </div>
-            <p className="text-foreground-200">
-              A collection of thoughts and ideas
-            </p>
+            <p className="text-foreground-200">A collection of thoughts and ideas</p>
           </div>
         </div>
         <div></div>

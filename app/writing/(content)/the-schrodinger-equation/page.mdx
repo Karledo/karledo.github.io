@@ -1,3 +1,8 @@
+---
+title: "The Schrödinger Equation"
+date: 2025-03-12
+---
+
 import { DynamicTitle } from "@/components/dynamic-title";
 import { AnchoredHeader } from "@/components/anchored-header";
 import { Latex } from "@/components/latex";
@@ -42,7 +47,7 @@ The notation can be somewhat overwhelming, but essentially what this equation sa
 
 We can use the Hamiltonian operator—also known as the Schrödinger operator to simplify this equation. This operator encapsulates calculating the kinetic energy and the potential energy of the wave function, into a function, so we can instead just apply the operator to the wave function instead.
 
-At a basic level, The Schrödinger Equation tells us the rate of change of a wave function with respective to time. Schrödinger used the idea of the conservation of energy and matter waves.
+At a basic level, The Schrödinger Equation tells us the rate of change of a wave function with respective to time. Schrödinger used the idea of the conservation of energy and matter waves. Any wave functions that solve the Schrödinger equation
 
 <AnchoredHeader id="what-is-a-wave-function">What is a Wave Function</AnchoredHeader>
 
@@ -57,6 +62,8 @@ We can't get the state of the system from the wave function directly, but we can
 For example if I had a time-dependent wave function <Latex text="$\psi(x, t)$" /> which describes the position of a particle in one dimension, where, internally, the wave function <Latex text="$\psi$" />, is written in the position basis <Latex text="$x$" />, then the probability of finding a particle at a given position <Latex text="$x_0$" />, is <Latex text="$|\psi(x_0, t)|^2$" />. This gives us a probability density function for the position of the particle at all position in this one dimension.
 
 <WaveFunction />
+
+<span className="text-foreground-200 text-sm">Press and hold on the canvas to collapse the wave function</span>
 
   </div>
 

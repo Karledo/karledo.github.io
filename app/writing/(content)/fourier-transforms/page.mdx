@@ -1,0 +1,61 @@
+---
+title: "Fourier Transforms"
+date: 2025-07-16
+---
+
+import { DynamicTitle } from "@/components/dynamic-title";
+import { AnchoredHeader } from "@/components/anchored-header";
+import { Signal } from "./components/signal";
+import { AmplitudeTriangle } from "./components/amplitude-triangle";
+import { Projection } from "./components/projection";
+import { Latex } from "@/components/latex";
+
+export const metadata = {
+  title: "Fourier Transforms",
+  description: "What are Fourier Transforms",
+  alternates: {
+    canonical: "/fourier-transforms",
+  },
+};
+
+<DynamicTitle className="mb-7" slug="/fourier-transforms" />
+
+<article>
+  <div className="mb-7 space-y-7">
+    <AnchoredHeader id="what-are-fourier-transforms">What are Fourier Transforms</AnchoredHeader>
+    
+    Essentially, a Fourier transform is a mathematical operation that we can perform on a sinusoidal function to break down it down into the particular frequencies that make it up. They are particularly useful in fields like image processing, signal processing and physics. There are a number of different analogies for Fourier transforms It is the equivalent to *unmixing* paint into the component colours that made that colour of paint.
+
+    <AnchoredHeader id="deriving-fourier-transforms">Deriving Fourier Transforms</AnchoredHeader>
+
+    Let's say that you have some signal <Latex text="$x(t)$" />, and you know the amplitude of signal at each point in time. <Latex text="$x(t)$" /> isn't composed of a single frequency however, but rather a superposition of multiple frequencies. We need way to disassemble the signal into the frequencies that make it up.
+
+    <Signal />
+
+    Say we have a wave of frequency <Latex text="$f$" />. A useful way to mathematically express waves is by using trigonometric functions, so let's do that. We need to convert the frequency of the wave to an angular frequency, therefore, let's define the variable <Latex text="$\omega$" /> to be the angular frequency, hence <Latex text="$w = 2\pi f$" />. We can now write the wave as <Latex text="$cos(\omega t)$" /> or <Latex text="$sin(\omega t),$" /> we use both <Latex text="$cos(\omega t)$" /> and <Latex text="$sin(\omega t)$" />, because every phase shift can be accounted for by using some combination of the two trigonometric functions.
+
+    Let's take a moment to try and understand what we're trying to achieve here; we're trying to create a mathematical functions, such that, when we apply it on the signal <Latex text="$x(t)$" /> it tells us the constituent frequencies that make up the signal. So naturally, it makes sense that we're going to have to develop a way to quantify how well a particular frequency correlates with <Latex text="$x(t)$" />.
+
+    Let's say want to test whether an arbitrary angular frequency was contained within <Latex text="$x(t)$" />. If we multiply <Latex text="$x(t)$" /> by <Latex text="$cos(\omega t)$" /> and <Latex text="$sin(\omega t)$" />, we get <Latex text="$x(t)cos(\omega t)$" /> and <Latex text="$x(t)sin(\omega t)$" />.
+
+    Essentially, what we're doing here is projecting <Latex text="$x(t)$" /> onto <Latex text="$cos(\omega t)$" /> and <Latex text="$sin(\omega t)$" /> respectively. Conveniently, the area under this projected graph will give us a measure of how much the <Latex text="$cosine$" /> of that angular frequency and <Latex text="$sine$" /> of that angular frequency correlates with <Latex text="$x(t)$" /> and we get this area by performing an integral.
+
+    <Projection />
+
+    <div>
+      <Latex text="$$A = \int_{t_1}^{t_2} x(t)sin(\omega t)$$" />
+      <Latex text="$$B = \int_{t_1}^{t_2} x(t)cos(\omega t)$$" />
+      <Latex text="$$z = Acos(\omega t) + Bsin(\omega t)$$" />
+    </div>
+
+
+    Once we have the area under the projections <Latex text="$x(t)cos(\omega t)$" /> and <Latex text="$x(t)sin(\omega t)$" />, we need a way to combine these values to get a single measurement of how well this particularly angular frequency correlates to <Latex text="$x(t)$" /> .
+
+    <Latex text="$$|z| = \sqrt{A^2cos^2(\omega t) + B^2sin^2(\omega t)}$$"/>
+
+    Well, since the areas effectively measure the correlation of each frequency to <Latex text="$x(t)$" />, by measuring how much the frequency matches up when it's in phase i.e. <Latex text="$cos(\omega t)$" /> and also measuring the how much the frequency matches up when it's <Latex text="$90 \degree$" /> out of phase i.e. <Latex text="$sin(\omega t)$" />. These values are the sides of a right-angled triangle, hence we can get a final magnitude using Pythagoras—and this is what we've been looking for, an absolute measure of how well a frequency correlates with <Latex text="$x(t)$" />
+
+    <AmplitudeTriangle />
+
+  </div>
+</article>
