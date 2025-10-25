@@ -108,7 +108,7 @@ em {
   :root {
     --background-100: hsl(0, 0%, 9%);
     --background-200: hsl(0, 0%, 11%);
-    --background-300: hsl(0 0% 15.8%);
+    --background-300: hsl(0, 0%, 15.8%);
     --foreground-100: hsl(0, 0%, 93%);
     --foreground-200: hsl(0, 0%, 63%);
     --selection: hsla(0, 0%, 100%, 0.077);

@@ -1,7 +1,11 @@
+---
+title: Law of Gravitational Attraction
+date: 2025-02-20
+---
+
 import { DynamicTitle } from "@/components/dynamic-title";
-import { Gravitation } from "./components/gravitation";
-import { LawOfUniversalGravitation } from "./components/law-of-universal-gravitation";
 import { Latex } from "@/components/latex";
+import { LawOfUniversalGravitation } from "./components/law-of-universal-gravitation";
 
 export const metadata = {
   title: "Law of Universal Gravitation",
@@ -14,14 +18,14 @@ export const metadata = {
 <DynamicTitle className="mb-7" slug="/law-of-universal-gravitation" />
 
 <article className="mb-7 space-y-7">
-
   This is an experimental simulation for Newton's Law of Universal Gravitation.
 
-  <div className="flex flex-col items-center">
-    <Latex text="$F = G \frac{m_1 m_2}{r^2}$" />
-  </div>
+<div className="flex flex-col items-center">
+  <Latex text="$F = G \frac{m_1 m_2}{r^2}$" />
+</div>
 
-  You can press anyone to simulate adding another body to the simulation.
+You can press anywhere to simulate adding another body to the simulation.
+
 </article>
 
 <LawOfUniversalGravitation />

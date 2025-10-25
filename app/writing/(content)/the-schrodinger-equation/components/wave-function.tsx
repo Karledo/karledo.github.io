@@ -1,6 +1,10 @@
 "use client";
 
-import { defaultSketch, type Setup, type Draw } from "@/components/default-sketch";
+import {
+  defaultSketch,
+  type Setup,
+  type Draw,
+} from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
 import katex from "katex";
 import P5 from "p5";
@@ -9,20 +13,14 @@ let axis: Record<string, P5.Element>;
 let toggleCollapse = false;
 let collapseX: number | undefined;
 
-const setup: Setup = ({ p, renderer, containerStyle }) => {
+const setup: Setup = ({ p, renderer }) => {
   p.colorMode(p.HSL);
   p.rectMode(p.CORNERS);
 
   const axisNames = ["psi", "x"];
   axis = Object.fromEntries(
     axisNames.map((value) => {
-      return [
-        value,
-        p
-          .createP()
-          .style("font-size", `${p.width * 0.0025}rem`)
-          .style("color", containerStyle.color),
-      ];
+      return [value, p.createP().style("font-size", `${p.width * 0.0025}rem`)];
     }),
   );
 
@@ -35,8 +33,9 @@ const setup: Setup = ({ p, renderer, containerStyle }) => {
   });
 
   renderer.mouseMoved((event: MouseEvent) => {
-    collapseX = event.clientX - (renderer.elt as HTMLCanvasElement).getBoundingClientRect().x;
-    console.log(collapseX);
+    collapseX =
+      event.clientX -
+      (renderer.elt as HTMLCanvasElement).getBoundingClientRect().x;
   });
 };
 
@@ -57,16 +56,18 @@ const draw: Draw = ({ p }) => {
   const noiseScale = 0.002;
   const timeScale = 0.3;
 
-  axis.psi.position(p.width * 0.52, p.height * 0.01);
-  axis.psi.style("font-size", `${p.width * 0.0015}rem`);
-  katex.render(String.raw`\psi(x, t)^2`, axis.psi.elt);
+  axis.psi.position(p.width * 0.51, p.height * 0.01);
+  axis.psi.style("font-size", `${p.width * 0.025}px`);
+  katex.render(String.raw`|\psi(x, t)|^2`, axis.psi.elt);
 
-  axis.x.style("font-size", `${p.width * 0.0015}rem`);
+  axis.x.style("font-size", `${p.width * 0.025}px`);
   axis.x.position(p.width * 0.97, p.height * 0.41);
   katex.render(String.raw`x`, axis.x.elt);
 
-  const collapseFn = (x: number) => p.height * 0.4 * gaussianFn(x, collapseX!, 4);
-  const normalWaveFunction = (x: number) => p.noise(x * noiseScale, seconds * timeScale) * noiseHeight;
+  const collapseFn = (x: number) =>
+    p.height * 0.4 * gaussianFn(x, collapseX!, 4);
+  const normalWaveFunction = (x: number) =>
+    p.noise(x * noiseScale, seconds * timeScale) * noiseHeight;
 
   const fn = toggleCollapse && collapseX ? collapseFn : normalWaveFunction;
 

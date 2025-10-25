@@ -8,6 +8,7 @@ const setup: Setup = ({ p }) => {
   p.rectMode(p.CORNERS);
 };
 
+
 const draw: Draw = ({ p }) => {
   p.clear();
   p.noStroke();

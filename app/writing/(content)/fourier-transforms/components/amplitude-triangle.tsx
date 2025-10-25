@@ -72,6 +72,7 @@ const draw: Draw = ({ p }) => {
   const documentStyle = getComputedStyle(document.documentElement);
   const foreground = documentStyle.getPropertyValue("--foreground-100");
   const background3 = documentStyle.getPropertyValue("--background-300");
+
   const red = documentStyle.getPropertyValue("--visual-red");
   const green = documentStyle.getPropertyValue("--visual-green");
   const blue = documentStyle.getPropertyValue("--visual-blue");

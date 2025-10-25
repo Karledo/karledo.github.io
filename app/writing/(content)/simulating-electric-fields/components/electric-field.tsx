@@ -1,181 +1,223 @@
 "use client";
-import { LazyMotionProvider } from "@/components/lazy-motion-provider";
-import { Vector2 } from "@/utils/vector2";
-import { m, motion, MotionValue, PanInfo, SVGMotionProps, useAnimationFrame, useSpring } from "motion/react";
-import { useRef } from "react";
-import useMeasure from "react-use-measure";
-import * as Slider from "@radix-ui/react-slider";
 
-const arrowColor = "#737373";
-const gridSize = 7;
-const arrowLengthScalar = 5e-2;
-const arrowWidthScalar = 7e-3;
+import {
+  defaultSketch,
+  type Draw,
+  type Setup,
+} from "@/components/default-sketch";
+import { BaseSlider } from "@/components/base-slider";
+import { StyledP5Container } from "@/components/p5-container";
+import { arrow } from "@/utils/sketch-utils";
+import P5 from "p5";
+import { Fragment, useRef } from "react";
 
-const defaultCharge = -1;
-const numChargedParticles = 2;
+type Charge = {
+  position: P5.Vector;
+  magnitude: number;
+};
 
-export function ElectricField() {
-  const firstCharge = useSpring(defaultCharge);
-  const secondCharge = useSpring(defaultCharge);
+const MAX_WIDTH = 641.52;
+const MAX_HEIGHT = (9 / 16) * MAX_WIDTH;
+const numCharges = 2;
+let charges: Array<Charge>;
+let selectedCharge: Charge | null;
 
-  const charges = [firstCharge, secondCharge];
+const setup: Setup = ({ p: p5 }) => {
+  p5.colorMode(p5.HSL);
 
-  const dragContainer = useRef<HTMLDivElement>(null);
-  const [ref, bounds] = useMeasure();
+  function stopTouchScrolling(canvas: unknown) {
+    document.body.addEventListener(
+      "touchstart",
+      function (e) {
+        if (e.target == canvas) {
+          e.preventDefault();
+        }
+      },
+      { passive: false },
+    );
+    document.body.addEventListener(
+      "touchend",
+      function (e) {
+        if (e.target == canvas) {
+          e.preventDefault();
+        }
+      },
+      { passive: false },
+    );
 
-  const dragPositions = Array.from({ length: numChargedParticles }).map(() => {
-    return {
-      x: bounds.width * 0.5,
-      y: bounds.height * 0.5,
-    };
-  });
-
-  const arrowLength = bounds.width * arrowLengthScalar;
-  const arrows = Array.from({ length: gridSize * gridSize }).map((_, i) => {
-    const x = (i % gridSize) * (bounds.width / gridSize) + (bounds.width * 0.5) / gridSize;
-    const y = Math.floor(i / gridSize) * (bounds.height / gridSize) + (bounds.height * 0.5) / gridSize;
-
-    return {
-      x1: new MotionValue(x),
-      y1: new MotionValue(y),
-      x2: new MotionValue(x + arrowLength / Math.sqrt(2)),
-      y2: new MotionValue(y + arrowLength / Math.sqrt(2)),
-    };
-  });
-
-  function handleDragging(event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo, index: number) {
-    if (dragContainer.current == null) return;
-    const rect = dragContainer.current.getBoundingClientRect();
-
-    dragPositions[index].x = info.point.x - (window.scrollX + rect.left);
-    dragPositions[index].y = info.point.y - (window.scrollY + rect.top);
+    document.body.addEventListener(
+      "touchmove",
+      function (e) {
+        if (e.target == canvas) {
+          e.preventDefault();
+        }
+      },
+      { passive: false },
+    );
   }
 
-  const k = 1;
-  const q2 = 1;
+  stopTouchScrolling(document.getElementById("defaultCanvas0"));
 
-  useAnimationFrame(() => {
-    for (const arrow of arrows) {
-      const tailPosition = new Vector2(arrow.x1.get(), arrow.y1.get());
+  charges = Array.from({ length: numCharges }).map((_, i) => {
+    return {
+      position: p5.createVector(
+        p5.width * 0.25 + i * p5.width * 0.1,
+        p5.height * 0.4,
+      ),
+      magnitude: 1,
+    };
+  });
+};
 
-      const forces = dragPositions.map((dragPosition, index) => {
-        const chargePosition = new Vector2(dragPosition.x, dragPosition.y);
-        const displacement = tailPosition.sub(chargePosition);
+const draw: Draw = ({ p }) => {
+  p.clear();
+  p.noStroke();
+  p.noFill();
 
-        const squaredDistance = tailPosition.sub(chargePosition).squaredMagnitude();
-        const force = equation(k, charges[index].get(), q2, squaredDistance);
-        const forceVector = displacement.normalized().scale(force);
-        return forceVector;
-      });
+  const documentStyle = getComputedStyle(document.documentElement);
+  const numArrows = { x: 8, y: 4 };
+  const arrowColor = documentStyle.getPropertyValue("--foreground-100");
+  const arrowLength = p.width * 0.05;
 
-      const averageDirection = forces
-        .reduce((previousVector, currentVector) => {
-          return previousVector.add(currentVector);
-        })
-        .normalized();
+  const mousePosition = p.createVector(p.mouseX, p.mouseY);
+  const chargeRadius = p.width * 0.025;
+  const chargeDiameter = chargeRadius * 2;
 
-      const arrowLength = bounds.width * arrowLengthScalar;
-      const resultantForce = averageDirection.scale(arrowLength);
-      const headPosition = tailPosition.add(resultantForce);
+  const positiveChargeColor = p.color(
+    documentStyle.getPropertyValue("--visual-blue"),
+  );
+  const negativeChargeColor = p.color(
+    documentStyle.getPropertyValue("--visual-red"),
+  );
+  const fontSize = p.width * 0.035;
 
-      arrow.x2.set(headPosition.x);
-      arrow.y2.set(headPosition.y);
-    }
+  const scaledCharges = charges.map((charge) => {
+    return {
+      position: charge.position.copy().mult(p.width / MAX_WIDTH),
+      magnitude: charge.magnitude,
+    };
   });
 
-  return (
-    <LazyMotionProvider>
-      <div ref={ref} className="bg-background-200 relative mb-7 aspect-video rounded-xl">
-        <m.svg viewBox={`0 0 ${bounds.width} ${bounds.height}`} className="pointer-events-none absolute inset-0">
-          <defs>
-            <marker
-              id="arrow"
-              viewBox="0 0 10 10"
-              refX="5"
-              refY="5"
-              markerWidth={3}
-              markerHeight={3}
-              fill={arrowColor}
-              orient="auto-start-reverse"
-            >
-              <path d="M 0 0 L 10 5 L 0 10 z" />
-            </marker>
-          </defs>
-          {arrows.map(({ x1, y1, x2, y2 }, i) => {
-            return (
-              <Arrow
-                key={i}
-                x1={x1}
-                y1={y1}
-                x2={x2}
-                y2={y2}
-                strokeWidth={bounds.width * arrowWidthScalar}
-                stroke={arrowColor}
-              />
-            );
-          })}
-        </m.svg>
-        <div ref={dragContainer} className="relative size-full">
-          {charges.map((charge, index) => {
-            return (
-              <motion.div
-                key={index}
-                className={`absolute ${index == 0 ? "left-1/3" : "left-2/3"} top-1/2 flex aspect-square h-1/10 items-center justify-center rounded-full border border-neutral-300 bg-white`}
-                drag
-                dragMomentum={false}
-                onDrag={(event, info) => handleDragging(event, info, index)}
-                dragConstraints={dragContainer}
-              >
-                <span className="text-sm font-semibold text-neutral-700 sm:text-base">{index + 1}</span>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
+  if (p.mouseIsPressed) {
+    for (let i = 0; i < charges.length; i++) {
+      if (
+        mousePosition.dist(scaledCharges[i].position) < chargeRadius &&
+        !selectedCharge
+      ) {
+        selectedCharge = charges[i];
+        break;
+      }
+    }
+  }
 
-      <div className="mb-7">
-        {charges.map((charge, index) => {
+  const scaledMousePosition = mousePosition.copy().mult(MAX_WIDTH / p.width);
+  if (selectedCharge) {
+    if (p.mouseIsPressed) {
+      selectedCharge.position.x = p.min(
+        p.max(0, scaledMousePosition.x),
+        MAX_WIDTH,
+      );
+      selectedCharge.position.y = p.min(
+        p.max(0, scaledMousePosition.y),
+        MAX_HEIGHT,
+      );
+    } else {
+      selectedCharge = null;
+    }
+  }
+
+  p.push();
+  p.translate((0.5 * p.width) / numArrows.x, (0.5 * p.height) / numArrows.y);
+  p.fill(arrowColor);
+  p.stroke(arrowColor);
+  p.strokeWeight(p.width * 0.0049);
+
+  for (let x = 0; x < numArrows.x; x++) {
+    for (let y = 0; y < numArrows.y; y++) {
+      const tailX = (x / numArrows.x) * p.width;
+      const tailY = (y / numArrows.y) * p.height;
+
+      const tail = p.createVector(tailX, tailY);
+
+      const resultantForce = p.createVector(0, 0);
+      for (const charge of scaledCharges) {
+        const distance = tail.dist(charge.position);
+        const forceMagnitude = equation(1, charge.magnitude, distance);
+        const displacement = tail.copy().sub(charge.position);
+        const force = displacement.setMag(forceMagnitude);
+        resultantForce.add(force);
+      }
+
+      const arrowVector = resultantForce.copy().setMag(arrowLength);
+
+      const headX = tailX + arrowVector.x;
+      const headY = tailY + arrowVector.y;
+
+      arrow(p, tailX, tailY, headX, headY);
+    }
+  }
+  p.pop();
+
+  p.push();
+  p.textFont("KaTex_Main");
+  p.textSize(fontSize);
+  p.textAlign(p.CENTER);
+  for (let i = 0; i < scaledCharges.length; i++) {
+    p.push();
+    const charge = scaledCharges[i];
+    const lerpFactor = (charge.magnitude + 1) * 0.5;
+    p.fill(p.lerpColor(negativeChargeColor, positiveChargeColor, lerpFactor));
+    p.circle(charge.position.x, charge.position.y, chargeDiameter);
+    p.fill(documentStyle.getPropertyValue("--foreground-100"));
+    p.translate(0, fontSize * 0.3);
+    p.text(`${i + 1}`, charge.position.x, charge.position.y);
+    p.pop();
+  }
+  p.pop();
+};
+
+const sketch = defaultSketch({ draw, setup });
+
+export function ElectricField() {
+  const chargeDisplay1 = useRef<HTMLSpanElement>(null);
+  const chargeDisplay2 = useRef<HTMLSpanElement>(null);
+
+  const chargeDisplays = [chargeDisplay1, chargeDisplay2];
+
+  return (
+    <div>
+      <StyledP5Container sketch={sketch} />
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
+        {Array.from({ length: numCharges }).map((_, i) => {
           return (
-            <div key={index} className="flex items-center gap-x-2">
-              <span>Charge {index + 1}</span>
-              <Slider.Root
+            <Fragment key={i}>
+              <span>Charge {i + 1}</span>
+              <BaseSlider
+                step={0.01}
                 min={-1}
                 max={1}
-                step={0.01}
-                defaultValue={[charge.get()]}
+                defaultValue={[1]}
                 onValueChange={([value]) => {
-                  charge.set(value);
+                  if (chargeDisplays[i].current) {
+                    chargeDisplays[i].current.innerText = `${value}`;
+                  }
+                  if (charges[i]) {
+                    charges[i].magnitude = value;
+                  }
                 }}
-                className="group relative flex h-3 grow cursor-grab touch-none items-center transition-transform duration-300 select-none active:cursor-grabbing"
-              >
-                <Slider.Track className="bg-background-300 relative h-1.5 grow rounded-full transition-transform duration-300 group-hover:scale-y-150 group-active:scale-y-150">
-                  <Slider.Range className="dark:bg-foreground-100 bg-foreground-200 absolute h-full rounded-full" />
-                </Slider.Track>
-                <Slider.Thumb />
-              </Slider.Root>
-            </div>
+              />
+              <span ref={chargeDisplays[i]} className="min-w-12">
+                1
+              </span>
+            </Fragment>
           );
         })}
       </div>
-    </LazyMotionProvider>
+    </div>
   );
 }
 
-function Arrow({
-  x1,
-  y1,
-  x2,
-  y2,
-  ...props
-}: {
-  x1: MotionValue<number>;
-  y1: MotionValue<number>;
-  x2: MotionValue<number>;
-  y2: MotionValue<number>;
-} & Omit<SVGMotionProps<SVGLineElement>, "markerEnd">) {
-  return <m.line x1={x1} y1={y1} x2={x2} y2={y2} {...props} markerEnd="url(#arrow)" />;
-}
-
-function equation(k: number, q1: number, q2: number, rSquared: number) {
-  return (k * q1 * q2) / Math.max(1e-8, rSquared);
-}
+const EPSILON_ZERO = 8.8 * 10e-12;
+const equation = (q1: number, q2: number, r: number) => {
+  return (q1 * q2) / (4 * Math.PI * EPSILON_ZERO * r * r);
+};

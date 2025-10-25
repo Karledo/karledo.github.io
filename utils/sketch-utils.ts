@@ -23,7 +23,6 @@ export const arrow = (
 
   const headTrianglePoint1 = head.copy().add(perp.copy().mult(arrowHeadSize / 2));
   const headTrianglePoint2 = head.copy().add(perp.copy().mult(-arrowHeadSize / 2));
-
   p.noStroke();
   p.triangle(
     headTrianglePoint1.x,
@@ -37,7 +36,6 @@ export const arrow = (
   if (doubleSided) {
     const tailTrianglePoint1 = tail.copy().add(perp.copy().mult(-arrowHeadSize / 2));
     const tailTrianglePoint2 = tail.copy().add(perp.copy().mult(arrowHeadSize / 2));
-
     p.triangle(
       tailTrianglePoint1.x,
       tailTrianglePoint1.y,

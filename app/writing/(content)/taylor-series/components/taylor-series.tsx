@@ -48,7 +48,6 @@ const draw: Draw = ({ p }) => {
   p.noStroke();
 
   const documentStyle = getComputedStyle(document.documentElement);
-
   const foreground = documentStyle.getPropertyValue("--foreground-100");
   const red = documentStyle.getPropertyValue("--visual-red");
   const green = documentStyle.getPropertyValue("--visual-green");
@@ -57,7 +56,6 @@ const draw: Draw = ({ p }) => {
   p.push();
   p.translate(p.width * 0.2, p.height * 0.5);
   p.strokeWeight(2);
-
   p.stroke(foreground);
   p.line(0, 0.5 * p.height, 0, 0.5 * -p.height);
   p.line(0, 0, p.width * 0.8, 0);
