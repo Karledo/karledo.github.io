@@ -83,7 +83,6 @@ const draw: DrawGL = ({ p }) => {
 
   const documentStyle = getComputedStyle(document.documentElement);
   const foreground = documentStyle.getPropertyValue("--foreground-100");
-  const background = documentStyle.getPropertyValue("--background-100");
 
   const deltaTimeSeconds = p.deltaTime / 1000;
   currentEndEffectorAngleDegrees = expDecay(
