@@ -1,9 +1,8 @@
 import Link from "next/link";
-import fs from "fs";
-import path from "path";
 import { CornerUpLeft } from "lucide-react";
 import { Metadata } from "next";
-import { parseFrontmatter } from "@/utils/parse-frontmatter";
+import { getNoteSlugs } from "@/utils/get-note-slugs";
+import { getNote } from "@/utils/get-note";
 
 export const metadata: Metadata = {
   title: "Writing",
@@ -13,27 +12,36 @@ export const metadata: Metadata = {
   },
 };
 
-const getFiles = () => {
-  const contentDir = path.join(process.cwd(), "app", "writing", "(content)");
-  const dirnames = fs.readdirSync(contentDir, "utf-8").filter((dirname) => {
-    const isDirectory = fs
-      .statSync(path.join(contentDir, dirname))
-      .isDirectory();
-    const isRouteGroup = /^\(.*\)$/.test(dirname);
-    return isDirectory && !isRouteGroup;
-  });
-
-  const files = dirnames.map((dirname) => {
-    const { frontmatter } = parseFrontmatter(dirname);
-    frontmatter.date ??= new Date();
-    frontmatter.title ??= dirname;
-    return { name: dirname, frontmatter };
-  });
-
-  return files;
+type Frontmatter = {
+  title: string;
+  date: Date;
 };
 
-const toGroups = <T, K extends string | number>(
+type SlugAndFrontmatter = {
+  slug: string;
+  frontmatter: Frontmatter;
+};
+
+type Group = {
+  group: number;
+  data: SlugAndFrontmatter[];
+};
+
+const getSlugsAndFrontmatter = async () => {
+  const slugs = await getNoteSlugs();
+  const frontmatterList = await Promise.all(
+    slugs.map(async (slug) => {
+      const { frontmatter } = await getNote(slug);
+      return frontmatter as Frontmatter;
+    }),
+  );
+
+  return slugs.map((slug, i) => {
+    return { slug, frontmatter: frontmatterList[i] };
+  });
+};
+
+const toGroups = <K extends string | number, T>(
   array: T[],
   getKey: (element: T) => K,
 ) => {
@@ -51,28 +59,26 @@ const toGroups = <T, K extends string | number>(
   return entries.map(([group, data]) => ({ group, data }));
 };
 
-type Frontmatter = {
-  title: string;
-  date: Date;
-};
-
-type File = {
-  name: string;
-  frontmatter: Frontmatter;
-};
+const sortYearsMostRecent = (a: Group, b: Group) => b.group - a.group;
+const sortContentMostRecent = (a: SlugAndFrontmatter, b: SlugAndFrontmatter) =>
+  b.frontmatter.date.getTime() - a.frontmatter.date.getTime();
+const groupByYear = ({ frontmatter }: { frontmatter: Frontmatter }) =>
+  frontmatter.date.getFullYear();
 
 export default async function Page() {
-  const ungroupedFiles = getFiles() as File[];
-  const files = toGroups(ungroupedFiles, (file) => {
-    return file.frontmatter.date.getFullYear();
-  });
+  const res = (await getSlugsAndFrontmatter()) as {
+    slug: string;
+    frontmatter: Frontmatter;
+  }[];
 
-  files.sort((a, b) => b.group - a.group);
+  const dataGroupedByYear: Group[] = toGroups<number, SlugAndFrontmatter>(
+    res,
+    groupByYear,
+  );
 
-  files.forEach(({ data: files }) => {
-    files.sort(
-      (a, b) => b.frontmatter.date.getTime() - a.frontmatter.date.getTime(),
-    );
+  dataGroupedByYear.sort(sortYearsMostRecent);
+  dataGroupedByYear.forEach(({ data: files }) => {
+    files.sort(sortContentMostRecent);
   });
 
   return (
@@ -90,13 +96,13 @@ export default async function Page() {
         </Link>
       </div>
       <div className="flex flex-col gap-4">
-        {files.map(({ group: year, data: files }) => {
+        {dataGroupedByYear.map(({ group: year, data: slugAndFrontmatter }) => {
           return (
             <div key={year}>
               <span className="text-foreground-200 mb-3 block text-sm">
                 {year}
               </span>
-              <FileGroup files={files} />
+              <FileGroup slugAndFrontmatter={slugAndFrontmatter} />
             </div>
           );
         })}
@@ -105,17 +111,21 @@ export default async function Page() {
   );
 }
 
-function FileGroup({ files }: { files: File[] }) {
+function FileGroup({
+  slugAndFrontmatter,
+}: {
+  slugAndFrontmatter: SlugAndFrontmatter[];
+}) {
   return (
     <div className="group/wrapper divide-background-300 border-background-300 flex flex-col divide-y border-t">
-      {files.map(({ name, frontmatter }) => {
+      {slugAndFrontmatter.map(({ slug, frontmatter }) => {
         const day = frontmatter.date.getDate().toString().padStart(2, "0");
         const month = frontmatter.date.getMonth() + 1;
         const dateString = `${day}/${month}`;
         return (
           <Link
-            key={name}
-            href={`/writing/${name}`}
+            key={slug}
+            href={`/writing/${slug}`}
             className="group/link flex items-center justify-between py-3"
           >
             <span className="group-hover/link:text-foreground-100! group-hover/wrapper:text-foreground-200 transition-colors duration-300">
