@@ -1,16 +1,15 @@
 "use client";
 
+import katex from "katex";
 import {
   defaultSketchWebGL,
   type DrawGL,
   type SetupGL,
 } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
-import { BaseSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/base-slider";
 import { Latex } from "@/components/latex";
-import { Fragment, useRef } from "react";
 
-// const MAX_WIDTH = 641.52;
 const setup: SetupGL = ({ p: p5 }) => {
   p5.colorMode(p5.HSL);
   p5.rectMode(p5.CORNERS);
@@ -27,22 +26,21 @@ const defaultTargetY = 30;
 const defaultTargetZ = 30;
 const defaultEndEffectorAngleDegrees = -30;
 
-let targetEndEffectorAngleDegrees = defaultEndEffectorAngleDegrees;
-let targetX = defaultTargetX;
-let targetY = defaultTargetY;
-let targetZ = defaultTargetZ;
+let targetEndEffectorAngleDegrees = { current: defaultEndEffectorAngleDegrees };
+let targetX = { current: defaultTargetX };
+let targetY = { current: defaultTargetY };
+let targetZ = { current: defaultTargetZ };
 
-let currentEndEffectorAngleDegrees = defaultEndEffectorAngleDegrees;
-let currentX = defaultTargetX;
-let currentY = defaultTargetY;
-let currentZ = defaultTargetZ;
+let currentEndEffectorAngleDegrees = targetEndEffectorAngleDegrees.current;
+let currentX = targetX.current;
+let currentY = targetY.current;
+let currentZ = targetZ.current;
 
 const decay = 1;
-const expDecay = (a: number, b: number, decay: number, deltaTime: number) => {
-  return b + (a - b) * Math.exp(-decay * deltaTime);
-};
+const expDecay = (a: number, b: number, decay: number, deltaTime: number) =>
+  b + (a - b) * Math.exp(-decay * deltaTime);
 
-const inverseKinematics = (x: number, y: number, z: number, gamma: number) => {
+function inverseKinematics(x: number, y: number, z: number, gamma: number) {
   const theta1 = Math.atan2(z, x);
   const xl4 = Math.sqrt(x * x + z * z);
   const y4 = y;
@@ -81,7 +79,7 @@ const inverseKinematics = (x: number, y: number, z: number, gamma: number) => {
   const angles = [theta1, theta2, theta3, theta4];
 
   return { points, angles };
-};
+}
 
 const draw: DrawGL = ({ p }) => {
   p.clear();
@@ -95,14 +93,14 @@ const draw: DrawGL = ({ p }) => {
   const deltaTimeSeconds = p.deltaTime / 1000;
   currentEndEffectorAngleDegrees = expDecay(
     currentEndEffectorAngleDegrees,
-    targetEndEffectorAngleDegrees,
+    targetEndEffectorAngleDegrees.current,
     decay,
     deltaTimeSeconds,
   );
 
-  currentX = expDecay(currentX, targetX, decay, deltaTimeSeconds);
-  currentY = expDecay(currentY, targetY, decay, deltaTimeSeconds);
-  currentZ = expDecay(currentZ, targetZ, decay, deltaTimeSeconds);
+  currentX = expDecay(currentX, targetX.current, decay, deltaTimeSeconds);
+  currentY = expDecay(currentY, targetY.current, decay, deltaTimeSeconds);
+  currentZ = expDecay(currentZ, targetZ.current, decay, deltaTimeSeconds);
 
   const { points } = inverseKinematics(
     currentX,
@@ -143,92 +141,40 @@ const draw: DrawGL = ({ p }) => {
 const sketch = defaultSketchWebGL({ draw, setup });
 
 export function InverseKinematics() {
-  const endEffector = useRef<HTMLSpanElement>(null);
-  const X = useRef<HTMLSpanElement>(null);
-  const Y = useRef<HTMLSpanElement>(null);
-  const Z = useRef<HTMLSpanElement>(null);
-
-  const sliders = [
-    {
-      key: "X",
-      ref: X,
-      default: defaultTargetX,
-      onValueChange: ([value]: number[]) => {
-        targetX = value;
-        if (X.current) {
-          X.current.innerText = `${value}`;
-        }
-      },
-    },
-    {
-      key: "Y",
-      ref: Y,
-      default: defaultTargetY,
-      onValueChange: ([value]: number[]) => {
-        targetY = value;
-        if (Y.current) {
-          Y.current.innerText = `${value}`;
-        }
-      },
-    },
-    {
-      key: "Z",
-      ref: Z,
-      default: defaultTargetZ,
-      onValueChange: ([value]: number[]) => {
-        targetZ = value;
-        if (Z.current) {
-          Z.current.innerText = `${value}`;
-        }
-      },
-    },
-  ];
-
   return (
     <div>
       <StyledP5Container sketch={sketch} />
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4">
-        {sliders.map((slider) => {
-          return (
-            <Fragment key={slider.key}>
-              <span className="text-center">
-                <Latex text={`$${slider.key}$`} />
-              </span>
-              <BaseSlider
-                min={-100}
-                max={100}
-                defaultValue={[slider.default]}
-                step={1}
-                onValueChange={slider.onValueChange}
-              />
-              <span className="min-w-[5ch]">
-                <span ref={slider.ref} className="tabular-nums">
-                  {slider.default}
-                </span>
-              </span>
-            </Fragment>
-          );
-        })}
-        <span className="flex max-w-[10ch] items-center">Angle</span>
-        <BaseSlider
-          min={-50}
-          max={50}
-          defaultValue={[0]}
-          step={1}
-          onValueChange={([value]) => {
-            targetEndEffectorAngleDegrees = value;
-            if (endEffector.current) {
-              endEffector.current.innerText = `${value}`;
-            }
-          }}
-        />
-        <span className="min-w-[5ch]">
-          <span ref={endEffector} className="tabular-nums">
-            {targetEndEffectorAngleDegrees}
-            <Latex text="$\degree$" />
-          </span>
-        </span>
-      </div>
+      <RefSlider
+        sharedRef={targetEndEffectorAngleDegrees}
+        label="End Effector Angle"
+        min={-50}
+        max={50}
+        step={1}
+        display={(value) =>
+          `${value}${katex.renderToString(String.raw`\degree`)}`
+        }
+      />
+      <RefSlider
+        sharedRef={targetX}
+        label={<Latex text="$X$" />}
+        min={-100}
+        max={100}
+        step={1}
+      />
+      <RefSlider
+        sharedRef={targetY}
+        label={<Latex text="$Y$" />}
+        min={-100}
+        max={100}
+        step={1}
+      />
+      <RefSlider
+        sharedRef={targetZ}
+        label={<Latex text="$Z$" />}
+        min={-100}
+        max={100}
+        step={1}
+      />
     </div>
   );
 }
