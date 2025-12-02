@@ -104,7 +104,7 @@ function calculateProjectionVelocity(p: P5, position: P5.Vector) {
   return p.createVector(position.x - p.mouseX, position.y - p.mouseY).mult(3);
 }
 
-const setup: Setup = ({ p, renderer }) => {
+const setup: Setup = ({ p }) => {
   p.colorMode(p.HSL);
   const diameter = p.width * 0.05;
 
@@ -279,9 +279,26 @@ const draw: Draw = ({ p }) => {
 const sketch = defaultSketch({ setup, draw });
 
 export function CoefficientOfRestitutionBall() {
+  function reset() {
+    balls = [];
+    for (let i = 0; i < ballTags.length; i++) {
+      const tag = ballTags[i];
+      tag.remove();
+    }
+    ballTags = [];
+  }
+
   return (
     <div>
-      <StyledP5Container className="mb-0" sketch={sketch} />
+      <div className="flex justify-end">
+        <button
+          onClick={() => reset()}
+          className="bg-background-200 outline-background-300 mb-2 rounded px-3 py-1 text-sm outline"
+        >
+          Reset
+        </button>
+      </div>
+      <StyledP5Container sketch={sketch} />
       <span className="text-foreground-200 text-sm select-none">
         Press and drag to spawn balls.
       </span>
