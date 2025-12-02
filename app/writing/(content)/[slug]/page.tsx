@@ -26,7 +26,7 @@ export default async function Page({
 
 export async function generateStaticParams() {
   const slugs = (await getNoteSlugs()).map((slug) => ({ slug }));
-  return [...slugs, { slug: "test" }];
+  return [...slugs];
 }
 
 export async function generateMetadata({

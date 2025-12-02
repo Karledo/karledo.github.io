@@ -1,8 +1,12 @@
 "use client";
 
-import { defaultSketch, type Setup, type Draw } from "@/components/default-sketch";
+import {
+  defaultSketch,
+  type Setup,
+  type Draw,
+} from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
-import { RefSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/ref-slider";
 import { Latex } from "@/components/latex";
 import { marque as whiteMask } from "@/utils/sketch-utils";
 import P5 from "p5";
@@ -116,7 +120,15 @@ const draw: Draw = ({ p, container }) => {
 
   waveletA.push();
   waveletA.stroke(red);
-  wavelet(waveletA, gratingDistance, firstSlitHeight * 0.5, waveletA.width, wavelength, wavespeed, seconds);
+  wavelet(
+    waveletA,
+    gratingDistance,
+    firstSlitHeight * 0.5,
+    waveletA.width,
+    wavelength,
+    wavespeed,
+    seconds,
+  );
   whiteMask(waveletA, gratingDistance, 0, screenDistance, p.height);
   waveletA.pop();
 
@@ -124,7 +136,15 @@ const draw: Draw = ({ p, container }) => {
 
   waveletB.push();
   waveletB.stroke(red);
-  wavelet(waveletB, gratingDistance, secondSlitHeight, waveletB.width, wavelength, wavespeed, seconds);
+  wavelet(
+    waveletB,
+    gratingDistance,
+    secondSlitHeight,
+    waveletB.width,
+    wavelength,
+    wavespeed,
+    seconds,
+  );
   whiteMask(waveletB, gratingDistance, 0, screenDistance, p.height);
   waveletB.pop();
 
@@ -136,7 +156,12 @@ const draw: Draw = ({ p, container }) => {
   p.strokeWeight(p.width * 0.007);
   p.translate(gratingDistance, 0);
   p.line(0, 0, 0, (p.height - slitSeparation) * 0.5 - slitGap);
-  p.line(0, (p.height - slitSeparation) * 0.5, 0, (p.height + slitSeparation) * 0.5);
+  p.line(
+    0,
+    (p.height - slitSeparation) * 0.5,
+    0,
+    (p.height + slitSeparation) * 0.5,
+  );
   p.line(0, (p.height + slitSeparation) * 0.5 + slitGap, 0, p.height);
   p.pop();
 
@@ -170,7 +195,12 @@ const draw: Draw = ({ p, container }) => {
   // }
 
   for (let d = 0; d <= p.height * 0.5; d++) {
-    const n = calcualteMaximaDistance(wavelength, distanceFromGratingToScreen, d, slitDistanceFromGratingCentre);
+    const n = calcualteMaximaDistance(
+      wavelength,
+      distanceFromGratingToScreen,
+      d,
+      slitDistanceFromGratingCentre,
+    );
     const intensity = Math.pow(Math.cos(Math.PI * (n - Math.round(n))), 2);
     color.setAlpha(intensity);
     p.stroke(color);

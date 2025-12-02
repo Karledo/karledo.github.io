@@ -7,14 +7,8 @@ import {
   type SetupGL,
 } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
-import { RefSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/ref-slider";
 import { Latex } from "@/components/latex";
-
-const setup: SetupGL = ({ p: p5 }) => {
-  p5.colorMode(p5.HSL);
-  p5.rectMode(p5.CORNERS);
-  p5.debugMode(p5.GRID);
-};
 
 // These need to be long enough to reach the maximum offset position for the end effector.
 const L2 = 60;
@@ -80,6 +74,12 @@ function inverseKinematics(x: number, y: number, z: number, gamma: number) {
 
   return { points, angles };
 }
+
+const setup: SetupGL = ({ p }) => {
+  p.colorMode(p.HSL);
+  p.rectMode(p.CORNERS);
+  p.debugMode(p.GRID);
+};
 
 const draw: DrawGL = ({ p }) => {
   p.clear();

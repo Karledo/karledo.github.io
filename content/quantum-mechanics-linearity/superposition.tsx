@@ -1,6 +1,6 @@
 "use client";
 
-import { RefSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/ref-slider";
 import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
 import { Latex } from "@/components/latex";
 import { StyledP5Container } from "@/components/p5-container";
@@ -48,7 +48,10 @@ const draw: Draw = ({ p }) => {
   p.stroke(red);
   drawGraph((x: number) => amplitude1 * fn1(x + timeSeconds * timeScale));
   p.stroke(blue);
-  drawGraph((x: number) => amplitude2 * fn2(x + timeSeconds * timeScale + phaseDifference.current));
+  drawGraph(
+    (x: number) =>
+      amplitude2 * fn2(x + timeSeconds * timeScale + phaseDifference.current),
+  );
   p.stroke(green);
   drawGraph(
     (x: number) =>
@@ -80,7 +83,9 @@ export function Superposition() {
         step={0.01}
         map={(value) => value * Math.PI}
         inverseMap={(value) => value / Math.PI}
-        display={(value) => `${value.toFixed(2)}${katex.renderToString(String.raw`\pi`)}`}
+        display={(value) =>
+          `${value.toFixed(2)}${katex.renderToString(String.raw`\pi`)}`
+        }
       />
       <RefSlider
         rangeStyle={{ backgroundColor: "var(--visual-red)" }}

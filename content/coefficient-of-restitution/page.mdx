@@ -1,0 +1,40 @@
+---
+title: Coefficient Of Restitution
+description: A smaller demonstration of the coefficient of restitution
+date: 2025-11-26
+---
+
+import { CoefficientOfRestitutionGround } from "./coefficient-of-restitution-ground";
+import { CoefficientOfRestitutionBall } from "./coefficient-of-restitution-ball-collision";
+import { CollisionPlayground } from "./collision-playground.tsx";
+import { Latex } from "@/components/latex";
+
+So here is a simulation of a collision between two materials, where the coefficient of restitution between the two materials is <Latex text="$e$" />.
+
+The coefficient of restitution is the ratio between the differences in the velocities of the two objects colliding, before and after the collision.
+
+We can write this as the following
+
+<Latex text="$$e = \frac{v_2 - v_1}{u_1 - u_2}$$" />
+
+You might be wondering why we don't use <Latex text="$u_2 - u_1$" /> on the denominator, and this is simply so our coefficient of restitution, <Latex text="$e$" /> a positive number.
+
+Now, you may want to consider the collision between a particle and a wall, and for that we can make the assumption that the wall remains at rest. In that case, our equation simplifies to:
+
+<Latex text="$$e = \frac{0 - v_1}{u_1 - 0} = -\frac{v_1}{u_1}$$" />
+
+Intuitively, you might think of <Latex text="$e$" />, as simply just being the ratio between the particle initial velocity and it's rebound velocity.
+
+<CoefficientOfRestitutionGround />
+
+So far, we've just been considering the velocity of a particle moving directly along the vertical <Latex text="$y$" /> axis, but in reality, this won't always be the case. You might imagine two particles colliding, each with vertical and horizontal velocity. How would we apply the coefficient of restitution in two dimensions.
+
+Well, it's actually more simple than you think, when particles are colliding, the coffiecient of restitution only acts along the _direction_ vector between the two objects. Therefore, we can just transform our Cartesian-defined velocities, that have basis vectors defined in the x- axis and the y- axis <Latex text="$\hat{i}$" /> and <Latex text="$\hat{j}$" /> respectively, into components that act along the direction vector and vector perpendicular to the direction vector.
+
+As the coefficient of restitution only acts along the direction vector between the two objects, the perpendicular component of our velocity remains unaffected. Whereas the velocity along the direction is affected by the coefficient of restitution.
+
+Let's see what happens when we apply that.
+
+We'll also maintain the collisions with the walls, and for now, the balls and the walls are made of the same material, meaning the coefficient of restitution, <Latex text="$e$" />, is the same for all collisions.
+
+<CoefficientOfRestitutionBall />

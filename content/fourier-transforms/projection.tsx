@@ -1,10 +1,11 @@
 "use client";
+
+import P5 from "p5";
+import katex from "katex";
 import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
 import { createText } from "@/utils/sketch-utils";
-import P5 from "p5";
-import katex from "katex";
-import { RefSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/ref-slider";
 import { Latex } from "@/components/latex";
 
 const omega = { current: 0.2 };
@@ -122,7 +123,10 @@ const draw: Draw = ({ p }) => {
 
   text.trig.position(p.width * 0.83, p.height * 0.02);
   text.trig.style("color", red).style("font-size", fontSize);
-  katex.render(String.raw`y = ${trig === Math.cos ? "cos" : "sin"}(\omega t)`, text.trig.elt);
+  katex.render(
+    String.raw`y = ${trig === Math.cos ? "cos" : "sin"}(\omega t)`,
+    text.trig.elt,
+  );
 
   text.f.position(p.width * 0.87, p.height * 0.09);
   text.f.style("color", blue).style("font-size", fontSize);
@@ -130,7 +134,10 @@ const draw: Draw = ({ p }) => {
 
   text.proj.position(p.width * 0.79, p.height * 0.17);
   text.proj.style("color", foreground1).style("font-size", fontSize);
-  katex.render(String.raw`y = f(t)${trig === Math.cos ? "cos" : "sin"}(\omega t)`, text.proj.elt);
+  katex.render(
+    String.raw`y = f(t)${trig === Math.cos ? "cos" : "sin"}(\omega t)`,
+    text.proj.elt,
+  );
 
   p.pop();
 };

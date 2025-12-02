@@ -1,6 +1,6 @@
 "use client";
 
-import { RefSlider } from "@/components/base-slider";
+import { RefSlider } from "@/components/ref-slider";
 import { defaultSketch, Draw, Setup } from "@/components/default-sketch";
 import { StyledP5Container } from "@/components/p5-container";
 import P5 from "p5";
@@ -19,7 +19,12 @@ class Ball {
   velocity: P5.Vector;
   diameter: number;
 
-  constructor(p: P5, position: P5.Vector, velocity: P5.Vector, diameter: number) {
+  constructor(
+    p: P5,
+    position: P5.Vector,
+    velocity: P5.Vector,
+    diameter: number,
+  ) {
     this.p = p;
     this.position = position;
     this.velocity = velocity;
@@ -40,7 +45,11 @@ class Ball {
       const x = xVelocityRef.current * t;
       const y = -yVelocityRef.current * t + 0.5 * gravity * t * t;
 
-      this.p.circle(this.diameter + x, this.p.height - this.diameter + y, this.diameter * 0.2);
+      this.p.circle(
+        this.diameter + x,
+        this.p.height - this.diameter + y,
+        this.diameter * 0.2,
+      );
     }
   }
 

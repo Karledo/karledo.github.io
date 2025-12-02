@@ -51,7 +51,12 @@ export const P5Container = ({ sketch, ...props }: P5ContainerProps) => {
   return <div {...props} ref={ref}></div>;
 };
 
-export const StyledP5Container = ({ sketch }: { sketch: P5Sketch }) => {
+export const StyledP5Container = ({
+  sketch,
+}: {
+  className?: string;
+  sketch: P5Sketch;
+}) => {
   return (
     <P5Container
       sketch={sketch}
