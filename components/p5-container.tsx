@@ -1,5 +1,3 @@
-"use client";
-
 import { HTMLAttributes, useEffect, useRef, useState } from "react";
 import P5 from "p5";
 
@@ -53,12 +51,16 @@ export const P5Container = ({ sketch, ...props }: P5ContainerProps) => {
   return <div {...props} ref={ref}></div>;
 };
 
-type DefaultP5ContainerProps = {
+export const StyledP5Container = ({
+  sketch,
+}: {
+  className?: string;
   sketch: P5Sketch;
-};
-
-export const StyledP5Container = ({ sketch }: DefaultP5ContainerProps) => {
+}) => {
   return (
-    <P5Container sketch={sketch} className="bg-background-200 relative mb-4 overflow-hidden rounded-xl pt-[56.25%]" />
+    <P5Container
+      sketch={sketch}
+      className="bg-background-200 relative mb-4 overflow-hidden rounded-xl pt-[56.25%]"
+    />
   );
 };

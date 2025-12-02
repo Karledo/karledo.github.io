@@ -7,12 +7,13 @@ type AnchoredHeaderProps = {
 };
 
 export function AnchoredHeader({ id, children }: AnchoredHeaderProps) {
+  const href = id ? `#${id}` : undefined;
   return (
-    <h3 className="mt-14 font-medium">
-      <a className="group inline-flex items-center gap-x-2" id={id} href={`#${id}`}>
+    <h2 className="mt-14 font-medium">
+      <a className="group inline-flex items-center gap-x-2" id={id} href={href}>
         <span>{children}</span>
         <Link2Icon className="text-foreground-200 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </a>
-    </h3>
+    </h2>
   );
 }

@@ -15,14 +15,20 @@ export const arrow = (
   const dir = point2.copy().sub(point1).normalize();
   const perp = dir.copy().rotate(p.PI * 0.5);
 
-  const tail = doubleSided ? point1.copy().add(dir.copy().mult(arrowHeadSize)) : point1;
+  const tail = doubleSided
+    ? point1.copy().add(dir.copy().mult(arrowHeadSize))
+    : point1;
   const head = point2.copy().add(dir.copy().mult(-arrowHeadSize));
 
   p.push();
   p.line(tail.x, tail.y, head.x, head.y);
 
-  const headTrianglePoint1 = head.copy().add(perp.copy().mult(arrowHeadSize / 2));
-  const headTrianglePoint2 = head.copy().add(perp.copy().mult(-arrowHeadSize / 2));
+  const headTrianglePoint1 = head
+    .copy()
+    .add(perp.copy().mult(arrowHeadSize / 2));
+  const headTrianglePoint2 = head
+    .copy()
+    .add(perp.copy().mult(-arrowHeadSize / 2));
   p.noStroke();
   p.triangle(
     headTrianglePoint1.x,
@@ -34,8 +40,12 @@ export const arrow = (
   );
 
   if (doubleSided) {
-    const tailTrianglePoint1 = tail.copy().add(perp.copy().mult(-arrowHeadSize / 2));
-    const tailTrianglePoint2 = tail.copy().add(perp.copy().mult(arrowHeadSize / 2));
+    const tailTrianglePoint1 = tail
+      .copy()
+      .add(perp.copy().mult(-arrowHeadSize / 2));
+    const tailTrianglePoint2 = tail
+      .copy()
+      .add(perp.copy().mult(arrowHeadSize / 2));
     p.triangle(
       tailTrianglePoint1.x,
       tailTrianglePoint1.y,
@@ -48,7 +58,13 @@ export const arrow = (
   p.pop();
 };
 
-export const marque = (p: P5, x1: number, y1: number, x2: number, y2: number) => {
+export const marque = (
+  p: P5,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+) => {
   p.push();
   p.rectMode(p.CORNERS);
   p.erase();
@@ -82,10 +98,21 @@ export const grid = (p: P5, spacing: number) => {
   p.pop();
 };
 
-export const createText = (p: P5, ...args: string[]) => {
-  return Object.fromEntries(
+export const createText = (p: P5, ...args: string[]) =>
+  Object.fromEntries(
     args.map((value) => {
       return [value, p.createP().style("font-size", "1rem")];
     }),
   );
+
+export const createParagraphs = (p: P5, count: number) => {
+  const paragraphs: P5.Element[] = [];
+  for (let i = 0; i < count; i++) {
+    paragraphs.push(p.createP().style("font-size", "1rem"));
+  }
+  return paragraphs;
+};
+
+export const createParagraph = (p: P5) => {
+  return p.createP().style("font-size", "1rem");
 };
