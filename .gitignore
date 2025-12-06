@@ -2,6 +2,7 @@
 
 # development dependecies
 /.vscode/
+/archive/
 
 # dependencies
 /node_modules
