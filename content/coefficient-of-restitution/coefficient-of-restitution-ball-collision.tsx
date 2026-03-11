@@ -259,7 +259,7 @@ const draw: Draw = ({ p }) => {
         midpoint.x +
           p.width * 0.02 * Math.sign(ball.velocity.x) -
           (ball.velocity.x < 0 ? tag.elt.offsetWidth : 0),
-        midpoint.y,
+        midpoint.y - p.height * 0.01,
       );
       katex.render(
         String.raw`${(ball.velocity.mag() / velocityScale).toFixed(1)}`,
@@ -271,7 +271,11 @@ const draw: Draw = ({ p }) => {
       tag.style("display", "none");
     }
 
+    p.push();
+    p.noFill();
+    p.stroke(foreground1);
     ball.draw();
+    p.pop();
   }
   p.pop();
 };
