@@ -88,6 +88,7 @@ class Ball extends Object {
 
   draw() {
     this.p.push();
+    this.p.fill("red");
     this.p.circle(this.position.x, this.position.y, this.p.width * 0.05);
     this.p.pop();
   }
