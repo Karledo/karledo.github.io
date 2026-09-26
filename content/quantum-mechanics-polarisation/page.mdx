@@ -8,7 +8,6 @@ import { AnchoredHeader } from "@/components/anchored-header";
 import { Latex } from "@/components/latex";
 import { SplittingWaveComponents } from "./splitting-wave-components";
 
-
 <AnchoredHeader id="discovering-the-photon">Discovering the Photon</AnchoredHeader>
 
 Maxwell’s equations allowed for the existence of propagating waves. He conjectured that light was an electromagnetic wave, a propagating electric and magnetic field.
@@ -41,7 +40,7 @@ Now, imagine let's say that you described the amplitude of this wave as <Latex t
 
 <SplittingWaveComponents />
 
-The energy of a wave is proportional to the square of its amplitude, or rather, the energy is proportional the intensity of the wave. The intensity, in this case, is how many of these photons—these packets of <Latex text="$h \nu$" />— are being sent by the wave.
+The energy of a wave is proportional to the square of its amplitude, or rather, the energy is proportional the intensity of the wave. The intensity, in this case, is how many of these photons, these packets of <Latex text="$h \nu$" />, are being sent by the wave.
 
 <div className="flex flex-col items-center">
   <Latex text="$E \propto I \propto A^2  $"/ >
@@ -51,8 +50,7 @@ It's tempting to believe that this means <Latex text="$\frac{1}{2}$" /> of the e
 
 But wait a moment, didn't we describe these photons to be *indivisible chunks of energy*.
 
-With this description however, that would imply these horizontal and vertical components have energy smaller than a photon. Remember, you cannot reduce the energy of the wave to be less than one photon—one packet of <Latex text="$h \nu$" />—without eliminating it entirely.
-
+With this description however, that would imply these horizontal and vertical components have energy smaller than a photon. Remember, you cannot reduce the energy of the wave to be less than one photon, one packet of <Latex text="$h \nu$" />, without eliminating it entirely.
 
 Well, if the energy isn't split into the different components, then what happens to the energy the wave once it goes through the filter. Surely, the polarizing filter has to change the wave in some way.
 
@@ -72,7 +70,7 @@ Let's imagine another example. Let's say that you had light which was polarized 
   </div>
 </div>
 
-<span className="text-visual-blue"><Latex text="$\ket{\psi}$" /></span> represents the polarisation state of the wave—a wave with a <Latex text="$22.5 \degree$" /> polarisation from the vertical—which we have chosen to describe in terms of the superposition of the two states, horizontal <span className="text-visual-red"><Latex text="$\ket{\rightarrow}$" /></span> and vertical <span className="text-visual-green"><Latex text="$\ket{\uparrow}$" /></span>, which are weight by their amplitudes <Latex text="$sin(22.5 \degree)$"/> and <Latex text="$cos(22.5 \degree)$" /> respectively.
+<span className="text-visual-blue"><Latex text="$\ket{\psi}$" /></span> represents the polarisation state of the wave, a wave with a <Latex text="$22.5 \degree$" /> polarisation from the vertical, which we have chosen to describe in terms of the superposition of the two states, horizontal <span className="text-visual-red"><Latex text="$\ket{\rightarrow}$" /></span> and vertical <span className="text-visual-green"><Latex text="$\ket{\uparrow}$" /></span>, which are weight by their amplitudes <Latex text="$sin(22.5 \degree)$"/> and <Latex text="$cos(22.5 \degree)$" /> respectively.
 
 Classically, you might think of the horizontal component having an amplitude of <Latex text="$sin(22.5) \approx 0.38$" /> and energy proportional to <Latex text="$sin^2(22.5) \approx 0.15$"/>. And you might think of the vertical component as having an amplitude of <Latex text="$cos(22.5) \approx 0.92$" /> and energy proportional to <Latex text="$cos^2(22.5) \approx 0.85$"/>.
 
@@ -80,5 +78,4 @@ But because the energy of light comes in these discrete indivisible packets, ins
 
 Once the photon has passed through the filter. The state of the filter, <span className="text-visual-blue"><Latex text="$\ket{\psi}$" /></span>, *collapses* from previously being a state of having a <Latex text="$15\%$" /> probability of being horizontal, <span className="text-visual-red"><Latex text="$\ket{\rightarrow}$" /></span>, and a <Latex text="$85\%$" /> probability of being vertical, <span className="text-visual-green"><Latex text="$\ket{\uparrow}$" /></span>, to instead having a <Latex text="$100\%$" /> probability of being vertical.
 
-This demonstrates something quite fundamental in quantum mechanics. Once we attempt to measure some quantum state, we essentially make the state *pick* a definite state—this is called wave function *collapse* because the multiple different states of the wave function collapse into *single state*.
-
+This demonstrates something quite fundamental in quantum mechanics. Once we attempt to measure some quantum state, we essentially make the state *pick* a definite state, this is called wave function *collapse* because the multiple different states of the wave function collapse into *single state*.

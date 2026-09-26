@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://karledo.github.io"),
   title: "Karl Edochie",
   description:
-    "Driven by curiosity, building with logic, striving for novelty—always moving forward.",
+    "Driven by curiosity, building with logic, striving for novelty, always moving forward.",
   creator: "Karl Edochie",
   publisher: "Karl Edochie",
   alternates: {

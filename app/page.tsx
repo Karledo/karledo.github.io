@@ -7,7 +7,7 @@ export default async function Page() {
       <div className="mb-7 space-y-7">
         <h1 className="text-foreground-100 mb-6">Karl Edochie</h1>
         <p>
-          Driven by curiosity, building with logic, striving for novelty—always
+          Driven by curiosity, building with logic, striving for novelty, always
           moving forward.
         </p>
       </div>

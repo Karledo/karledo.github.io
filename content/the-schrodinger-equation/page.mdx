@@ -8,10 +8,9 @@ import { AnchoredHeader } from "@/components/anchored-header";
 import { Latex } from "@/components/latex";
 import { WaveFunction } from "./wave-function";
 
-
 <AnchoredHeader id="wave-particle-duality">Wave-Particle Duality</AnchoredHeader>
 
-Whilst others were debating whether light was a particle or a wave, a suggestion was made by Louis de Broglie, that all things with matter could also behave like waves—this includes electrons, protons, and atoms et cetera. He related this idea with this equation.
+Whilst others were debating whether light was a particle or a wave, a suggestion was made by Louis de Broglie, that all things with matter could also behave like waves, this includes electrons, protons, and atoms et cetera. He related this idea with this equation.
 
 <div className="flex flex-col items-center">
   <Latex text="$\lambda = \frac{h}{p}$" />
@@ -21,7 +20,7 @@ This equation relates that the wavelength of a particle <Latex text="$\lambda$" 
 
 <AnchoredHeader id="what-is-the-schrodinger-equation">What is the Schrödinger Equation</AnchoredHeader>
 
-Schrödinger used the idea of conservation of energy and these matter waves described by de Broglie to come up with his equation—the Schrödinger Equation. The time-dependent Schrödinger Equation describes how the wave function of a quantum system evolves over time.
+Schrödinger used the idea of conservation of energy and these matter waves described by de Broglie to come up with his equation, the Schrödinger Equation. The time-dependent Schrödinger Equation describes how the wave function of a quantum system evolves over time.
 
 <div className="flex flex-col items-center">
   <Latex text="$i\hbar \frac{\delta\psi}{\delta t} = \frac{-\hbar^2}{2m} \frac{\delta^2 \psi}{\delta x^2} + V\psi$" />
@@ -33,7 +32,7 @@ The notation can be somewhat overwhelming, but essentially what this equation sa
   <Latex text="$i\hbar \frac{\delta \psi}{\delta t} = H\psi$" />
 </div>
 
-We can use the Hamiltonian operator—also known as the Schrödinger operator to simplify this equation. This operator encapsulates calculating the kinetic energy and the potential energy of the wave function, into a function, so we can instead just apply the operator to the wave function instead.
+We can use the Hamiltonian operator, also known as the Schrödinger operator to simplify this equation. This operator encapsulates calculating the kinetic energy and the potential energy of the wave function, into a function, so we can instead just apply the operator to the wave function instead.
 
 At a basic level, The Schrödinger Equation tells us the rate of change of a wave function with respective to time. Schrödinger used the idea of the conservation of energy and matter waves. Any wave functions that solve the Schrödinger equation
 
@@ -52,4 +51,3 @@ For example if I had a time-dependent wave function <Latex text="$\psi(x, t)$" /
 <WaveFunction />
 
 <span className="text-foreground-200 text-sm">Press and hold on the canvas to collapse the wave function</span>
-
