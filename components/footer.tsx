@@ -16,6 +16,7 @@ export function Footer() {
     <footer>
       <div className="border-background-300 mt-10 flex items-center justify-between border-t pt-10">
         <span className="text-foreground-200 text-sm">Karl Edochie</span>
+        <span className="text-foreground-300 text-sm">No AI was used in the making of this website</span>
         <div className="text-foreground-200 inline-flex gap-x-3">
           {links.map(({ icon, href }) => (
             <a

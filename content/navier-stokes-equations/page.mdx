@@ -1,0 +1,221 @@
+---
+title: Navier Stokes Equations
+description: "Learning about the Navier-Stokes Equations"
+date: 2026-09-30
+---
+
+import { AnchoredHeader } from "@/components/anchored-header";
+import { Latex } from "@/components/latex";
+
+<AnchoredHeader id="the-navier-stokes-equations">What are the Navier-Stokes Equations?</AnchoredHeader>
+
+The Navier-Stokes Equations are a set of equations that govern the motion of viscous fluids, but in this explainer we're going to go over the Navier-Stokes Equations for incompressible fluids.
+
+Now you may be thinking, what's the use of this, why would we ever need to model the motion of fluids, other than for our own enjoyment of seeing *splish-splash-splosh*.
+
+Well, there are many doors that open when you're able to accurately model a fluid. Think about an aerospace engineer, modelling the airflow around a wing to optimize for lift and drag, or perhaps an automotive engineer optimizing fuel efficiency for land vehicles.
+
+Weather patterns, ocean currents, and blood flow in the arteries can all be modelled, which helps in designing medical devices such as stents. All of these are useful applications of the Navier-Stokes Equations, where the challenge really comes down to accurately modelling a fluid.
+
+Since we've been talking about the Navier-Stokes Equations, let's finally have a look at them. The Navier-Stokes Equations are a set of two equations. It's about time that I showed you the first Navier-Stokes Equation, which is often called the *continuity equation*.
+
+<AnchoredHeader id="the-continuity-equation">The Continuity Equation</AnchoredHeader>
+
+<Latex text="$$\nabla \cdot \mathbf{v} = 0$$" />
+
+At first glance... this looks very unfamiliar, <Latex text="$\mathbf{v}$"/> is the velocity field of the fluid, but since when did we start using *triangles* in Mathematics. To be able to understand what relationship this equation is encoding, we're going to have to learn about the '*nabla operator*', <Latex text="$\nabla$" />.
+
+<AnchoredHeader id="the-nabla-operator">The Nabla Operator</AnchoredHeader>
+
+In general, an operator takes a function and returns a function. One that you may be familiar with is the differential operator, <Latex text="$\frac{d}{dx}$" />. The nabla operator is another type of operator, which in two dimensions expands to
+
+<Latex text="$$\nabla = \begin{pmatrix} \frac{\partial}{\partial x} \\[6pt] \frac{\partial}{\partial y} \end{pmatrix}$$" />
+
+Well, first of all, as we can see, the nabla operator is a vector of operators, and each component of it is a *partial differential operator* with respect to each spatial dimension. But hang on, we have something else that's new that we need to define, *partial derivatives*.
+
+To put it simply, partial derivatives measure how much a function changes with respect to one variable, when you hold everything else constant.
+
+<Latex text="$$\frac{\partial}{\partial x}$$" />
+
+If we apply that understanding of the operator to the first component, we're essentially asking, if I walk in the *x-direction* alone, fixing every other dimension, give me a new function that tells me how the function changes. The nabla operator then packages up these differential operators into a vector.
+
+But there are multiple ways that we can apply it to a vector field.
+
+<Latex text="$$\nabla \cdot \mathbf{F}$$" />
+<Latex text="$$\nabla \mathbf{F}$$" />
+<Latex text="$$\nabla \times \mathbf{F}$$" />
+
+We're not going to go through all of these right now, but we are going to go through the one that's relevant to the continuity equation.
+
+<Latex text="$$\nabla \cdot \mathbf{F}$$" />
+
+Let's go ahead and define the vector field, <Latex text="$\mathbf{F}$" />.
+
+<Latex text="$$\mathbf{F} = \begin{pmatrix} F_x(x, y) \\[6pt] F_y(x, y) \end{pmatrix}$$" />
+
+I want you to realise something important here, the value of <Latex text="$F_x$" /> and <Latex text="$F_y$" /> is dependent on both <Latex text="$x$" /> and <Latex text="$y$" />. In other words, if we want to know the x-component of the vector at a point in the field, it is defined in terms of both <Latex text="$x$" /> and <Latex text="$y$" />.
+
+The dot operator <Latex text="$\cdot$"/> multiplies two vectors, component by component and adds up the result to produce a single number, we like to call regular 1D numbers, scalars.
+
+Following this, the continuity equation for incompressible fluids expands out to be
+
+<Latex text="$$\nabla \cdot \mathbf{v} = 0$$" />
+<Latex text="$$
+\begin{pmatrix} \frac{\partial}{\partial x} \\[6pt] \frac{\partial}{\partial y} \end{pmatrix}
+\cdot
+\begin{pmatrix} v_x(x, y) \\[6pt] v_y(x, y) \end{pmatrix}
+=
+\frac{\partial v_x}{\partial x} + \frac{\partial v_y}{\partial y}
+=
+0
+$$" />
+
+Now we've stumbled upon an interesting result.
+
+<Latex text="$$
+\frac{\partial v_x}{\partial x} + \frac{\partial v_y}{\partial y} = 0
+$$" />
+
+Let's try and reason through this. Each component is measuring, when we walk in that dimension, by how much the velocity field <Latex text="$\mathbf{v}$" /> changes.
+
+When we walk in each direction and sum those changes together, they sum to zero. Now imagine, we had the fluid expanding in the x-direction so <Latex text="$\frac{\partial v_x}{\partial x}$" /> is positive, well the equation states that we must have the fluid compressing in the y-direction, so <Latex text="$\frac{\partial v_y}{\partial y}$" /> must be negative making the sum equal zero. Meaning the area of a small patch of fluid doesn't change in 2D, and the volume of our fluid doesn't change in 3D.
+
+The formal name for <Latex text="$\nabla \cdot \mathbf{F}$" /> is the *divergence* of the vector field <Latex text="$\mathbf{F}$" />, and it's a measure of how much a field spreads out from or flows into a point. In our example here, the net flow of fluid is zero. In other words, *conservation of mass*, there are no sinks or sources of fluid.
+
+<AnchoredHeader id="the-momentum-equation">The Momentum Equation</AnchoredHeader>
+
+Now that we've gone through the continuity equation, let's go through the second equation for the Navier-Stokes Equations. The momentum equation is
+
+<Latex text="$$\rho \left( \frac{\partial \mathbf{v}}{\partial t} + (\mathbf{v} \cdot \nabla)\mathbf{v} \right) = -\nabla p + \mu \nabla^2 \mathbf{v} + \mathbf{f}$$" />
+
+This equation is a little bit more complicated than the last one. But hopefully, using the understanding that we've built up, we can reason through it.
+
+Let's look at the left-hand side of the equation first.
+
+<Latex text="$$\rho \left( \frac{\partial \mathbf{v}}{\partial t} + (\mathbf{v} \cdot \nabla)\mathbf{v} \right)$$" />
+
+<Latex text="$\rho$" /> is just the density of the fluid. For our incompressible fluid the density is constant. <Latex text="$\left( \frac{\partial \mathbf{v}}{\partial t} + (\mathbf{v} \cdot \nabla)\mathbf{v} \right)$" /> on the other hand, is the acceleration.
+
+The left-hand side is therefore *density* <Latex text="$\times$" /> *acceleration*, if we start with Newton's Second Law, and divide both sides by volume, we get
+
+<Latex text="$$F = ma$$" />
+<Latex text="$$\frac{F}{V} = \frac{m}{V}a = \rho a$$" />
+
+So therefore, the left-hand side is the *force* per *unit volume* of fluid. So rather than describing the motion of a finite fluid, the Navier-Stokes Equations allow us to extend to any size fluid, by considering the forces acting on its *unit volume* fluid parcels.
+
+<AnchoredHeader id="the-acceleration-term">The Acceleration Term</AnchoredHeader>
+
+Now let's look at the acceleration term
+<Latex text="$$\left( \frac{\partial \mathbf{v}}{\partial t} + (\mathbf{v} \cdot \nabla)\mathbf{v} \right)$$" />
+
+<Latex text="$\frac{\partial \mathbf{v}}{\partial t}$" /> is the rate of change of velocity against time. But note that because this is a partial derivative, it describes how the velocity changes over time when we don't change position, and this touches on something important.
+
+There are two ways for our fluid to change its velocity, it either moves to a region where the velocity field has differing velocity, or it accelerates over time at its current position.
+
+<Latex text="$(\mathbf{v} \cdot \nabla)\mathbf{v}$" /> accounts for this change in velocity from changing position. In this case here, <Latex text="$(\mathbf{v} \cdot \nabla)$" /> is not the divergence of <Latex text="$\mathbf{v}$" />, that would be <Latex text="$(\nabla \cdot \mathbf{v})$" />. There is a difference between <Latex text="$v_x \frac{\partial}{\partial x}$" /> and <Latex text="$\frac{\partial v_x}{\partial x}$" />.
+
+If we expand out <Latex text="$(\mathbf{v} \cdot \nabla)\mathbf{v}$" />, we can see what this term is targeting.
+
+<Latex text="$$(\mathbf{v} \cdot \nabla)\mathbf{v} = \left( v_x \frac{\partial}{\partial x} + v_y \frac{\partial}{\partial y} \right) \mathbf{v} = v_x \frac{\partial \mathbf{v}}{\partial x} + v_y \frac{\partial \mathbf{v}}{\partial y} = \frac{dx}{dt}\frac{\partial \mathbf{v}}{\partial x} + \frac{dy}{dt}\frac{\partial \mathbf{v}}{\partial y}$$" />
+
+<Latex text="$\frac{dx}{dt}\frac{\partial \mathbf{v}}{\partial x}$" /> is how fast a unit volume of fluid is moving in the x-direction <Latex text="$\frac{dx}{dt}$" />, *scaled* by how fast velocity climbs with position in the field when moving in the x-direction <Latex text="$\frac{\partial \mathbf{v}}{\partial x}$" />.
+
+<Latex text="$\frac{dy}{dt}\frac{\partial \mathbf{v}}{\partial y}$" /> does the same but in the y-direction. Because <Latex text="$\frac{\partial \mathbf{v}}{\partial x}$" /> and <Latex text="$\frac{\partial \mathbf{v}}{\partial y}$" /> are vectors, the result is still a vector.
+
+<Latex text="$$(\mathbf{v} \cdot \nabla)\mathbf{v} = \begin{pmatrix} v_x \dfrac{\partial v_x}{\partial x} + v_y \dfrac{\partial v_x}{\partial y} \\[10pt] v_x \dfrac{\partial v_y}{\partial x} + v_y \dfrac{\partial v_y}{\partial y} \end{pmatrix}$$" />
+
+This is often called the *convective acceleration*. Just how you have convection currents, fluid can be carried away into different positions, where the velocity of the fluid there is different.
+
+<AnchoredHeader id="the-right-hand-side">The Right-Hand Side</AnchoredHeader>
+
+Now let's look at the right-hand side, the first thing that we can see is different, is the way that the nabla operator is being used. Let's focus on the first term <Latex text="$-\nabla p$" />. This notation <Latex text="$\nabla p$" /> is the result of scaling the vector <Latex text="$\nabla$" /> by <Latex text="$p$" />, since the pressure field, <Latex text="$p$" /> is a scalar field.
+
+<Latex text="
+$$\nabla p =
+\begin{pmatrix} \dfrac{\partial}{\partial x} \\[8pt] \dfrac{\partial}{\partial y} \end{pmatrix}
+p =
+\begin{pmatrix}
+\dfrac{\partial p}{\partial x}  \\[10pt]
+\dfrac{\partial p}{\partial y}
+\end{pmatrix}
+$$" />
+
+Well, what does this describe? It measures how much <Latex text="$p$" /> changes as you move along the x and y directions. The formal term for this is the *gradient* of the scalar field, <Latex text="$p$" />.
+
+Quick side-note, if we instead apply <Latex text="$\nabla$" /> to a vector field, we get the *gradient* of the vector field: a matrix of every partial derivative of each component (the outer product of <Latex text="$\nabla$"/> with <Latex text="$\mathbf{v}$" />, treating <Latex text="$\mathbf{v}$" /> as a row).
+
+Let's quickly just verify the units. We can start with the definition of pressure. Since we're looking at how the pressure changes per unit length in each direction, we can divide both sides by the length.
+
+<Latex text="$$p = \frac{F}{A}$$" />
+<Latex text="$$\frac{p}{L} = \frac{F}{AL} = \frac{F}{V}$$" />
+
+As we can see, we get force per unit volume again, which is equivalent to our left-hand side. Perfect! Two more terms to go.
+
+<AnchoredHeader id="the-viscosity-term">The Viscosity Term</AnchoredHeader>
+
+Let's have a look at the viscosity term.
+
+<Latex text="$$\mu \nabla^{2}\mathbf{v}$$" />
+
+Here we have some new notation, we have <Latex text="$\nabla^{2}$" />, which expands to a dot product, <Latex text="$\nabla \cdot \nabla$" />. Using our previous knowledge of dot products, this is the *divergence* of the gradient <Latex text="$(\nabla)$" /> operator. So we've essentially made a new operator.
+
+We're going to call this new operator, the *Laplacian operator*. Remember, when we apply this to a vector field, it gives us the divergence of the gradient for each component, and it's a scalar operator.
+
+<Latex text="$$\nabla^2 = \nabla \cdot \nabla = \left( \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} \right) $$" />
+
+When we then apply this scalar operator to the vector field per component, we get
+
+<Latex text="$$\mu \nabla^2 \mathbf{v}
+= \mu \left( \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} \right)
+\begin{pmatrix} v_x \\[6pt] v_y \end{pmatrix}
+= \mu
+\begin{pmatrix}
+\dfrac{\partial^2 v_x}{\partial x^2} + \dfrac{\partial^2 v_x}{\partial y^2} \\[10pt]
+\dfrac{\partial^2 v_y}{\partial x^2} + \dfrac{\partial^2 v_y}{\partial y^2}
+\end{pmatrix}$$" />
+
+Every row in the resulting vector sums how fast the gradient of that component of the velocity is changing in each direction (i.e. the *divergence* of the gradient of that component).
+
+So it asks, how fast does the gradient of the velocity field change away from a point. It can sometimes help to think of <Latex text="$\nabla^2\mathbf{v}$" /> as <Latex text="$\nabla \cdot \left( \nabla \mathbf{v} \right)$" />. This works because it gives the same result.
+
+<Latex text="$$
+(\nabla \cdot \nabla)\mathbf{v}
+= \left( \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} \right) \mathbf{v}
+  $$" />
+
+<Latex text="$$\nabla \cdot (\nabla \mathbf{v}) = \frac{\partial}{\partial x}\left( \frac{\partial \mathbf{v}}{\partial x} \right) + \frac{\partial}{\partial y}\left( \frac{\partial \mathbf{v}}{\partial y} \right)
+$$" />
+
+Both of them expand to give
+
+<Latex text="$$
+\frac{\partial^2 \mathbf{v}}{\partial x^2} + \frac{\partial^2 \mathbf{v}}{\partial y^2}
+  $$" />
+
+<Latex text="$\mu$" /> is just the viscosity, which is a property of the fluid, given in *pascal seconds*, <Latex text="$\mathrm{Pa\,s}$" />. We're assuming a constant viscosity (a Newtonian fluid), alongside our constant density.
+
+So overall, the viscosity term is asking how *fast* the gradient of the velocity is changing with position, i.e. the slope of the gradient, and then scaling that by the viscosity.
+
+Verifying the units again, we get
+
+<Latex text="$$\mathrm{Pa\,s \cdot ms^{-1}\,m^{-2}}$$" />
+
+Which simplifies to pressure per unit length.
+
+<Latex text="$$\mathrm{Pa\,m^{-1}}$$" />
+
+Pressure is force per unit area, so we get force per unit area, per unit length.
+
+<Latex text="$$\frac{p}{L} = \frac{F}{AL} = \frac{F}{V}$$" />
+
+Which equals force per unit volume, the same units as before.
+
+<AnchoredHeader id="external-forces">External Forces</AnchoredHeader>
+
+The last term is very simple, it just accounts for external forces. An important thing to remember is that we specify the force per unit volume, therefore any external forces, such as the force of gravity, must be given per unit volume. For gravity that is:
+
+<Latex text="$$\mathbf{f} = \rho \mathbf{g}$$" />
+
+<AnchoredHeader id="final-notes">Final Notes</AnchoredHeader>
+
+And with that, we have worked our way through the differential form of the Navier-Stokes Equations. The Navier-Stokes Equations lend very nicely to teaching these concepts of divergence, the laplacian, and partial derivatives, because you already have a quite visceral understanding of how fluids are supposed to act, and what it means to flow in a field.
