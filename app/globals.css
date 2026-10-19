@@ -33,6 +33,11 @@
   text-shadow: none;
 }
 
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 body {
   color: var(--color-foreground-100);
   background: var(--color-background-100);

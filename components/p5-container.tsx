@@ -63,4 +63,5 @@ export const StyledP5Container = ({
       className="bg-background-200 relative mb-4 overflow-hidden rounded-xl pt-[56.25%]"
     />
   );
-};
+}
+
