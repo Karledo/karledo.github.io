@@ -124,7 +124,7 @@ const draw: Draw = ({ p }) => {
   text.trig.position(p.width * 0.83, p.height * 0.02);
   text.trig.style("color", red).style("font-size", fontSize);
   katex.render(
-    String.raw`y = ${trig === Math.cos ? "cos" : "sin"}(\omega t)`,
+    String.raw`y = ${trig === Math.cos ? String.raw`\cos` : String.raw`\sin`}(\omega t)`,
     text.trig.elt,
   );
 
@@ -135,7 +135,7 @@ const draw: Draw = ({ p }) => {
   text.proj.position(p.width * 0.79, p.height * 0.17);
   text.proj.style("color", foreground1).style("font-size", fontSize);
   katex.render(
-    String.raw`y = f(t)${trig === Math.cos ? "cos" : "sin"}(\omega t)`,
+    String.raw`y = f(t)${trig === Math.cos ? String.raw`\cos` : String.raw`\sin`}(\omega t)`,
     text.proj.elt,
   );
 

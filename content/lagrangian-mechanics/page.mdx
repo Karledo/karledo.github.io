@@ -5,17 +5,19 @@ date: 2026-08-25
 ---
 
 import { AnchoredHeader } from "@/components/anchored-header";
-import { FixedPendulum} from "./fixed-pendulum.tsx"
-import { Pendulum} from "./pendulum.tsx"
-import { FixedDoublePendulum} from "./fixed-double-pendulum.tsx"
-import { StationaryGraph } from "./stationary-graph.tsx"
-import { StationaryAction } from "./stationary-action.tsx"
-import { DoublePendulum} from "./double-pendulum.tsx"
+import { FixedPendulum } from "./fixed-pendulum.tsx";
+import { Pendulum } from "./pendulum.tsx";
+import { FixedDoublePendulum } from "./fixed-double-pendulum.tsx";
+import { StationaryGraph } from "./stationary-graph.tsx";
+import { StationaryAction } from "./stationary-action.tsx";
+import { DoublePendulum } from "./double-pendulum.tsx";
 import { Latex } from "@/components/latex";
 
 You're probably already quite familiar with one of the forms of classical mechanics, that being Newtonian mechanics. Newtonian mechanics is most likely the formulation of classical mechanics that you used all the way through secondary school, but let's first understand how we use Newtonian mechanics.
 
-<AnchoredHeader id="building-from-newtonian-mechanics">Building from Newtonian Mechanics</AnchoredHeader>
+<AnchoredHeader id="building-from-newtonian-mechanics">
+  Building from Newtonian Mechanics
+</AnchoredHeader>
 
 Newtonian mechanics works on the basis of three laws.
 
@@ -26,7 +28,10 @@ Newtonian mechanics works on the basis of three laws.
 
 <div className="flex flex-col items-center gap-y-2">
   <span className="text-foreground-200 text-sm">Newton's Second Law</span>
-  <span className="text-center w-[75%]">*The acceleration of an object is directly proportional to the resultant force acting upon it and inversely proportional to its mass*</span>
+  <span className="w-[75%] text-center">
+    *The acceleration of an object is directly proportional to the resultant
+    force acting upon it and inversely proportional to its mass*
+  </span>
 </div>
 
 <div className="flex flex-col items-center gap-y-2">
@@ -46,34 +51,40 @@ Defining <Latex text="$\theta$" /> as the angle of the string from downwards ver
 
 <FixedPendulum />
 
-<Latex text="$$
+<Latex
+  text="$$
 \begin{aligned}
 -T\sin(\theta) &= m\ddot{x} \\
 mg - T\cos(\theta) &= m\ddot{y}
 \end{aligned}
-$$" />
+$$"
+/>
 
 We also have the restriction that the string is inextensible, so we can also state that
 
-<Latex text="$$
+<Latex
+  text="$$
 \begin{aligned}
 x &= L\sin(\theta) \\
 y &= L\cos(\theta)
 \end{aligned}
-$$" />
+$$"
+/>
 
 And then we can also differentiate with respect to time, and remembering to use the chain rule, we get these results
 
-<Latex text="$$
+<Latex
+  text="$$
 \begin{gathered}
 \dot{x} = L\dot{\theta}\cos\theta \\
 \ddot{x} = L\ddot{\theta}\cos\theta - L\dot{\theta}^2\sin\theta \\
 \dot{y} = -L\dot{\theta}\sin\theta \\
 \ddot{y} = -L\ddot{\theta}\sin\theta - L\dot{\theta}^2\cos\theta
 \end{gathered}
-$$" />
+$$"
+/>
 
-I'm not going to bore you with the algebra to eliminate <Latex text="$\ddot{x}$" />, <Latex text="$\ddot{y}$" /> and <Latex text="$T$" />, but we get to a nice equation for the *angular acceleration*, which ends up being
+I'm not going to bore you with the algebra to eliminate <Latex text="$\ddot{x}$" />, <Latex text="$\ddot{y}$" /> and <Latex text="$T$" />, but we get to a nice equation for the _angular acceleration_, which ends up being
 
 <Latex text="$$\ddot{\theta} = -\frac{g}{L}\sin(\theta)$$" />
 
@@ -91,7 +102,7 @@ Let's start with the same definitions as before, but we will define a new angle 
 
 The equations of motion are now coupled. The first bob feels the tension in the second string as well as the tension in the first, and the second bob hangs from the first, so its motion includes the first bob’s. Each bob’s acceleration depends on the other’s, so neither pendulum can be solved without the other.
 
-This is fine, and it's probably an obvious result that the two pendulums are interconnected. But the bigger problem is the algebra. We have to resolve both the *tensions* into Cartesian components, using the angles of each pendulum, and then eliminate <Latex text="$T_1$" />, and now <Latex text="$T_2$" />, alongside rewriting <Latex text="$\ddot{x}_1$" />, <Latex text="$\ddot{y}_1$" />, <Latex text="$\ddot{x}_2$" /> and <Latex text="$\ddot{y}_2$" /> in terms of <Latex text="$\theta_1$" /> and <Latex text="$\theta_2$" />.
+This is fine, and it's probably an obvious result that the two pendulums are interconnected. But the bigger problem is the algebra. We have to resolve both the _tensions_ into Cartesian components, using the angles of each pendulum, and then eliminate <Latex text="$T_1$" />, and now <Latex text="$T_2$" />, alongside rewriting <Latex text="$\ddot{x}_1$" />, <Latex text="$\ddot{y}_1$" />, <Latex text="$\ddot{x}_2$" /> and <Latex text="$\ddot{y}_2$" /> in terms of <Latex text="$\theta_1$" /> and <Latex text="$\theta_2$" />.
 
 That's a lot of work, and it's tedious and error-prone. We have to work with two tensions that we don't care about, just to get to the two angles we actually care about. On top of that, forces lend themselves to a Cartesian coordinate system, which doesn't fit the geometry of the problem nicely, when really, working in the two angles we defined is much more useful.
 
@@ -99,13 +110,13 @@ That's a lot of work, and it's tedious and error-prone. We have to work with two
 
 This is where Lagrangian mechanics comes in, just as Newtonian mechanics is one formulation of classical mechanics we can use, Lagrangian mechanics is another, and it centres around the path of stationary action.
 
-Action as a quantity is equal to *energy* <Latex text="$\times$" /> *time*, and for every possible path the bobs could take, we can evaluate its action.
+Action as a quantity is equal to _energy_ <Latex text="$\times$" /> _time_, and for every possible path the bobs could take, we can evaluate its action.
 
-We do that by defining the *Lagrangian*
+We do that by defining the _Lagrangian_
 
 <Latex text="$$L = T - V$$" />
 
-where <Latex text="$T$" /> is the *kinetic energy* of the system and <Latex text="$V$" /> is the *potential energy* of the system. This equation was found by working backwards to find an equation that reproduces Newton's equations.
+where <Latex text="$T$" /> is the _kinetic energy_ of the system and <Latex text="$V$" /> is the _potential energy_ of the system. This equation was found by working backwards to find an equation that reproduces Newton's equations.
 
 The action of the path is then given by
 
@@ -123,17 +134,19 @@ Now, imagine you had a function <Latex text="$f(x)$" />, and just so we can visu
 
 If we make a small change, <Latex text="$\epsilon$" />, where <Latex text="$\epsilon$" /> is sufficiently small, to <Latex text="$x$" /> then the change in the function is
 
-<Latex text="$$
+<Latex
+  text="$$
 f(x + \epsilon) - f(x) = (3x^2 - 12x + 9)\,\epsilon + (3x - 6)\,\epsilon^2 + \epsilon^3
-$$" />
+$$"
+/>
 
-The definition of a stationary point (a minimum, a maximum, or a stationary point of inflection) is where *gradient* equals zero. Equivalently, it is where the change in the function is zero, to *first order*.
+The definition of a stationary point (a minimum, a maximum, or a stationary point of inflection) is where _gradient_ equals zero. Equivalently, it is where the change in the function is zero, to _first order_.
 
 This means a change in the function from a small nudge <Latex text="$\epsilon$" /> is only the result of orders of <Latex text="$\epsilon$" /> higher than first order, i.e. <Latex text="$\epsilon^2$" />, <Latex text="$\epsilon^3$" />, <Latex text="$\epsilon^4$" /> and so on. But why does a zero first-order change mean we have a stationary point at that <Latex text="$x$" />?
 
 Here, we need to recognise something about this result. A small shift to the right is <Latex text="$\epsilon > 0$" />, and a small shift to the left is <Latex text="$\epsilon < 0$"/>.
 
-That means, at a given <Latex text="$x$" />, if the change in the function were dominated by <Latex text="$\epsilon$" />, then we would increase on one side, but decrease on the other, and we would no longer have a stationary point at <Latex text="$x$" />.
+That means, at a given <Latex text="$x$" />, if the change in the function were dominated by the <Latex text="$\epsilon$" /> term, then we would increase on one side, but decrease on the other, and we would no longer have a stationary point at <Latex text="$x$" />.
 
 This is because there would be a point lower than the local minimum nearby, or a point greater than the local maximum nearby, depending on the nature of the stationary point.
 
@@ -147,30 +160,34 @@ Therefore, once the first-order term vanishes, the <Latex text="$\epsilon^2$" />
 
 So we require the change to be zero, to first order:
 
-<Latex text="$$
+<Latex
+  text="$$
 \begin{gathered}
 (3x^2 - 12x + 9)\,\epsilon = 0 \\[0.5em]
 3x^2 - 12x + 9 = 0 \\[0.5em]
 3(x-1)(x-3) = 0
 \end{gathered}
-$$" />
+$$"
+/>
 
 This gives us <Latex text="$x = 3$"/> or <Latex text="$x = 1$" /> as our stationary points. This is exactly what we'd get from differentiating. In fact, essentially what we're doing is differentiating from first principles, but omitting the part where we take the limit.
 
-<Latex text="$$
+<Latex
+  text="$$
 \begin{gathered}
 f(x) = x^3 - 6x^2 + 9x\\[0.5em]
 f'(x) = 3x^2 - 12x + 9 \\[0.5em]
 3x^2 - 12x + 9 = 0 \\[0.5em]
 3(x-1)(x-3) = 0
 \end{gathered}
-$$" />
+$$"
+/>
 
 We can determine the nature of each stationary point from the coefficient of <Latex text="$\epsilon^2$" />. If it is positive, the change increases on both sides; if negative, it decreases on both sides. If it is zero, we look at the <Latex text="$\epsilon^3$" /> term: a change that increases on one side and decreases on the other indicates a point of inflection.
 
-At <Latex text="$x = 3$"/>, the coefficient of <Latex text="$\epsilon^2$" /> is <Latex text="$3(3) - 6 = 3$" />, so we're increasing on both sides, which means it's a *minimum*.
+At <Latex text="$x = 3$"/>, the coefficient of <Latex text="$\epsilon^2$" /> is <Latex text="$3(3) - 6 = 3$" />, so we're increasing on both sides, which means it's a _minimum_.
 
-At <Latex text="$x = 1$"/>, the coefficient of <Latex text="$\epsilon^2$" /> is <Latex text="$3(1) - 6 = -3$" />, so we're decreasing on both sides, which means it's a *maximum*.
+At <Latex text="$x = 1$"/>, the coefficient of <Latex text="$\epsilon^2$" /> is <Latex text="$3(1) - 6 = -3$" />, so we're decreasing on both sides, which means it's a _maximum_.
 
 Note that our cubic has no stationary points of inflection.
 
@@ -192,16 +209,18 @@ Therefore, given the action <Latex text="$S[y]= \int_0^{t_f} L\,dt$"/>, where <L
 
 So for any system, if we can find the Lagrangian, we can determine which path has stationary action, and derive the equations of motion.
 
-<AnchoredHeader id="the-euler-lagrange-equation">The Euler-Lagrange equation</AnchoredHeader>
+<AnchoredHeader id="the-euler-lagrange-equation">
+  The Euler-Lagrange equation
+</AnchoredHeader>
 
 Preferably, we don't want to work through first principles every time we want to use Lagrangian mechanics to answer a question, but conveniently, Euler, as usual, has generalised it for a general <Latex text="$L$" />.
 
-For any system you can write down <Latex text="$L$" />, then write the Euler-Lagrange equation for each coordinate <Latex text="$q$" />, and then solve for the equation of motion for that coordinate.
+For any system you can write down <Latex text="$L$" />, using any _generalised_ coordiante system that we'd like, then write the Euler-Lagrange equation for each coordinate <Latex text="$q$" />, and then solve for the equation of motion for that coordinate.
 
 <Latex text="$$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}}\right) = \frac{\partial L}{\partial q}$$" />
 
-In our ball example, the coordinate is just <Latex text="$y$" /> and the answer that we get is <Latex text="$\ddot{y} = -g$" />, which makes sense: the ball is just accelerating under gravity, and since y points up, we say that is the negative direction (unlike the pendulum).
+In our ball example, the coordinate is just <Latex text="$y$" /> and the answer that we get is <Latex text="$\ddot{y} = -g$" />, which makes sense: the ball is just accelerating downwards under gravity, which is in the negative direction.
 
-We can now do the same to our double pendulum problem, for both <Latex text="$\theta_1$" /> and <Latex text="$\theta_2$" />, to figure out <Latex text="$\ddot{\theta}_1$" /> and <Latex text="$\ddot{\theta}_2$" />
+We can now do the same to our double pendulum problem, for both <Latex text="$\theta_1$" /> and <Latex text="$\theta_2$" />, to figure out <Latex text="$\ddot{\theta}_1$" /> and <Latex text="$\ddot{\theta}_2$" />. Find the kinetic energy and potential energy in terms of these two coordinates, and use the Euler-Lagrange equation to then find the equations of motion.
 
 <DoublePendulum />

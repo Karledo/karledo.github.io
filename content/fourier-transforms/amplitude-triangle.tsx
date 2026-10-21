@@ -130,14 +130,14 @@ const draw: Draw = ({ p }) => {
 
   labels.red.position(halfWidth + point.x / 2, p.height * 0.52);
   labels.red.style("color", red).style("font-size", fontSize);
-  katex.render(String.raw`Acos(\omega t)`, labels.red.elt);
+  katex.render(String.raw`A\cos(\omega t)`, labels.red.elt);
 
   const offset =
     (textSide < 0 ? -labels.green.elt.offsetWidth : 0) +
     Math.sign(textSide) * p.width * 0.015;
   labels.green.position(halfWidth + point.x + offset, halfHeight - point.y / 2);
   labels.green.style("color", green).style("font-size", fontSize);
-  katex.render(String.raw`Bsin(\omega t)`, labels.green.elt);
+  katex.render(String.raw`B\sin(\omega t)`, labels.green.elt);
 
   labels.blue.position(halfWidth + point.x / 2, halfHeight - point.y / 2);
   labels.blue.style("color", blue).style("font-size", fontSize);
